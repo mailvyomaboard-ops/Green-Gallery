@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
@@ -39,11 +40,22 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
           {/* Column 1: Brand & Operational Summary */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center">
-                <Sprout className="w-4 h-4 text-green-200" />
+            <div className="flex items-center gap-3">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-400/30 bg-black shadow-md shrink-0">
+                <Image
+                  src="/images/logo.jpg"
+                  alt="GreenGallery Emblem"
+                  fill
+                  className="object-cover scale-150 -translate-y-0.5"
+                  sizes="48px"
+                />
               </div>
-              <h3 className="font-display text-2xl font-extrabold text-white tracking-tight">GreenGallery</h3>
+              <div>
+                <h3 className="font-display text-2xl font-extrabold text-white tracking-tight leading-tight">GreenGallery</h3>
+                <span className="text-[10px] uppercase tracking-widest text-amber-300 font-medium block">
+                  Cultivating Natural Elegance
+                </span>
+              </div>
             </div>
             <p className="text-sm text-white/80 leading-relaxed font-light">
               Landscape design, execution, plantation, and garden care services across Pune and Western Maharashtra.

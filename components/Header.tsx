@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
@@ -17,14 +18,26 @@ export function Header() {
   return (
     <header className="sticky top-3 z-50 px-4 sm:px-6 max-w-[1240px] mx-auto pointer-events-none mb-2">
       <div className="bg-white/90 dark:bg-black/90 backdrop-blur-md border border-green-900/10 dark:border-white/10 rounded-full shadow-soft px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between gap-4 pointer-events-auto transition-all">
-        {/* Wordmark Logo with Saturated Leaf Pill */}
-        <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
-          <div className="w-9 h-9 rounded-full bg-green-950 text-cream-50 flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
-            <Sprout className="w-5 h-5 text-green-400" />
+        {/* Brand Emblem Logo & Wordmark */}
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none">
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-amber-500/30 dark:border-amber-400/40 bg-black shadow-md shrink-0 group-hover:scale-105 transition-all">
+            <Image
+              src="/images/logo.jpg"
+              alt="GreenGallery Logo"
+              fill
+              className="object-cover scale-150 -translate-y-0.5"
+              priority
+              sizes="40px"
+            />
           </div>
-          <span className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-            green gallery
-          </span>
+          <div className="flex flex-col">
+            <span className="font-display text-lg sm:text-xl font-extrabold tracking-tight text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors leading-tight">
+              GreenGallery
+            </span>
+            <span className="text-[9px] uppercase tracking-widest text-green-800/80 dark:text-amber-400/90 font-medium hidden sm:block -mt-0.5">
+              Natural Elegance
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation Links — Pill Navigation */}

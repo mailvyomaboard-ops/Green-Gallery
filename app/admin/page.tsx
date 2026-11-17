@@ -481,19 +481,30 @@ export default function AdminPage() {
     return (
       <div className="min-h-[82vh] flex items-center justify-center py-20 px-4 bg-cream-50">
         <div className="w-full max-w-sm bg-white border border-[#283618]/15 rounded-brand p-8 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="w-2 h-2 rounded-full bg-green-900" />
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
-              Operations Console
-            </span>
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="relative w-20 h-20 rounded-2xl overflow-hidden border border-amber-500/30 bg-black shadow-md mb-3">
+              <Image
+                src="/images/logo.jpg"
+                alt="GreenGallery Logo"
+                fill
+                className="object-cover"
+                priority
+                sizes="80px"
+              />
+            </div>
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#283618]/70">
+                Operations Console
+              </span>
+            </div>
+            <h1 className="text-2xl font-serif font-bold text-green-950 tracking-tight">
+              GreenGallery
+            </h1>
+            <p className="text-[11px] text-amber-800 font-medium tracking-wide">
+              Cultivating Natural Elegance
+            </p>
           </div>
-
-          <h1 className="text-2xl font-serif font-semibold text-green-900 tracking-tight mb-2">
-            Green Gallery
-          </h1>
-          <p className="text-xs text-ink-500 leading-relaxed mb-6 font-light">
-            Authorized administrative desk for live analytics, inquiry triage, and stock synchronization.
-          </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -539,14 +550,22 @@ export default function AdminPage() {
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#283618]/10">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-green-900 animate-pulse" />
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-amber-500/30 bg-black shadow-xs shrink-0">
+              <Image
+                src="/images/logo.jpg"
+                alt="GreenGallery Emblem"
+                fill
+                className="object-cover scale-150 -translate-y-0.5"
+                sizes="32px"
+              />
+            </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif text-lg font-semibold tracking-tight text-green-900">
-                  Green Gallery
+                <span className="font-serif text-lg font-bold tracking-tight text-green-950">
+                  GreenGallery
                 </span>
-                <span className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded border border-[#283618]/20 text-[#283618] bg-cream-50">
-                  Operations
+                <span className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded border border-[#283618]/20 text-[#283618] bg-cream-50 font-bold">
+                  Operations Desk
                 </span>
               </div>
             </div>
