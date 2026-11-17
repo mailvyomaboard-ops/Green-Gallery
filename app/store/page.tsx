@@ -223,26 +223,46 @@ export default function StoreCatalogPage() {
                   className="group bg-white border border-green-900/10 rounded-3xl p-4 sm:p-5 overflow-hidden flex flex-col justify-between hover:border-green-600 transition-all shadow-soft hover:shadow-glow"
                 >
                   <div>
-                    <div className="relative h-60 w-full rounded-2xl overflow-hidden bg-cream-50 mb-4">
-                      <Image
-                        src={prod.mainImage}
-                        alt={prod.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
-                        loading="lazy"
-                      />
-                      <div
-                        className={`absolute top-2.5 right-2.5 text-[10px] font-bold px-3 py-1 rounded-full shadow-xs uppercase tracking-wider ${
-                          prod.stockQuantity > 10
-                            ? "bg-white/95 text-green-950"
-                            : prod.stockQuantity > 0
-                            ? "bg-amber-100 text-amber-900"
-                            : "bg-red-100 text-red-900"
-                        }`}
-                      >
-                        {prod.stockLabel}
-                      </div>
+                    <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-4 flex flex-col justify-between text-white border border-green-800/30">
+                      {prod.mainImage ? (
+                        <>
+                          <Image
+                            src={prod.mainImage}
+                            alt={prod.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
+                            loading="lazy"
+                          />
+                          <div
+                            className={`absolute top-2.5 right-2.5 text-[10px] font-bold px-3 py-1 rounded-full shadow-xs uppercase tracking-wider ${
+                              prod.stockQuantity > 10
+                                ? "bg-white/95 text-green-950"
+                                : prod.stockQuantity > 0
+                                ? "bg-amber-100 text-amber-900"
+                                : "bg-red-100 text-red-900"
+                            }`}
+                          >
+                            {prod.stockLabel}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between">
+                            <span className="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-mono text-green-300 border border-white/10">
+                              {prod.category}
+                            </span>
+                            <span className="text-[10px] font-mono text-green-400 bg-green-950/80 px-2 py-0.5 rounded border border-green-500/30">
+                              Alandi Depot
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-mono text-green-400 uppercase tracking-wider block">Acclimatized Palette</span>
+                            <span className="text-sm font-bold text-white truncate block">{prod.name}</span>
+                            <span className="text-xs text-white/60 italic block mt-0.5">{prod.botanicalName}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     <div className="px-1">

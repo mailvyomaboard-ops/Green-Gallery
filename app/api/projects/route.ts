@@ -36,10 +36,10 @@ export async function POST(req: NextRequest) {
       areaSqFt: Number(body.areaSqFt) || 5000,
       clientName: body.clientName,
       clientLogo: body.clientLogo,
-      coverImage: body.coverImage || "/images/courtyard-modern.jpg",
-      images: Array.isArray(body.images) ? body.images : [
-        { url: body.coverImage || "/images/courtyard-modern.jpg", caption: body.title, alt: body.title }
-      ],
+      coverImage: body.coverImage || "",
+      images: Array.isArray(body.images) ? body.images : (body.coverImage ? [
+        { url: body.coverImage, caption: body.title, alt: body.title }
+      ] : []),
       brief: body.brief || "",
       plantsUsed: Array.isArray(body.plantsUsed) ? body.plantsUsed : [],
       servicesUsed: Array.isArray(body.servicesUsed) ? body.servicesUsed : ["Landscape Design and Installation"],

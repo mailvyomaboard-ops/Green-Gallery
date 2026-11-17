@@ -106,24 +106,33 @@ export default function ProjectsPage() {
             className="bg-white dark:bg-[#080A09] rounded-3xl p-5 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group"
           >
             <div>
-              {/* Cover Image Deck */}
-              <div className="relative h-60 w-full rounded-2xl overflow-hidden mb-4 bg-green-950">
-                <Image
-                  src={project.coverImage}
-                  alt={project.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, 380px"
-                />
-                {/* Status Badge */}
-                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[10px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                  <span>{project.status || "COMPLETED"}</span>
-                </div>
-
-                <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-green-950/80 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider shadow-sm">
-                  {project.category}
-                </div>
+              {/* Cover Image Deck / Architectural Blueprint Header */}
+              <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-4 flex flex-col justify-between border border-green-800/30">
+                {project.coverImage ? (
+                  <Image
+                    src={project.coverImage}
+                    alt={project.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, 380px"
+                  />
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between z-10">
+                      <div className="px-3 py-1 rounded-full bg-white/10 dark:bg-black/60 backdrop-blur-sm text-[10px] font-bold text-green-300 uppercase tracking-wider shadow-sm flex items-center gap-1.5 border border-white/15">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                        <span>{project.status || "COMPLETED"}</span>
+                      </div>
+                      <div className="px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-sm text-[10px] font-mono text-white/90 uppercase tracking-wider border border-white/10">
+                        {project.category}
+                      </div>
+                    </div>
+                    <div className="z-10 pt-4">
+                      <span className="text-[10px] font-mono text-green-400 uppercase tracking-wider block">Scale &amp; Execution</span>
+                      <span className="text-xs font-bold text-white/95 block">{project.areaSqFt.toLocaleString("en-IN")} sq. ft. · {project.location}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Meta info */}

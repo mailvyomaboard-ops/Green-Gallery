@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import {
@@ -82,14 +81,38 @@ export default function AboutPage() {
         </div>
 
         <div className="lg:col-span-5 relative">
-          <div className="relative h-80 sm:h-96 w-full rounded-3xl overflow-hidden shadow-soft border border-green-900/10 dark:border-white/10 bg-green-950">
-            <Image
-              src="/images/courtyard-modern.jpg"
-              alt="GreenGallery Landscaping in Pune"
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 500px"
-            />
+          <div className="h-full min-h-[320px] sm:min-h-[380px] w-full rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#061A12] border border-green-800/40 shadow-soft flex flex-col justify-between text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-bold uppercase tracking-wider text-green-300 mb-4">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <span>Operational Backbone</span>
+              </div>
+              <h3 className="font-display text-2xl font-bold text-white mb-2">
+                Pune Infrastructure Matrix
+              </h3>
+              <p className="text-xs text-white/70 font-light leading-relaxed">
+                Structured for rapid material dispatch, direct acclimatization, and reliable site execution across Western Maharashtra.
+              </p>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-semibold text-white text-xs">Alandi Logistical Staging Depot</div>
+                  <div className="text-[11px] text-white/60 font-light">Inventory sorting, pre-delivery acclimation &amp; civil dispatch</div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-3">
+                <Building2 className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-semibold text-white text-xs">Old Mumbai–Pune Highway Setup</div>
+                  <div className="text-[11px] text-white/60 font-light">Upcoming nursery and operations facility in active development</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

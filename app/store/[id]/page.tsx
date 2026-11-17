@@ -91,22 +91,61 @@ export default function ProductDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left Column: Image Gallery */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="relative h-[420px] sm:h-[500px] w-full bg-white rounded-3xl overflow-hidden border border-green-900/10 shadow-soft">
-              <Image
-                src={activeImage}
-                alt={product.name}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-              <div className="absolute top-4 left-4 bg-green-950 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                {product.stockLabel}
-              </div>
+            <div className="relative min-h-[420px] sm:h-[500px] w-full bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-6 sm:p-8 rounded-3xl overflow-hidden border border-green-900/10 shadow-soft flex flex-col justify-between text-white">
+              {activeImage ? (
+                <>
+                  <Image
+                    src={activeImage}
+                    alt={product.name}
+                    fill
+                    priority
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  <div className="absolute top-4 left-4 bg-green-950 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                    {product.stockLabel}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-xs font-mono text-green-300 border border-white/15">
+                      {product.category}
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-green-500/20 text-xs font-mono text-green-300 border border-green-500/30">
+                      {product.stockLabel}
+                    </span>
+                  </div>
+
+                  <div className="my-auto py-6">
+                    <span className="text-xs font-mono text-green-400 uppercase tracking-widest block mb-2">Botanical Specimen Sheet</span>
+                    <h2 className="text-3xl font-display font-extrabold text-white mb-1">
+                      {product.name}
+                    </h2>
+                    <p className="text-sm text-white/70 italic font-mono mb-4">{product.botanicalName}</p>
+
+                    <div className="grid grid-cols-2 gap-4 max-w-sm pt-4 border-t border-white/10 text-xs">
+                      <div>
+                        <span className="text-white/60 block text-[10px] uppercase font-mono">Sunlight Spec</span>
+                        <span className="font-semibold text-white">{product.lightRequirement}</span>
+                      </div>
+                      <div>
+                        <span className="text-white/60 block text-[10px] uppercase font-mono">Staging Location</span>
+                        <span className="font-semibold text-white">Alandi Logistical Depot</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-green-300/80">
+                    <span>Pune &amp; PCMC Direct Supply</span>
+                    <span className="font-mono text-white/90 font-bold">+91 78230 80251</span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Thumbnail Gallery */}
-            {product.images.length > 1 && (
+            {product.images && product.images.filter(Boolean).length > 1 && (
               <div className="flex items-center gap-3">
                 {product.images.map((img, idx) => (
                   <button
@@ -147,7 +186,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <span className="font-bold text-green-950 block">
                   {product.stockQuantity > 0 ? `${product.stockQuantity} specimens in nursery` : "Out of Stock"}
                 </span>
-                <span>Tathawade holding bay</span>
+                <span>Alandi staging depot</span>
               </div>
             </div>
 

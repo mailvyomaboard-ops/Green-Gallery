@@ -82,16 +82,40 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      {/* Main Cover Showcase */}
-      <div className="relative h-[380px] sm:h-[500px] md:h-[560px] w-full rounded-3xl overflow-hidden shadow-soft border border-green-900/10 dark:border-white/10 bg-green-950">
-        <Image
-          src={project.coverImage}
-          alt={project.title}
-          fill
-          priority
-          className="object-cover"
-          sizes="(max-width: 1240px) 100vw, 1240px"
-        />
+      {/* Main Cover Showcase / Architectural Blueprint Showcase */}
+      <div className="relative min-h-[300px] sm:min-h-[420px] w-full rounded-3xl overflow-hidden shadow-soft border border-green-900/10 dark:border-white/10 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-6 sm:p-10 flex flex-col justify-between text-white">
+        {project.coverImage ? (
+          <Image
+            src={project.coverImage}
+            alt={project.title}
+            fill
+            priority
+            className="object-cover"
+            sizes="(max-width: 1240px) 100vw, 1240px"
+          />
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-full bg-white/10 text-xs font-mono text-green-300 border border-white/15">
+                {project.category} · {project.location}
+              </span>
+              <span className="text-xs font-mono text-green-400 bg-green-950/80 px-2.5 py-1 rounded-full border border-green-500/30">
+                {project.areaSqFt.toLocaleString("en-IN")} Sq. Ft.
+              </span>
+            </div>
+            <div className="max-w-2xl py-8">
+              <span className="text-xs font-mono text-green-400 uppercase tracking-widest block mb-1">Architectural Scope Profile</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-extrabold text-white leading-tight">
+                {project.title}
+              </h2>
+            </div>
+            <div className="flex items-center gap-3 pt-4 border-t border-white/10 text-xs text-white/70">
+              <span>Execution Year: {project.year}</span>
+              <span>•</span>
+              <span>Status: {project.status || "COMPLETED"}</span>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Brief & Execution Details */}
@@ -154,13 +178,13 @@ export default async function ProjectDetailPage({
       </div>
 
       {/* Additional Visuals */}
-      {project.images && project.images.length > 1 && (
+      {project.images && project.images.filter(img => Boolean(img.url)).length > 1 && (
         <div className="space-y-6">
           <h2 className="font-display text-2xl font-bold text-green-950 dark:text-white">
             Project Visual Gallery
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {project.images.slice(1).map((img, idx) => (
+            {project.images.filter(img => Boolean(img.url)).slice(1).map((img, idx) => (
               <div
                 key={idx}
                 className="relative h-64 sm:h-72 rounded-2xl overflow-hidden shadow-soft border border-green-900/10 dark:border-white/10 group bg-green-950"

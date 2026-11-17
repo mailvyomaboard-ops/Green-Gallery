@@ -40,24 +40,63 @@ export default function PlantDetailClient({ product }: { product: Product }) {
   return (
     <div className="space-y-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left: Product Images */}
+        {/* Left: Product Specimen Showcase */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative h-96 sm:h-[480px] w-full rounded-3xl overflow-hidden shadow-soft border border-green-900/10 dark:border-white/10 bg-cream-100">
-            <Image
-              src={selectedImage}
-              alt={product.name}
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 600px"
-            />
-            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-xs font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
-              {product.stockLabel}
-            </div>
+          <div className="relative min-h-[360px] sm:h-[480px] w-full rounded-3xl overflow-hidden shadow-soft border border-green-900/10 dark:border-white/10 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-6 sm:p-8 flex flex-col justify-between text-white">
+            {selectedImage ? (
+              <>
+                <Image
+                  src={selectedImage}
+                  alt={product.name}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 600px"
+                />
+                <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-xs font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
+                  {product.stockLabel}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="px-3 py-1 rounded-full bg-white/10 text-xs font-mono text-green-300 border border-white/15">
+                    {product.category}
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-green-500/20 text-xs font-mono text-green-300 border border-green-500/30">
+                    {product.stockLabel}
+                  </span>
+                </div>
+
+                <div className="my-auto py-6">
+                  <span className="text-xs font-mono text-green-400 uppercase tracking-widest block mb-2">Botanical Specimen Sheet</span>
+                  <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-white mb-1">
+                    {product.name}
+                  </h2>
+                  <p className="text-sm text-white/70 italic font-mono mb-4">{product.botanicalName}</p>
+
+                  <div className="grid grid-cols-2 gap-3 max-w-sm pt-4 border-t border-white/10 text-xs">
+                    <div>
+                      <span className="text-white/60 block text-[10px] uppercase font-mono">Height Profile</span>
+                      <span className="font-semibold text-white">{product.careGuide.height}</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60 block text-[10px] uppercase font-mono">Size Category</span>
+                      <span className="font-semibold text-white">{product.sizeCategory}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-green-300/80">
+                  <span>Alandi Logistical Staging Depot</span>
+                  <span>Pune &amp; PCMC Delivery</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Thumbnail gallery */}
-          {product.images && product.images.length > 1 && (
+          {product.images && product.images.filter(Boolean).length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
               {product.images.map((img, idx) => (
                 <button

@@ -1476,7 +1476,7 @@ export default function AdminPage() {
               </div>
               <div className="relative w-full min-h-[300px] rounded-2xl overflow-hidden bg-green-950 border border-green-800 flex flex-col justify-between p-6 sm:p-8 text-cream-50 shadow-inner">
                 <Image
-                  src={siteContent.heroImage || "/images/courtyard-modern.jpg"}
+                  src={siteContent.heroImage || "/images/hero-clean.webp"}
                   alt="Preview"
                   fill
                   className="object-cover object-center scale-105"
@@ -1572,25 +1572,17 @@ export default function AdminPage() {
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        value={siteContent.heroImage}
+                        value={siteContent.heroImage || "/images/hero-clean.webp"}
                         onChange={(e) => setSiteContent({ ...siteContent, heroImage: e.target.value })}
                         className="flex-1 px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
                       />
                       <button
                         type="button"
-                        onClick={() => setSiteContent({ ...siteContent, heroImage: "/images/courtyard-modern.jpg" })}
-                        className="px-2.5 py-1.5 border border-[#283618]/15 hover:bg-cream-200/50 text-[10px] font-mono rounded cursor-pointer"
-                        title="Courtyard"
-                      >
-                        Courtyard
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => setSiteContent({ ...siteContent, heroImage: "/images/hero-clean.webp" })}
                         className="px-2.5 py-1.5 border border-[#283618]/15 hover:bg-cream-200/50 text-[10px] font-mono rounded cursor-pointer"
-                        title="Clean"
+                        title="AI Hero Image"
                       >
-                        Clean
+                        AI Hero Image
                       </button>
                     </div>
                   </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { siteConfig, ServiceItem } from "@/config/site";
 import { ArrowRight, CheckCircle2, Sprout, ArrowUpRight } from "lucide-react";
@@ -56,16 +55,18 @@ export default function ServicesPage() {
             className="bg-white dark:bg-[#080A09] rounded-3xl p-6 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between"
           >
             <div>
-              <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-5 bg-green-950">
-                <Image
-                  src={service.image}
-                  alt={service.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 380px"
-                />
-                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[10px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
-                  {service.category}
+              <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-5 flex flex-col justify-between border border-green-800/30">
+                <div className="flex items-center justify-between">
+                  <span className="px-3 py-1 rounded-full bg-white/10 dark:bg-black/50 backdrop-blur-sm text-[10px] font-bold text-green-300 uppercase tracking-wider border border-white/15">
+                    {service.category}
+                  </span>
+                  <span className="text-[10px] font-mono text-green-400 bg-green-950/80 px-2 py-0.5 rounded border border-green-500/30">
+                    Pune Market Scope
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-green-400/80 uppercase tracking-wider block">Target Property</span>
+                  <span className="text-xs font-semibold text-white/90 truncate block">{service.idealFor.split(',')[0]}</span>
                 </div>
               </div>
 

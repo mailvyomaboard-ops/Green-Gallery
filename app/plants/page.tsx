@@ -14,7 +14,8 @@ import {
   ShoppingBag,
   Info,
   MapPin,
-  Sparkles
+  Sparkles,
+  Sprout
 } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
@@ -125,17 +126,37 @@ export default function PlantsPage() {
             className="bg-white dark:bg-[#080A09] rounded-3xl p-4 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group"
           >
             <div>
-              <div className="relative h-60 w-full rounded-2xl overflow-hidden mb-3 bg-cream-100">
-                <Image
-                  src={prod.mainImage}
-                  alt={prod.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 280px"
-                />
-                <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[9px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
-                  {prod.stockLabel}
-                </div>
+              <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-3 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-4 flex flex-col justify-between text-white border border-green-800/30">
+                {prod.mainImage ? (
+                  <>
+                    <Image
+                      src={prod.mainImage}
+                      alt={prod.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 280px"
+                    />
+                    <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[9px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
+                      {prod.stockLabel}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-green-400">
+                        <Sprout className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/15 text-[9px] font-mono text-green-300">
+                        {prod.stockLabel}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-mono uppercase tracking-wider text-green-400 block">Alandi Staged</span>
+                      <span className="text-xs font-bold text-white truncate block">{prod.botanicalName}</span>
+                      <span className="text-[10px] text-white/60 font-light block mt-0.5">{prod.careGuide.height} · {prod.sizeCategory}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 block mb-0.5">

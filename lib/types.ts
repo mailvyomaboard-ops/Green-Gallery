@@ -170,7 +170,7 @@ export interface SiteContent {
 }
 
 export const defaultSiteContent: SiteContent = {
-  heroImage: "/images/courtyard-modern.jpg",
+  heroImage: "/images/hero-clean.webp",
   heroBadge: "Horticultural Landscape Execution · Pune",
   heroHeadline: "growth",
   heroDescription:
@@ -189,7 +189,7 @@ export const defaultSiteContent: SiteContent = {
   showcaseRow1: [
     {
       id: "work-1",
-      image: "/images/courtyard-modern.jpg",
+      image: "/images/hero-clean.webp",
       title: "Architectural Villa Courtyard & Hearth",
       subtitle: "Private Estate Landscape · Koregaon Park",
     },

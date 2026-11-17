@@ -52,10 +52,10 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     images: [
       {
-        url: "/images/frames/ezgif-frame-001.jpg",
+        url: "/images/hero-clean.webp",
         width: 1920,
         height: 1080,
-        alt: "Green Gallery — Estate Landscape Design and Specimen Nursery",
+        alt: "Green Gallery — Landscape Design & Execution, Pune",
       },
     ],
   },
@@ -81,7 +81,7 @@ export default function RootLayout({
     "@type": "LandscapeArchitect",
     "name": siteConfig.name,
     "description": siteConfig.description,
-    "image": `${siteConfig.url}/images/frames/ezgif-frame-001.jpg`,
+    "image": `${siteConfig.url}/images/hero-clean.webp`,
     "@id": siteConfig.url,
     "url": siteConfig.url,
     "telephone": siteConfig.contact.phone,

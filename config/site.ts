@@ -9,7 +9,7 @@ export interface ServiceItem {
   scope: string[];
   deliverables: string[];
   idealFor: string;
-  image: string;
+  image?: string;
   faq: { q: string; a: string }[];
 }
 
@@ -194,7 +194,6 @@ export const siteConfig: SiteConfig = {
         "Establishment care guidelines"
       ],
       idealFor: "Corporate Offices, Tech Parks, Showrooms, Industrial Plants, Hospitals & Hospitality Venues",
-      image: "https://images.unsplash.com/photo-1541888946425-d0fbb186f5f7?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "How do you coordinate with our civil and MEP contractors?",
@@ -233,7 +232,6 @@ export const siteConfig: SiteConfig = {
         "Maintenance transition roadmap"
       ],
       idealFor: "Real Estate Developers, Township Promoters, EPC Contractors, Project Management Consultants",
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "Can you execute landscapes in phases across tower handovers?",
@@ -267,7 +265,6 @@ export const siteConfig: SiteConfig = {
         "Monthly maintenance logs and water-saving guidance"
       ],
       idealFor: "Housing Societies, Residential RWA Committees, Apartment Complexes",
-      image: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "Do you provide committee proposals for society AGM approvals?",
@@ -302,7 +299,6 @@ export const siteConfig: SiteConfig = {
         "Plant care manual and seasonal pruning roadmap"
       ],
       idealFor: "Bungalow Owners, Villa Residents, Weekend Farmhouses in Mulshi, Lonavala & Pune Suburbs",
-      image: "https://images.unsplash.com/photo-1558904541-efa8c4a08931?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "How much space is needed for a residential garden?",
@@ -337,7 +333,6 @@ export const siteConfig: SiteConfig = {
         "Care kit instructions"
       ],
       idealFor: "Urban Apartment Dwellers, Penthouse Terraces, Duplex Balconies",
-      image: "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "Will terrace planters damage my roof waterproofing?",
@@ -372,7 +367,6 @@ export const siteConfig: SiteConfig = {
         "Low-light watering schedule"
       ],
       idealFor: "Corporate Lounges, Executive Offices, Luxury Homes, Fine Dining Restaurants, Boutiques",
-      image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "What plants work best in air-conditioned offices?",
@@ -407,7 +401,6 @@ export const siteConfig: SiteConfig = {
         "Quarterly inspection schedule"
       ],
       idealFor: "Commercial Entrance Walls, Villa Courtyard Walls, Restaurant Backdrops, Urban Compound Walls",
-      image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "How often do vertical gardens need watering?",
@@ -442,7 +435,6 @@ export const siteConfig: SiteConfig = {
         "Survival audit report"
       ],
       idealFor: "Educational Campuses, Industrial Boundaries, Farmhouse Estates, Urban Avenue Development",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "What tree species are most resilient for Pune soil and climate?",
@@ -476,7 +468,6 @@ export const siteConfig: SiteConfig = {
         "Delivery challans and species tagging"
       ],
       idealFor: "Landscape Architects, General Contractors, Facility Managers, Institutional Estate Heads",
-      image: "https://images.unsplash.com/photo-1463936575829-25148e1db1b8?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "Can I visit your nursery to pick plants?",
@@ -511,7 +502,6 @@ export const siteConfig: SiteConfig = {
         "Emergency plant health callouts"
       ],
       idealFor: "Corporate Campuses, Housing Societies, Commercial Buildings, Private Villas & Estates",
-      image: "https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=1200&q=80",
       faq: [
         {
           q: "What maintenance plans do you offer?",

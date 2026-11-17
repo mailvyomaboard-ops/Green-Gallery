@@ -17,7 +17,8 @@ import {
   Clock,
   MapPin,
   FileText,
-  HeartHandshake
+  HeartHandshake,
+  Droplets
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { initialProducts, clientsData } from "@/lib/data";
@@ -111,16 +112,18 @@ export default function HomePage() {
               className="bg-white dark:bg-[#080A09] rounded-3xl p-6 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all group flex flex-col justify-between"
             >
               <div>
-                <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-5 bg-green-950">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 380px"
-                  />
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[10px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
-                    {service.category}
+                <div className="relative h-44 w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-5 flex flex-col justify-between border border-green-800/30 group-hover:border-green-500/40 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full bg-white/10 dark:bg-black/50 backdrop-blur-sm text-[10px] font-bold text-green-300 uppercase tracking-wider border border-white/15">
+                      {service.category}
+                    </span>
+                    <span className="w-8 h-8 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                      <Sparkles className="w-4 h-4" />
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono text-green-400/80 uppercase tracking-wider block">Target Portfolio</span>
+                    <span className="text-xs font-semibold text-white/90 truncate block">{service.idealFor.split(',')[0]}</span>
                   </div>
                 </div>
 
@@ -210,21 +213,40 @@ export default function HomePage() {
             </div>
 
             <div className="lg:col-span-5 relative">
-              <div className="relative h-[380px] sm:h-[450px] w-full rounded-3xl overflow-hidden border border-white/15 shadow-2xl">
-                <Image
-                  src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80"
-                  alt="Modern commercial and residential podium landscaping in Pune"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-green-400 block mb-0.5">
-                    Western Pune Development
-                  </span>
-                  <p className="text-xs text-white font-medium">
-                    Integrated landscape matrices designed for low water consumption and year-round green coverage.
+              <div className="h-[380px] sm:h-[450px] w-full rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#061A12] border border-white/15 shadow-2xl flex flex-col justify-between text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-72 h-72 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
+                
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase tracking-wider text-green-300 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-green-400" />
+                    <span>Commercial Deliverables</span>
+                  </div>
+                  <h3 className="font-display text-2xl font-bold text-white mb-2">
+                    Developer Handover Matrix
+                  </h3>
+                  <p className="text-xs text-white/70 font-light leading-relaxed">
+                    Designed to integrate seamlessly with civil schedules, MEP conduits, and handover deadlines.
                   </p>
+                </div>
+
+                <div className="space-y-2.5 pt-3 border-t border-white/10 text-xs">
+                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2.5">
+                    <Layers className="w-4 h-4 text-green-400 shrink-0" />
+                    <span className="text-white/90 text-xs font-medium">Lightweight engineered podium soil matrices</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2.5">
+                    <Droplets className="w-4 h-4 text-green-400 shrink-0" />
+                    <span className="text-white/90 text-xs font-medium">Automated drip irrigation &amp; STP water integration</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-green-400 shrink-0" />
+                    <span className="text-white/90 text-xs font-medium">Alandi staging depot quality hold &amp; batch inspection</span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-green-300/80">
+                  <span>Pune &amp; PCMC Municipal Coverage</span>
+                  <span className="font-mono text-white/90 font-bold">+91 78230 80251</span>
                 </div>
               </div>
             </div>
@@ -374,16 +396,19 @@ export default function HomePage() {
               className="bg-white dark:bg-[#080A09] rounded-3xl p-5 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all group flex flex-col justify-between"
             >
               <div>
-                <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden bg-cream-100 mb-4">
-                  <Image
-                    src={prod.mainImage}
-                    alt={prod.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 380px"
-                  />
-                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[10px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
-                    {prod.stockLabel}
+                <div className="relative h-60 sm:h-64 w-full rounded-2xl overflow-hidden bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-5 flex flex-col justify-between text-white border border-green-800/30 mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-mono text-green-300 border border-white/10">
+                      {prod.category}
+                    </span>
+                    <span className="text-[10px] font-mono text-green-400 bg-green-950/80 px-2 py-0.5 rounded border border-green-500/30">
+                      Alandi Staging
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono text-green-400 uppercase tracking-wider block">Acclimatized Palette</span>
+                    <span className="text-sm font-bold text-white truncate block">{prod.name}</span>
+                    <span className="text-xs text-white/60 italic block mt-0.5">{prod.botanicalName}</span>
                   </div>
                 </div>
 
@@ -467,13 +492,9 @@ export default function HomePage() {
       <section className="max-w-[1240px] mx-auto px-4 sm:px-6 pb-8">
         <div className="relative rounded-[2.5rem] overflow-hidden bg-green-950 p-10 sm:p-14 md:p-16 text-center text-white border border-green-800/40 shadow-2xl">
           <div className="absolute inset-0 w-full h-full pointer-events-none">
-            <Image
-              src="/images/courtyard-modern.jpg"
-              alt="Lush tropical leaves background"
-              fill
-              className="object-cover object-center opacity-30 scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#061A12]/90 via-[#0B2B1E]/80 to-[#061A12]/95" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#061A12] via-[#0B2B1E] to-[#040E0A]" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           <div className="relative z-10 max-w-2xl mx-auto">

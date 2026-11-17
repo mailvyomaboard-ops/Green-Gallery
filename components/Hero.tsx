@@ -30,7 +30,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
         {/* Saturated Lush Tropical Leaf Background with Dual Vignette */}
         <div className="absolute inset-0 w-full h-full">
           <Image
-            src={content.heroImage || "/images/courtyard-modern.jpg"}
+            src={content.heroImage || "/images/hero-clean.webp"}
             alt={content.heroHeadline || "GreenGallery - Professional Landscape Services & Botanical Execution in Pune"}
             fill
             priority
