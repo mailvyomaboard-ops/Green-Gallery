@@ -14,16 +14,24 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id, quantityInStock, status, priceBand } = body;
+    const { id, name, botanicalName, category, sizeOrHeight, potSize, quantityInStock, status, priceBand, price, image, description } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Item ID is required." }, { status: 400 });
     }
 
     const updated = inventoryRepo.update(id, {
+      ...(name && { name }),
+      ...(botanicalName && { botanicalName }),
+      ...(category && { category }),
+      ...(sizeOrHeight && { sizeOrHeight }),
+      ...(potSize && { potSize }),
       ...(quantityInStock !== undefined && { quantityInStock: Number(quantityInStock) }),
       ...(status && { status }),
       ...(priceBand && { priceBand }),
+      ...(price !== undefined && { price: Number(price) }),
+      ...(image !== undefined && { image }),
+      ...(description !== undefined && { description }),
     });
 
     if (!updated) {
@@ -62,6 +70,9 @@ export async function POST(req: NextRequest) {
       quantityInStock: Number(body.quantityInStock) || 0,
       status: body.quantityInStock > 0 ? "In Stock" : "Out of Stock",
       priceBand: body.priceBand || "Price on Request",
+      price: body.price ? Number(body.price) : undefined,
+      image: body.image || "",
+      description: body.description || "",
       linkedProductId: body.linkedProductId,
     });
 

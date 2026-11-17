@@ -3,9 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { siteConfig, ServiceItem } from "@/config/site";
+import { useSiteContent } from "@/lib/useSiteContent";
 import { ArrowRight, CheckCircle2, Sprout, ArrowUpRight } from "lucide-react";
 
 export default function ServicesPage() {
+  const { content } = useSiteContent();
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
   const categories = ["All", "Commercial", "Residential", "Specialized", "Maintenance"];
@@ -20,13 +22,13 @@ export default function ServicesPage() {
       {/* Page Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <span className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400">
-          Comprehensive Landscaping Solutions
+          {content.servicesPageBadge || "Comprehensive Landscaping Solutions"}
         </span>
         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-green-950 dark:text-white tracking-tight">
-          Our Services &amp; Capabilities
+          {content.servicesPageTitle || "Our Services & Capabilities"}
         </h1>
         <p className="text-sm sm:text-base text-ink-700 dark:text-white/70 font-light leading-relaxed">
-          From developer podium decks and corporate campuses to private residential sanctuaries and scheduled horticultural upkeep. Tailored specifically for Pune and Western Maharashtra’s unique climate.
+          {content.servicesPageDescription || "From developer podium decks and corporate campuses to private residential sanctuaries and scheduled horticultural upkeep. Tailored specifically for Pune and Western Maharashtra’s unique climate."}
         </p>
       </div>
 

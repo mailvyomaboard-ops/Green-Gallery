@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { useSiteContent } from "@/lib/useSiteContent";
 import {
   Sprout,
   Building2,
@@ -16,6 +19,8 @@ import {
 } from "lucide-react";
 
 export default function AboutPage() {
+  const { content } = useSiteContent();
+
   const values = [
     {
       title: "Climate-First Horticultural Engineering",
@@ -41,13 +46,13 @@ export default function AboutPage() {
       <div className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-green-950 text-white p-8 sm:p-12 md:p-16 border border-green-800/40 shadow-2xl">
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-green-300 text-xs font-bold uppercase tracking-wider">
-            <span>About GreenGallery</span>
+            <span>{content.aboutBadge || "About GreenGallery"}</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            Cultivating Pune’s Natural Landscape
+            {content.aboutTitle || "Cultivating Pune’s Natural Landscape"}
           </h1>
           <p className="text-white/80 text-sm sm:text-base leading-relaxed font-light">
-            GreenGallery is a Pune-based landscape design, execution, plantation, and garden care company. We serve real estate developers, commercial campuses, housing societies, and private bungalow owners across Western Maharashtra.
+            {content.aboutDescription || "GreenGallery is a Pune-based landscape design, execution, plantation, and garden care company. We serve real estate developers, commercial campuses, housing societies, and private bungalow owners across Western Maharashtra."}
           </p>
         </div>
       </div>
@@ -137,11 +142,11 @@ export default function AboutPage() {
             <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
               <MapPin className="w-5 h-5 text-green-600" />
               <h3 className="font-display text-lg font-bold text-green-950 dark:text-white">
-                Logistical Staging Depot — Alandi, Pune
+                {content.aboutAlandiTitle || "Logistical Staging Depot — Alandi, Pune"}
               </h3>
             </div>
             <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed">
-              Our operational warehouse and material staging facility is located at Alandi, Pune. This dedicated depot is used for batch receiving, soil conditioning, root ball stabilization, and dispatching bulk plant orders directly to active Pune construction and landscape sites.
+              {content.aboutAlandiDescription || "Our operational warehouse and material staging facility is located at Alandi, Pune. This dedicated depot is used for batch receiving, soil conditioning, root ball stabilization, and dispatching bulk plant orders directly to active Pune construction and landscape sites."}
             </p>
             <div className="text-[11px] text-ink-500 dark:text-white/50 bg-cream-50 dark:bg-white/5 p-2.5 rounded-xl">
               <strong>Notice:</strong> Alandi is an operational logistics depot and staging area, not a public walk-in retail showroom.
@@ -153,11 +158,11 @@ export default function AboutPage() {
             <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
               <Clock className="w-5 h-5 text-amber-500" />
               <h3 className="font-display text-lg font-bold text-green-950 dark:text-white">
-                Nursery &amp; Office Hub — Old Mumbai–Pune Highway
+                {content.aboutHighwayTitle || "Nursery & Office Hub — Old Mumbai–Pune Highway"}
               </h3>
             </div>
             <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed">
-              A comprehensive new office and expansive botanical cultivation nursery is currently under active development along the Old Mumbai–Pune Highway corridor. This facility will significantly expand our propagation and specimen inventory capacity.
+              {content.aboutHighwayDescription || "A comprehensive new office and expansive botanical cultivation nursery is currently under active development along the Old Mumbai–Pune Highway corridor. This facility will significantly expand our propagation and specimen inventory capacity."}
             </p>
             <div className="text-[11px] text-ink-500 dark:text-white/50 bg-cream-50 dark:bg-white/5 p-2.5 rounded-xl">
               <strong>Status:</strong> Under active development. Staging and client deliveries are currently handled through our Alandi logistical depot.
@@ -173,10 +178,10 @@ export default function AboutPage() {
             <Users className="w-5 h-5" />
           </div>
           <h3 className="font-display text-lg font-bold text-green-950 dark:text-white">
-            Core Professional Team
+            {content.aboutTeamCount || "Core Professional Team (~9 Specialists)"}
           </h3>
           <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed">
-            Our operational core consists of approximately 9 dedicated landscaping professionals overseeing design alignment, soil preparation, planting supervision, and automated irrigation.
+            {content.aboutTeamDescription || "Our operational core consists of approximately 9 dedicated landscaping professionals overseeing design alignment, soil preparation, planting supervision, and automated irrigation."}
           </p>
         </div>
 

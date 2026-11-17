@@ -3,10 +3,12 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
+import { useSiteContent } from "@/lib/useSiteContent";
 import { LeadForm } from "@/components/LeadForm";
 import { Compass, Building2, MessageSquare, ArrowUpRight, Phone, Mail, MapPin, Clock } from "lucide-react";
 
 function ContactContent() {
+  const { content } = useSiteContent();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
   const serviceParam = searchParams.get("service") || "";
@@ -34,13 +36,13 @@ function ContactContent() {
       <section className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-green-950 text-white p-8 sm:p-12 md:p-16 border border-green-800/40 shadow-2xl">
         <div className="relative z-10 max-w-3xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-green-300 text-xs font-bold uppercase tracking-wider">
-            <span>Direct Project Desk · Pune</span>
+            <span>{content.contactBadge || "Direct Project Desk · Pune"}</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            Consultation &amp; Project Desk
+            {content.contactTitle || "Consultation & Project Desk"}
           </h1>
           <p className="text-white/80 text-sm sm:text-base max-w-2xl leading-relaxed font-light">
-            Book an on-site landscape assessment across Pune, request formal developer BOQ pricing, or discuss bulk plant supply staged from our Alandi depot.
+            {content.contactDescription || "Book an on-site landscape assessment across Pune, request formal developer BOQ pricing, or discuss bulk plant supply staged from our Alandi depot."}
           </p>
         </div>
       </section>
@@ -151,10 +153,10 @@ function ContactContent() {
                   Direct Phone / WhatsApp
                 </span>
                 <a
-                  href={`tel:${siteConfig.contact.phone}`}
+                  href={`tel:${content.contactPhone || siteConfig.contact.phone}`}
                   className="text-green-700 dark:text-green-400 font-bold text-sm block hover:underline"
                 >
-                  {siteConfig.contact.phoneDisplay}
+                  {content.contactPhone || siteConfig.contact.phoneDisplay}
                 </a>
               </div>
 
@@ -163,10 +165,10 @@ function ContactContent() {
                   Email Desk
                 </span>
                 <a
-                  href={`mailto:${siteConfig.contact.email}`}
+                  href={`mailto:${content.contactEmail || siteConfig.contact.email}`}
                   className="text-green-700 dark:text-green-400 underline font-medium block"
                 >
-                  {siteConfig.contact.email}
+                  {content.contactEmail || siteConfig.contact.email}
                 </a>
               </div>
             </div>
@@ -181,14 +183,14 @@ function ContactContent() {
               </div>
 
               <a
-                href={`https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(
+                href={`https://wa.me/${(content.contactWhatsapp || siteConfig.contact.whatsappNumber).replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
                   siteConfig.contact.whatsappDefaultMessage
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full min-h-[48px] px-6 py-3 bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-sm rounded-full shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
-                <span>Chat on WhatsApp ({siteConfig.contact.whatsappDisplay})</span>
+                <span>Chat on WhatsApp ({content.contactWhatsapp || siteConfig.contact.whatsappDisplay})</span>
                 <ArrowUpRight className="w-4 h-4" />
               </a>
             </div>

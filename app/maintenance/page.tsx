@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { useSiteContent } from "@/lib/useSiteContent";
 import {
   Scissors,
   Droplets,
@@ -19,6 +20,8 @@ import {
 } from "lucide-react";
 
 export default function MaintenancePage() {
+  const { content } = useSiteContent();
+
   const maintenanceFeatures = [
     {
       icon: Scissors,
@@ -95,13 +98,13 @@ export default function MaintenancePage() {
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <span className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400">
-          Horticultural Longevity
+          {content.maintenanceBadge || "Horticultural Longevity"}
         </span>
         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-green-950 dark:text-white tracking-tight">
-          Garden Maintenance &amp; Plant Care
+          {content.maintenanceTitle || "Garden Maintenance & Plant Care"}
         </h1>
         <p className="text-sm sm:text-base text-ink-700 dark:text-white/70 font-light leading-relaxed">
-          A great landscape is cultivated, not just planted. GreenGallery provides disciplined, scheduled maintenance programs tailored for Pune’s soil, water minerals, and seasonal climate swings.
+          {content.maintenanceDescription || "A great landscape is cultivated, not just planted. GreenGallery provides disciplined, scheduled maintenance programs tailored for Pune’s soil, water minerals, and seasonal climate swings."}
         </p>
       </div>
 

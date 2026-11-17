@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { initialProducts } from "@/lib/data";
 import { Product } from "@/lib/types";
+import { useSiteContent } from "@/lib/useSiteContent";
 import {
   Search,
   Filter,
@@ -20,6 +21,7 @@ import {
 import { useCart } from "@/lib/cart";
 
 export default function PlantsPage() {
+  const { content } = useSiteContent();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -67,13 +69,13 @@ export default function PlantsPage() {
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <span className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400">
-          Botanical Supply &amp; Staging
+          {content.plantsPageBadge || "Botanical Supply & Staging"}
         </span>
         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-green-950 dark:text-white tracking-tight">
-          Plant &amp; Specimen Catalogue
+          {content.plantsPageTitle || "Plant & Specimen Catalogue"}
         </h1>
         <p className="text-sm sm:text-base text-ink-700 dark:text-white/70 font-light leading-relaxed">
-          Acclimatized indoor and outdoor specimens, architectural avenue trees, and engineered soil mixes. Staged at our Alandi logistics depot and delivered across Pune &amp; PCMC.
+          {content.plantsPageDescription || "Acclimatized indoor and outdoor specimens, architectural avenue trees, and engineered soil mixes. Staged at our Alandi logistics depot and delivered across Pune & PCMC."}
         </p>
 
         {/* Operational Notice Box */}

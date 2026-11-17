@@ -29,3 +29,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Telemetry failed" }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    analyticsRepo.clear();
+    return NextResponse.json({ success: true, message: "Telemetry logs cleared" });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Failed to clear analytics" }, { status: 500 });
+  }
+}

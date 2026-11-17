@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { initialProjects, clientsData } from "@/lib/data";
 import { Project, ClientPartner } from "@/lib/types";
+import { useSiteContent } from "@/lib/useSiteContent";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 
 export default function ProjectsPage() {
+  const { content } = useSiteContent();
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [clients, setClients] = useState<ClientPartner[]>(clientsData);
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -60,13 +62,13 @@ export default function ProjectsPage() {
       <div className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-green-950 text-white p-8 sm:p-12 md:p-16 border border-green-800/40 shadow-2xl">
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-green-300 text-xs font-bold uppercase tracking-wider">
-            <span>Western Maharashtra Landscape Portfolio</span>
+            <span>{content.projectsPageBadge || "Western Maharashtra Landscape Portfolio"}</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            Executed Projects &amp; Case Studies
+            {content.projectsPageTitle || "Executed Projects & Case Studies"}
           </h1>
           <p className="text-white/80 text-sm sm:text-base leading-relaxed font-light">
-            Explore our curated landscaping case studies across Pune, PCMC, and Western Maharashtra. From podium decks and entrance avenues to private villa sanctuaries and urban terraces.
+            {content.projectsPageDescription || "Explore our curated landscaping case studies across Pune, PCMC, and Western Maharashtra. From podium decks and entrance avenues to private villa sanctuaries and urban terraces."}
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">

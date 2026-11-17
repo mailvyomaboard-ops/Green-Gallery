@@ -64,10 +64,27 @@ function readDb(): DatabaseSchema {
     } else {
       parsed.leads = [];
     }
-    // Ensure clients are populated and projects have clientLogos
+    // Ensure clients are populated, Nirman Greens is first, and Shriram Group is removed
     if (!parsed.clients || parsed.clients.length === 0) {
       parsed.clients = clientsData;
       parsed.projects = initialProjects;
+    } else {
+      // Cleanse removed client
+      parsed.clients = parsed.clients.filter(
+        (c) => c.slug !== "shriram-group" && c.id !== "client-shriram" && !c.name.toLowerCase().includes("shriram")
+      );
+      // Bring Nirman Greens to position 0
+      const nirmanIdx = parsed.clients.findIndex((c) => c.name.toLowerCase().includes("nirman"));
+      if (nirmanIdx > 0) {
+        const [nirman] = parsed.clients.splice(nirmanIdx, 1);
+        parsed.clients.unshift(nirman);
+      }
+      // Cleanse removed project
+      if (parsed.projects) {
+        parsed.projects = parsed.projects.filter(
+          (p) => p.id !== "proj-shriram" && p.slug !== "shriram-green-acres" && !p.title.toLowerCase().includes("shriram")
+        );
+      }
     }
     if (!parsed.siteContent) {
       parsed.siteContent = defaultSiteContent;
@@ -198,6 +215,45 @@ export const inventoryRepo = {
       id: `inv-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       lastUpdated: "Just now",
     };
+
+    // If price or image provided, ensure corresponding store product exists
+    if (newItem.price !== undefined || newItem.image) {
+      const newProdSlug = newItem.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const newProd: Product = {
+        id: `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        name: newItem.name,
+        botanicalName: newItem.botanicalName,
+        slug: newProdSlug || `specimen-${Date.now()}`,
+        description: newItem.description || `Premium specimen ${newItem.name} cultivated for Western Maharashtra climate.`,
+        price: newItem.price || 0,
+        category: "Trees and Palms",
+        lightRequirement: "Full Sun",
+        sizeCategory: "Specimen (6+ ft)",
+        inStock: newItem.quantityInStock > 0,
+        stockQuantity: newItem.quantityInStock,
+        stockLabel: newItem.status,
+        mainImage: newItem.image || "/images/hero-clean.webp",
+        images: newItem.image ? [newItem.image] : ["/images/hero-clean.webp"],
+        bulkThreshold: 25,
+        variants: [
+          {
+            id: `var-${Date.now()}`,
+            label: newItem.sizeOrHeight || "Specimen (6+ ft)",
+            price: newItem.price || 0,
+            inventoryQty: newItem.quantityInStock,
+          },
+        ],
+        deliveryNote: "Staged from Alandi logistics depot across Pune & PCMC.",
+        careGuide: {
+          light: newItem.lightRequirement || "Full Sun",
+          water: "Moderate watering with good drainage.",
+          height: newItem.sizeOrHeight || "6+ ft",
+        },
+      };
+      db.products.push(newProd);
+      newItem.linkedProductId = newProd.id;
+    }
+
     db.inventory.unshift(newItem);
     writeDb(db);
     return newItem;
@@ -228,19 +284,77 @@ export const inventoryRepo = {
 
     db.inventory[index] = updated;
 
-    // SINGLE SOURCE OF TRUTH: If this item is linked to a product, sync the store product!
-    if (updated.linkedProductId) {
-      const prodIndex = db.products.findIndex((p) => p.id === updated.linkedProductId);
-      if (prodIndex !== -1) {
-        const prod = db.products[prodIndex];
-        prod.stockQuantity = updated.quantityInStock;
-        prod.stockLabel = updated.status;
-        prod.inStock = updated.quantityInStock > 0;
-        // Also update any matching variant
-        if (prod.variants && prod.variants.length > 0) {
-          prod.variants[0].inventoryQty = updated.quantityInStock;
+    // SINGLE SOURCE OF TRUTH: If this item is linked to a product (or matches by name), sync the store product!
+    const targetProdId = updated.linkedProductId;
+    const prodIndex = db.products.findIndex(
+      (p) => (targetProdId && p.id === targetProdId) || p.name.toLowerCase() === updated.name.toLowerCase()
+    );
+
+    if (prodIndex !== -1) {
+      const prod = db.products[prodIndex];
+      prod.stockQuantity = updated.quantityInStock;
+      prod.stockLabel = updated.status;
+      prod.inStock = updated.quantityInStock > 0;
+      if (updated.price !== undefined) {
+        prod.price = updated.price;
+      }
+      if (updated.image) {
+        prod.images = [updated.image, ...(prod.images ? prod.images.filter((img) => img !== updated.image) : [])];
+      }
+      if (updated.name) {
+        prod.name = updated.name;
+      }
+      if (updated.botanicalName) {
+        prod.botanicalName = updated.botanicalName;
+      }
+      if (updated.description) {
+        prod.description = updated.description;
+      }
+      if (prod.variants && prod.variants.length > 0) {
+        prod.variants[0].inventoryQty = updated.quantityInStock;
+        if (updated.price !== undefined) {
+          prod.variants[0].price = updated.price;
         }
       }
+      if (!updated.linkedProductId) {
+        updated.linkedProductId = prod.id;
+      }
+    } else if (updated.price !== undefined || updated.image) {
+      // If no matching product exists yet, auto-create one for catalog consistency
+      const newProdSlug = updated.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const newProd: Product = {
+        id: `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        name: updated.name,
+        botanicalName: updated.botanicalName,
+        slug: newProdSlug || `specimen-${Date.now()}`,
+        description: updated.description || `Premium specimen ${updated.name} cultivated for Western Maharashtra climate.`,
+        price: updated.price || 0,
+        category: "Trees and Palms",
+        lightRequirement: "Full Sun",
+        sizeCategory: "Specimen (6+ ft)",
+        inStock: updated.quantityInStock > 0,
+        stockQuantity: updated.quantityInStock,
+        stockLabel: updated.status,
+        mainImage: updated.image || "/images/hero-clean.webp",
+        images: updated.image ? [updated.image] : ["/images/hero-clean.webp"],
+        bulkThreshold: 25,
+        variants: [
+          {
+            id: `var-${Date.now()}`,
+            label: updated.sizeOrHeight || "Specimen (6+ ft)",
+            price: updated.price || 0,
+            inventoryQty: updated.quantityInStock,
+          },
+        ],
+        deliveryNote: "Staged from Alandi logistics depot across Pune & PCMC.",
+        careGuide: {
+          light: updated.lightRequirement || "Full Sun",
+          water: "Moderate watering with good drainage.",
+          height: updated.sizeOrHeight || "6+ ft",
+        },
+      };
+      db.products.push(newProd);
+      updated.linkedProductId = newProd.id;
     }
 
     writeDb(db);
@@ -563,6 +677,13 @@ export const analyticsRepo = {
       dailyTrends: Object.values(dailyMap),
       recentVisits: events.slice(0, 20),
     };
+  },
+
+  clear(): boolean {
+    const db = readDb();
+    db.analytics = [];
+    writeDb(db);
+    return true;
   },
 };
 

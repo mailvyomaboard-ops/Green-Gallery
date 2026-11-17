@@ -88,10 +88,10 @@ export default function HomePage() {
               End-to-End Solutions
             </span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-950 dark:text-white tracking-tight">
-              Landscaping Services for Pune
+              {siteContent.servicesSectionTitle || "Landscaping Services for Pune"}
             </h2>
             <p className="text-sm text-ink-700 dark:text-white/70 mt-2 font-light max-w-2xl leading-relaxed">
-              From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban balcony greening.
+              {siteContent.servicesSectionSubtitle || "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban balcony greening."}
             </p>
           </div>
           <Link
@@ -155,13 +155,13 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6">
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-green-600/30 text-green-300 text-xs font-semibold uppercase tracking-wider border border-green-500/30">
                 <Building2 className="w-3.5 h-3.5" />
-                <span>Commercial &amp; Real Estate Solutions</span>
+                <span>{siteContent.b2bBadge || "Commercial & Real Estate Solutions"}</span>
               </span>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-                Engineering Enduring Landscapes for Pune Developers
+                {siteContent.b2bSectionTitle || "Engineering Enduring Landscapes for Pune Developers"}
               </h2>
               <p className="text-white/80 text-sm sm:text-base font-light leading-relaxed">
-                We bridge the gap between architectural plans and living green reality. Our team handles complex podium slab loading calculations, sub-slab drainage coordination, staged tower handover planting, and large-scale specimen procurement from our Alandi staging depot.
+                {siteContent.b2bSectionDescription || "We bridge the gap between architectural plans and living green reality. Our team handles complex podium slab loading calculations, sub-slab drainage coordination, staged tower handover planting, and large-scale specimen procurement from our Alandi staging depot."}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -261,10 +261,10 @@ export default function HomePage() {
             Methodical Delivery
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-950 dark:text-white tracking-tight">
-            How GreenGallery Delivers
+            {siteContent.processSectionTitle || "How GreenGallery Delivers"}
           </h2>
           <p className="text-sm text-ink-700 dark:text-white/70 mt-2 font-light max-w-xl mx-auto leading-relaxed">
-            Our disciplined, 5-stage project framework guarantees transparent commercials, healthy plants, and timely handover.
+            {siteContent.processSectionSubtitle || "Our disciplined, 5-stage project framework guarantees transparent commercials, healthy plants, and timely handover."}
           </p>
         </div>
 

@@ -57,6 +57,10 @@ export interface InventoryItem {
   quantityInStock: number;
   status: "In Stock" | "Low Stock" | "Made to Order" | "Out of Stock";
   priceBand: string; // e.g. "₹850 - ₹1,200" or single price
+  price?: number;
+  image?: string;
+  description?: string;
+  lightRequirement?: string;
   linkedProductId?: string;
   lastUpdated: string;
 }
@@ -152,6 +156,7 @@ export interface ShowcaseItem {
 }
 
 export interface SiteContent {
+  // Home Page
   heroImage: string;
   heroBadge: string;
   heroHeadline: string;
@@ -162,14 +167,68 @@ export interface SiteContent {
   secondaryButtonText: string;
   introHeadline?: string;
   introDescription?: string;
+  servicesSectionTitle?: string;
+  servicesSectionSubtitle?: string;
+  b2bBadge?: string;
+  b2bSectionTitle?: string;
+  b2bSectionDescription?: string;
+  processSectionTitle?: string;
+  processSectionSubtitle?: string;
   bannerBadge?: string;
   bannerHeadline?: string;
   bannerDescription?: string;
   showcaseRow1: ShowcaseItem[];
   showcaseRow2: ShowcaseItem[];
+
+  // About Page
+  aboutBadge?: string;
+  aboutTitle?: string;
+  aboutDescription?: string;
+  aboutAlandiTitle?: string;
+  aboutAlandiDescription?: string;
+  aboutHighwayTitle?: string;
+  aboutHighwayDescription?: string;
+  aboutTeamCount?: string;
+  aboutTeamDescription?: string;
+
+  // Services Page
+  servicesPageBadge?: string;
+  servicesPageTitle?: string;
+  servicesPageDescription?: string;
+
+  // Projects Page
+  projectsPageBadge?: string;
+  projectsPageTitle?: string;
+  projectsPageDescription?: string;
+
+  // Plants Page
+  plantsPageBadge?: string;
+  plantsPageTitle?: string;
+  plantsPageDescription?: string;
+
+  // Maintenance Page
+  maintenanceBadge?: string;
+  maintenanceTitle?: string;
+  maintenanceDescription?: string;
+  maintenanceSocietyTitle?: string;
+  maintenanceSocietyDesc?: string;
+  maintenanceCommercialTitle?: string;
+  maintenanceCommercialDesc?: string;
+  maintenanceVillaTitle?: string;
+  maintenanceVillaDesc?: string;
+
+  // Contact Page
+  contactBadge?: string;
+  contactTitle?: string;
+  contactDescription?: string;
+  contactPhone?: string;
+  contactWhatsapp?: string;
+  contactEmail?: string;
+  contactAlandiAddress?: string;
 }
 
 export const defaultSiteContent: SiteContent = {
+  // Home Page
   heroImage: "/images/hero-clean.webp",
   heroBadge: "Horticultural Landscape Execution · Pune",
   heroHeadline: "growth",
@@ -182,10 +241,63 @@ export const defaultSiteContent: SiteContent = {
   introHeadline: "Transforming Spaces Through Thoughtful Landscaping",
   introDescription:
     "From corporate campuses and residential developments to private villas and balcony gardens, we deliver tailored landscape solutions built for Pune's climate.",
+  servicesSectionTitle: "Landscaping Services for Pune",
+  servicesSectionSubtitle: "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban balcony greening.",
+  b2bBadge: "Commercial Partnerships",
+  b2bSectionTitle: "Turnkey Foliage & Landscaping for Real Estate Developers",
+  b2bSectionDescription: "Comprehensive BOQ estimation, staged nursery supply, structural podium coordination, and scheduled tower handover landscaping across Pune and PCMC.",
+  processSectionTitle: "How We Work",
+  processSectionSubtitle: "A structured, accountable 5-stage landscape delivery workflow built for Pune's climatic rhythms and civil handover timelines.",
   bannerBadge: "Start Your Botanical Project",
   bannerHeadline: "Partner with GreenGallery",
   bannerDescription:
     "Review site plans with our team, enquire about plant supply from our staging depot, or request formal developer BOQ pricing.",
+
+  // About Page
+  aboutBadge: "Pune Operating Foundation",
+  aboutTitle: "Rooted in Pune. Cultivating Enduring Landscapes.",
+  aboutDescription: "GreenGallery provides professional landscape design, plantation execution, plant supply, and long-term garden maintenance across Pune and Western Maharashtra.",
+  aboutAlandiTitle: "Alandi Logistical Staging Depot",
+  aboutAlandiDescription: "Logistical staging, inventory sorting, plant quarantine, and pre-delivery site conditioning facility in Alandi, Pune.",
+  aboutHighwayTitle: "Old Mumbai–Pune Highway Setup",
+  aboutHighwayDescription: "Our upcoming operations office and nursery facility along the Old Mumbai–Pune Highway is currently in active development.",
+  aboutTeamCount: "~9 Working Professionals",
+  aboutTeamDescription: "Backed by an experienced flexible regional site labor network and direct wholesale grower alliances across Maharashtra.",
+
+  // Services Page
+  servicesPageBadge: "Verified Execution Capabilities",
+  servicesPageTitle: "Landscape Services & Horticultural Solutions",
+  servicesPageDescription: "Tailored landscape design, execution, plant procurement, and garden maintenance for builders, architects, societies, and homeowners in Pune.",
+
+  // Projects Page
+  projectsPageBadge: "Pune Portfolio",
+  projectsPageTitle: "Landscape Projects & Developer Portfolios",
+  projectsPageDescription: "Explore completed and ongoing podium greening, avenue plantations, and private estate landscapes executed across Pune and PCMC.",
+
+  // Plants Page
+  plantsPageBadge: "Direct Botanical Supply",
+  plantsPageTitle: "Architectural Plant & Specimen Catalogue",
+  plantsPageDescription: "Acclimatized indoor and outdoor foliage, specimen trees, and bulk landscaping palettes staged through our Alandi logistics depot.",
+
+  // Maintenance Page
+  maintenanceBadge: "Care & Health Guarantees",
+  maintenanceTitle: "Annual Garden Maintenance Contracts (AMC)",
+  maintenanceDescription: "Professional groundskeeping, pest control, pruning, fertilization, and automated irrigation management across Pune.",
+  maintenanceSocietyTitle: "Residential Societies & Townships",
+  maintenanceSocietyDesc: "Perimeter green buffers, central lawn aeration, clubhouse foliage maintenance, and seasonal monsoon drainage management.",
+  maintenanceCommercialTitle: "Corporate & IT Campuses",
+  maintenanceCommercialDesc: "Pristine entrance atriums, biophilic indoor plants, bi-weekly health audits, and executive courtyard grooming.",
+  maintenanceVillaTitle: "Private Bungalows & Weekend Sanctuaries",
+  maintenanceVillaDesc: "Tailored horticultural care, specimen tree styling, and evening uplighting checks for private estates in Koregaon Park, Khandala, and Lonavala.",
+
+  // Contact Page
+  contactBadge: "Direct Pune Coordination",
+  contactTitle: "Initiate Your Landscape Project",
+  contactDescription: "Connect directly with our horticultural team for site consultations, developer BOQ quotes, or staging depot procurement.",
+  contactPhone: "+91 78230 80251",
+  contactWhatsapp: "+91 78230 80251",
+  contactEmail: "greengallery.landscapers@gmail.com",
+  contactAlandiAddress: "Alandi Logistical Staging Depot, Pune, Maharashtra, India",
   showcaseRow1: [
     {
       id: "work-1",
