@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ModalProvider } from "@/components/ConsultationModal";
 import { CartProvider } from "@/lib/cart";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -130,9 +131,10 @@ export default function RootLayout({
           <CartProvider>
             <ModalProvider>
               <Header />
-              <main className="flex-grow">{children}</main>
+              <main className="flex-grow pb-24 lg:pb-0">{children}</main>
               <Footer />
               <FloatingWhatsApp />
+              <MobileBottomNav />
             </ModalProvider>
           </CartProvider>
         </ThemeProvider>

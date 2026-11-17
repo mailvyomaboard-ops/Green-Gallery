@@ -56,7 +56,7 @@ export default function HomePage() {
     {
       title: "Where does GreenGallery operate and where are your facilities?",
       content:
-        "GreenGallery operates throughout Pune and Pimpri-Chinchwad (PCMC), as well as weekend estate corridors in Lonavala and Khandala. We maintain an operational logistical staging depot in Alandi, Pune for receiving, conditioning, and dispatching plant batches to active job sites. Additionally, a new dedicated nursery hub along the Old Mumbai–Pune Highway is currently in active development."
+        "GreenGallery delivers turnkey landscape architecture and botanical execution across premier residential and commercial developments. Our primary operational headquarters and dedicated logistical staging depot are established in Alandi, Pune for receiving, conditioning, and dispatching healthy plant batches to active job sites. Additionally, a new dedicated nursery hub along the Old Mumbai–Pune Highway is currently in active development."
     },
     {
       title: "How do you coordinate with builders, developers, and project architects?",
@@ -69,7 +69,7 @@ export default function HomePage() {
         "Absolutely. While we execute large commercial and podium projects, residential gardens are an essential part of our craft. We design private villa grounds, courtyard plantings, and compact balcony/terrace gardens utilizing lightweight planters, automated micro-drip watering, and weather-resilient foliage."
     },
     {
-      title: "Do you offer post-handover garden maintenance contracts in Pune?",
+      title: "Do you offer post-handover garden maintenance contracts?",
       content:
         "Yes. A landscape's long-term health depends on consistent horticultural care. We provide structured weekly, bi-weekly, or monthly maintenance plans covering lawn mowing, organic fertilization, seasonal pruning, pest prevention, and irrigation checkups."
     }
@@ -88,7 +88,7 @@ export default function HomePage() {
               End-to-End Solutions
             </span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-950 dark:text-white tracking-tight">
-              {siteContent.servicesSectionTitle || "Landscaping Services for Pune"}
+              {siteContent.servicesSectionTitle || "Comprehensive Landscaping & Botanical Services"}
             </h2>
             <p className="text-sm text-ink-700 dark:text-white/70 mt-2 font-light max-w-2xl leading-relaxed">
               {siteContent.servicesSectionSubtitle || "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban balcony greening."}
@@ -158,7 +158,7 @@ export default function HomePage() {
                 <span>{siteContent.b2bBadge || "Commercial & Real Estate Solutions"}</span>
               </span>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-                {siteContent.b2bSectionTitle || "Engineering Enduring Landscapes for Pune Developers"}
+                {siteContent.b2bSectionTitle || "Turnkey Foliage & Landscaping for Developers"}
               </h2>
               <p className="text-white/80 text-sm sm:text-base font-light leading-relaxed">
                 {siteContent.b2bSectionDescription || "We bridge the gap between architectural plans and living green reality. Our team handles complex podium slab loading calculations, sub-slab drainage coordination, staged tower handover planting, and large-scale specimen procurement from our Alandi staging depot."}
@@ -245,7 +245,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-green-300/80">
-                  <span>Pune &amp; PCMC Municipal Coverage</span>
+                  <span>Turnkey Botanical Capabilities</span>
                   <span className="font-mono text-white/90 font-bold">+91 78230 80251</span>
                 </div>
               </div>
@@ -301,7 +301,7 @@ export default function HomePage() {
               Developer Collaborations
             </span>
             <h2 className="text-xl sm:text-2xl font-display font-extrabold text-green-950 dark:text-white mt-0.5">
-              Projects &amp; Collaborations Across Pune
+              Projects &amp; Developer Collaborations
             </h2>
           </div>
           <Link
@@ -450,7 +450,7 @@ export default function HomePage() {
             Frequently Asked Questions
           </h2>
           <p className="text-sm text-ink-700 dark:text-white/70 mt-2 font-light max-w-lg mx-auto">
-            Everything you need to know about our landscaping execution, plant staging, and maintenance across Pune.
+            Everything you need to know about our landscaping execution, plant staging, and maintenance services.
           </p>
         </div>
 
@@ -505,7 +505,7 @@ export default function HomePage() {
               Partner with GreenGallery
             </h2>
             <p className="text-white/80 text-sm sm:text-base font-light mb-8 max-w-xl mx-auto leading-relaxed">
-              Schedule an on-site consultation across Pune, request formal developer BOQ pricing, or discuss bespoke garden design with our operational team.
+              Schedule an on-site consultation, request formal developer BOQ pricing, or discuss bespoke garden design with our operational team.
             </p>
 
             <div className="bg-white/10 backdrop-blur-md p-1.5 rounded-full border border-white/20 inline-flex flex-wrap items-center justify-center gap-2 max-w-full">

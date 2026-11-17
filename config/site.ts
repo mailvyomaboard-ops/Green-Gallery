@@ -79,16 +79,16 @@ export interface SiteConfig {
 export const siteConfig: SiteConfig = {
   name: "GreenGallery",
   url: "https://greengallery.in",
-  legalStatus: "GreenGallery Landscaping Services (Pune)",
-  tagline: "Landscape Design, Execution, Plantation & Garden Care in Pune",
+  legalStatus: "GreenGallery Landscaping Services",
+  tagline: "Landscape Design, Execution, Plantation & Garden Care",
   description:
-    "Professional landscaping, plantation, and garden care services for Pune's real estate developers, commercial properties, institutions, and residential clients.",
+    "Professional landscaping, turnkey plantation, and garden care services for real estate developers, commercial properties, institutions, and residential sanctuaries.",
   primaryMarket: "Pune, Maharashtra, India",
   seo: {
-    defaultTitle: "GreenGallery — Professional Landscaping Services & Plant Supply in Pune",
-    titleTemplate: "%s | GreenGallery Pune",
+    defaultTitle: "GreenGallery — Professional Landscaping Services & Botanical Execution",
+    titleTemplate: "%s | GreenGallery",
     defaultDescription:
-      "Landscape design, turnkey execution, podium planting, tree plantation, plant supply, and garden maintenance across Pune and Western Maharashtra.",
+      "Landscape design, turnkey execution, podium planting, tree plantation, plant supply, and garden maintenance across Maharashtra and beyond.",
   },
   navItems: [
     { label: "Home", href: "/" },

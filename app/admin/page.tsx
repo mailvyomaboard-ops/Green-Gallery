@@ -2043,7 +2043,7 @@ export default function AdminPage() {
                     </div>
                     <div>
                       <label className="block text-[11px] font-mono uppercase tracking-wider text-green-900 mb-1">
-                        Hero Giant Headline (e.g. &quot;growth&quot;)
+                        Hero Brand Title (e.g. &quot;Green Gallery&quot;)
                       </label>
                       <input
                         type="text"

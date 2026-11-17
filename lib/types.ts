@@ -257,33 +257,33 @@ export interface SiteContent {
 export const defaultSiteContent: SiteContent = {
   // Home Page
   heroImage: "/images/hero-clean.webp",
-  heroBadge: "Horticultural Landscape Execution · Pune",
-  heroHeadline: "growth",
+  heroBadge: "Landscape Design & Botanical Execution",
+  heroHeadline: "Green Gallery",
   heroDescription:
-    "Professional landscape design, plantation execution, and ongoing botanical care across Pune and Western Maharashtra.",
-  heroStatCount: "Pune & PCMC",
-  heroStatLabel: "Dedicated operational staging and site execution network.",
+    "Masterful landscape design, precision plantation execution, and ongoing botanical care for prestigious developments, commercial campuses, and private sanctuaries.",
+  heroStatCount: "Turnkey Excellence",
+  heroStatLabel: "Dedicated logistical staging, specimen nursery networks, and comprehensive site execution.",
   primaryButtonText: "Explore Services",
   secondaryButtonText: "Book Site Consultation",
   introHeadline: "Transforming Spaces Through Thoughtful Landscaping",
   introDescription:
-    "From corporate campuses and residential developments to private villas and balcony gardens, we deliver tailored landscape solutions built for Pune's climate.",
-  servicesSectionTitle: "Landscaping Services for Pune",
-  servicesSectionSubtitle: "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban balcony greening.",
-  b2bBadge: "Commercial Partnerships",
+    "From corporate campuses and residential developments to private villas and balcony gardens, we deliver tailored botanical solutions crafted with horticultural precision.",
+  servicesSectionTitle: "Comprehensive Landscaping & Botanical Services",
+  servicesSectionSubtitle: "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban botanical sanctuaries.",
+  b2bBadge: "Enterprise & Builder Partnerships",
   b2bSectionTitle: "Turnkey Foliage & Landscaping for Real Estate Developers",
-  b2bSectionDescription: "Comprehensive BOQ estimation, staged nursery supply, structural podium coordination, and scheduled tower handover landscaping across Pune and PCMC.",
+  b2bSectionDescription: "Comprehensive BOQ estimation, staged nursery supply, structural podium coordination, and scheduled tower handover landscaping.",
   processSectionTitle: "How We Work",
-  processSectionSubtitle: "A structured, accountable 5-stage landscape delivery workflow built for Pune's climatic rhythms and civil handover timelines.",
+  processSectionSubtitle: "A structured, accountable 5-stage landscape delivery workflow built for rigorous architectural standards and civil handover timelines.",
   bannerBadge: "Start Your Botanical Project",
   bannerHeadline: "Partner with GreenGallery",
   bannerDescription:
     "Review site plans with our team, enquire about plant supply from our staging depot, or request formal developer BOQ pricing.",
 
   // About Page
-  aboutBadge: "Pune Operating Foundation",
-  aboutTitle: "Rooted in Pune. Cultivating Enduring Landscapes.",
-  aboutDescription: "GreenGallery provides professional landscape design, plantation execution, plant supply, and long-term garden maintenance across Pune and Western Maharashtra.",
+  aboutBadge: "Botanical Foundation",
+  aboutTitle: "Rooted in Excellence. Cultivating Enduring Landscapes.",
+  aboutDescription: "GreenGallery provides professional landscape design, plantation execution, plant supply, and long-term garden maintenance.",
   aboutAlandiTitle: "Alandi Logistical Staging Depot",
   aboutAlandiDescription: "Logistical staging, inventory sorting, plant quarantine, and pre-delivery site conditioning facility in Alandi, Pune.",
   aboutHighwayTitle: "Old Mumbai–Pune Highway Setup",
@@ -294,12 +294,12 @@ export const defaultSiteContent: SiteContent = {
   // Services Page
   servicesPageBadge: "Verified Execution Capabilities",
   servicesPageTitle: "Landscape Services & Horticultural Solutions",
-  servicesPageDescription: "Tailored landscape design, execution, plant procurement, and garden maintenance for builders, architects, societies, and homeowners in Pune.",
+  servicesPageDescription: "Tailored landscape design, execution, plant procurement, and garden maintenance for builders, architects, societies, and private residences.",
 
   // Projects Page
-  projectsPageBadge: "Pune Portfolio",
+  projectsPageBadge: "Curated Portfolio",
   projectsPageTitle: "Landscape Projects & Developer Portfolios",
-  projectsPageDescription: "Explore completed and ongoing podium greening, avenue plantations, and private estate landscapes executed across Pune and PCMC.",
+  projectsPageDescription: "Explore completed and ongoing podium greening, avenue plantations, and private estate landscapes executed with precision.",
 
   // Plants Page
   plantsPageBadge: "Direct Botanical Supply",
@@ -309,7 +309,7 @@ export const defaultSiteContent: SiteContent = {
   // Maintenance Page
   maintenanceBadge: "Care & Health Guarantees",
   maintenanceTitle: "Annual Garden Maintenance Contracts (AMC)",
-  maintenanceDescription: "Professional groundskeeping, pest control, pruning, fertilization, and automated irrigation management across Pune.",
+  maintenanceDescription: "Professional groundskeeping, pest control, pruning, fertilization, and automated irrigation management.",
   maintenanceSocietyTitle: "Residential Societies & Townships",
   maintenanceSocietyDesc: "Perimeter green buffers, central lawn aeration, clubhouse foliage maintenance, and seasonal monsoon drainage management.",
   maintenanceCommercialTitle: "Corporate & IT Campuses",

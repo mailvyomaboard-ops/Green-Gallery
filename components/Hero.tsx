@@ -43,62 +43,73 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
         </div>
 
         {/* Top Tag Pill */}
-        <div className="relative z-10 flex items-center justify-between w-full">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 w-full text-center sm:text-left">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-cream-50 text-xs font-semibold uppercase tracking-wider">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span>Landscape Execution & Care · Pune & PCMC</span>
+            <span>Landscape Architecture & Botanical Execution</span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-xs font-sans text-green-200/90 bg-black/25 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-white/10">
+          <div className="hidden sm:inline-flex items-center gap-1.5 text-xs font-sans text-green-200/90 bg-black/25 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-white/10">
             <MapPin className="w-3.5 h-3.5 text-green-400" />
-            <span>Alandi Logistics Staging Depot</span>
+            <span>Central Logistical Staging Depot</span>
           </div>
         </div>
 
-        {/* Central Giant Punchy Headline (The "growth" Vibe) */}
-        <div className="relative z-10 my-auto py-8 sm:py-12 max-w-4xl text-left">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-green-400 block mb-3 flex items-center gap-2">
+        {/* Central Giant Punchy Headline */}
+        <div className="relative z-10 my-auto py-8 sm:py-12 max-w-4xl text-center sm:text-left flex flex-col items-center sm:items-start mx-auto sm:mx-0">
+          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-green-400 mb-3 flex items-center justify-center sm:justify-start gap-2">
             <Sparkles className="w-4 h-4 text-green-400" />
-            {content.heroBadge || "Horticultural Landscape Execution · Pune"}
+            {content.heroBadge && !content.heroBadge.toLowerCase().includes("pune")
+              ? content.heroBadge
+              : "Landscape Design & Botanical Execution"}
           </span>
 
-          <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tight text-white leading-[0.92] mb-6 drop-shadow-md">
-            {content.heroHeadline || "growth"}
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05] sm:leading-[0.95] mb-2 drop-shadow-md">
+            {content.heroHeadline && content.heroHeadline.toLowerCase() !== "growth"
+              ? content.heroHeadline
+              : "Green Gallery"}
           </h1>
 
-          <p className="text-white/90 text-base sm:text-xl md:text-2xl font-normal max-w-2xl leading-relaxed drop-shadow">
+          <div className="text-base sm:text-xl md:text-2xl font-serif italic text-amber-200/90 font-light tracking-wide mb-5 drop-shadow">
+            Cultivating Natural Elegance
+          </div>
+
+          <p className="text-white/90 text-sm sm:text-lg md:text-xl font-normal max-w-2xl leading-relaxed drop-shadow mx-auto sm:mx-0">
             {content.heroDescription ||
-              "Professional landscape design, plantation execution, and ongoing botanical care across Pune and Western Maharashtra."}
+              "Masterful landscape design, precision plantation execution, and ongoing botanical care for prestigious developments, commercial campuses, and private sanctuaries."}
           </p>
         </div>
 
         {/* Bottom Floating Island Controls */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pt-4 border-t border-white/10">
-          {/* Left Inset Card: Pune Operational Network */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-3 sm:p-4 rounded-2xl flex items-center gap-4 max-w-sm">
-            <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-green-900 border border-white/20 shrink-0">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-5 sm:gap-6 pt-4 border-t border-white/10 w-full">
+          {/* Left Inset Card: Operational Network */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-3 sm:p-4 rounded-2xl flex items-center gap-4 w-full sm:max-w-sm text-left">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-green-900 border border-white/20 shrink-0">
               <Image
                 src="/images/frames/ezgif-frame-003.jpg"
-                alt="Acclimatized flora in Pune"
+                alt="Acclimatized specimen flora"
                 fill
                 className="object-cover"
               />
             </div>
             <div>
-              <div className="font-display font-bold text-white text-base sm:text-lg leading-tight">
-                {content.heroStatCount || "Pune & PCMC"}
+              <div className="font-display font-bold text-white text-sm sm:text-base leading-tight">
+                {content.heroStatCount && !content.heroStatCount.includes("Pune")
+                  ? content.heroStatCount
+                  : "Turnkey Excellence"}
               </div>
               <p className="text-white/70 text-xs font-light leading-snug mt-0.5">
-                {content.heroStatLabel || "Dedicated operational staging and site execution network."}
+                {content.heroStatLabel ||
+                  "Dedicated logistical staging, specimen nursery networks, and comprehensive site execution."}
               </p>
             </div>
           </div>
 
           {/* Right Action CTAs: Pill Buttons */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             <Link
               href="/services"
-              className="flex-1 sm:flex-initial min-h-[48px] px-6 py-3 bg-white hover:bg-cream-50 text-green-950 font-bold text-sm rounded-full shadow-lg transition-all flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto min-h-[46px] sm:min-h-[48px] px-6 py-3 bg-white hover:bg-cream-50 text-green-950 font-bold text-sm rounded-full shadow-lg transition-all flex items-center justify-center gap-2 group"
             >
               <span>{content.primaryButtonText || "Explore Services"}</span>
               <ArrowUpRight className="w-4 h-4 text-green-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -106,7 +117,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
 
             <Link
               href="/contact?type=consultation"
-              className="flex-1 sm:flex-initial min-h-[48px] px-6 py-3 bg-green-700/80 hover:bg-green-600 text-white font-bold text-sm rounded-full border border-green-500/40 backdrop-blur-md transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[46px] sm:min-h-[48px] px-6 py-3 bg-green-700/80 hover:bg-green-600 text-white font-bold text-sm rounded-full border border-green-500/40 backdrop-blur-md transition-all flex items-center justify-center gap-2"
             >
               <span>{content.secondaryButtonText || "Book Consultation"}</span>
             </Link>
