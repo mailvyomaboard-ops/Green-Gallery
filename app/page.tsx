@@ -11,7 +11,6 @@ import {
   ArrowUpRight,
   CheckCircle2,
   ChevronDown,
-  Sparkles,
   TreePine,
   Layers,
   Clock,
@@ -88,75 +87,7 @@ export default function HomePage() {
       {/* 1. Saturated Botanical Hero */}
       <Hero initialContent={siteContent} />
 
-      {/* 2. Core Operational Capabilities & Service Pillars */}
-      <section className="max-w-[1240px] mx-auto px-4 sm:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400 block mb-1">
-              End-to-End Solutions
-            </span>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-950 dark:text-white tracking-tight">
-              {siteContent.servicesSectionTitle || "Comprehensive Landscaping & Botanical Services"}
-            </h2>
-            <p className="text-sm text-ink-700 dark:text-white/70 mt-2 font-light max-w-2xl leading-relaxed">
-              {siteContent.servicesSectionSubtitle || "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban balcony greening."}
-            </p>
-          </div>
-          <Link
-            href="/services"
-            className="text-xs uppercase tracking-wider font-bold text-green-800 dark:text-green-300 hover:text-green-950 dark:hover:text-white flex items-center gap-1.5 self-start sm:self-auto bg-white dark:bg-white/10 px-5 py-2.5 rounded-full border border-green-900/10 dark:border-white/15 shadow-sm"
-          >
-            <span>View All 10 Services</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* 6 High-Impact Service Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {siteConfig.services.slice(0, 6).map((service) => (
-            <Link
-              key={service.id}
-              href={`/services/${service.slug}`}
-              className="bg-white dark:bg-[#080A09] rounded-3xl p-6 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all group flex flex-col justify-between"
-            >
-              <div>
-                <div className="relative h-44 w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-5 flex flex-col justify-between border border-green-800/30 group-hover:border-green-500/40 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full bg-white/10 dark:bg-black/50 backdrop-blur-sm text-[10px] font-bold text-green-300 uppercase tracking-wider border border-white/15">
-                      {service.category}
-                    </span>
-                    <span className="w-8 h-8 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
-                      <Sparkles className="w-4 h-4" />
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-mono text-green-400/80 uppercase tracking-wider block">Target Portfolio</span>
-                    <span className="text-xs font-semibold text-white/90 truncate block">{service.idealFor.split(',')[0]}</span>
-                  </div>
-                </div>
-
-                <h3 className="font-display text-xl font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-xs text-ink-700 dark:text-white/70 mt-2 font-light leading-relaxed line-clamp-3">
-                  {service.shortDescription}
-                </p>
-              </div>
-
-              <div className="pt-4 mt-5 border-t border-cream-200 dark:border-white/10 flex items-center justify-between">
-                <span className="text-xs font-semibold text-green-800 dark:text-green-400">
-                  Learn Scope &amp; Details
-                </span>
-                <div className="w-8 h-8 rounded-full bg-green-950 dark:bg-green-700 text-white flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Developer & Builder Solutions (B2B Priority Section) */}
+      {/* 2. Developer & Builder Solutions (B2B Priority Section) */}
       <section className="bg-[#11241a] text-white py-16 px-4 sm:px-6">
         <div className="max-w-[1240px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">

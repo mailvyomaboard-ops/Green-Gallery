@@ -1,4 +1,4 @@
-﻿# GreenGallery PowerShell Launcher
+# GreenGallery PowerShell Launcher
 Write-Host "==============================================================" -ForegroundColor Green
 Write-Host "            🌿 GREEN GALLERY — BOTANICAL SUITE 🌿" -ForegroundColor DarkGreen
 Write-Host "              Cultivating Natural Elegance" -ForegroundColor DarkYellow
