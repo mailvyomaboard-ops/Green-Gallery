@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { inventoryRepo } from "@/lib/db";
+import { verifyAdminSession } from "@/lib/auth";
 
 export async function GET() {
   const items = inventoryRepo.getAll();
@@ -7,6 +8,10 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  if (!verifyAdminSession(req)) {
+    return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { id, quantityInStock, status, priceBand } = body;
@@ -32,6 +37,10 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!verifyAdminSession(req)) {
+    return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
 
@@ -63,6 +72,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!verifyAdminSession(req)) {
+    return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");

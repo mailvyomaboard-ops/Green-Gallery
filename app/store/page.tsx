@@ -85,7 +85,7 @@ export default function StoreCatalogPage() {
       <section className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-green-950 text-white p-8 sm:p-12 md:p-16 border border-green-800/40 shadow-2xl">
         <div className="relative z-10 max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-green-300 text-xs font-bold uppercase tracking-wider mb-4">
-            <span>Direct Tathawade Nursery Supply</span>
+            <span>Alandi Logistical Staging &amp; Supply</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
             Specimen Nursery Store
@@ -195,7 +195,7 @@ export default function StoreCatalogPage() {
         <div className="lg:col-span-9">
           <div className="flex items-center justify-between mb-6 text-xs text-ink-500 px-1">
             <span className="font-bold text-green-950">Showing {filteredProducts.length} specimens</span>
-            <span>All stock acclimatized in Pune Tathawade bays</span>
+            <span>All stock staged &amp; conditioned for Pune climate</span>
           </div>
 
           {filteredProducts.length === 0 ? (

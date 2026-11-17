@@ -142,11 +142,23 @@ export const leadsRepo = {
     return newLead;
   },
 
-  updateStatus(id: string, status: LeadSubmission["status"]): LeadSubmission | null {
+  updateStatus(id: string, status: LeadSubmission["status"], note?: string, followUpDate?: string): LeadSubmission | null {
     const db = readDb();
     const index = db.leads.findIndex((l) => l.id === id);
     if (index === -1) return null;
     db.leads[index].status = status;
+    if (followUpDate !== undefined) {
+      db.leads[index].followUpDate = followUpDate;
+    }
+    if (note) {
+      if (!db.leads[index].notesLog) {
+        db.leads[index].notesLog = [];
+      }
+      db.leads[index].notesLog!.push({
+        date: new Date().toISOString(),
+        note,
+      });
+    }
     writeDb(db);
     return db.leads[index];
   },
@@ -288,6 +300,40 @@ export const productsRepo = {
     const db = readDb();
     return db.products.find((p) => p.slug === slug || p.id === slug);
   },
+
+  create(prodData: Omit<Product, "id">): Product {
+    const db = readDb();
+    const newProd: Product = {
+      ...prodData,
+      id: `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    };
+    db.products.push(newProd);
+    writeDb(db);
+    return newProd;
+  },
+
+  update(id: string, updates: Partial<Product>): Product | null {
+    const db = readDb();
+    const index = db.products.findIndex((p) => p.id === id || p.slug === id);
+    if (index === -1) return null;
+    db.products[index] = {
+      ...db.products[index],
+      ...updates,
+    };
+    writeDb(db);
+    return db.products[index];
+  },
+
+  delete(id: string): boolean {
+    const db = readDb();
+    const initialLen = db.products.length;
+    db.products = db.products.filter((p) => p.id !== id && p.slug !== id);
+    if (db.products.length !== initialLen) {
+      writeDb(db);
+      return true;
+    }
+    return false;
+  },
 };
 
 // -------------------------------------------------------------
@@ -303,6 +349,40 @@ export const projectsRepo = {
   getBySlug(slug: string): Project | undefined {
     const db = readDb();
     return db.projects.find((p) => p.slug === slug || p.id === slug);
+  },
+
+  create(projectData: Omit<Project, "id">): Project {
+    const db = readDb();
+    const newProject: Project = {
+      ...projectData,
+      id: `proj-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    };
+    db.projects.push(newProject);
+    writeDb(db);
+    return newProject;
+  },
+
+  update(id: string, updates: Partial<Project>): Project | null {
+    const db = readDb();
+    const index = db.projects.findIndex((p) => p.id === id || p.slug === id);
+    if (index === -1) return null;
+    db.projects[index] = {
+      ...db.projects[index],
+      ...updates,
+    };
+    writeDb(db);
+    return db.projects[index];
+  },
+
+  delete(id: string): boolean {
+    const db = readDb();
+    const initialLen = db.projects.length;
+    db.projects = db.projects.filter((p) => p.id !== id && p.slug !== id);
+    if (db.projects.length !== initialLen) {
+      writeDb(db);
+      return true;
+    }
+    return false;
   },
 };
 

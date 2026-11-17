@@ -42,7 +42,9 @@ export interface LeadSubmission {
   // Metadata
   sourcePage: string;
   createdAt: string;
-  status: "New" | "Contacted" | "Consultation Scheduled" | "Proposal Sent" | "Closed";
+  status: "New" | "Contacted" | "Site Visit Scheduled" | "Quotation Preparation" | "Quotation Sent" | "Negotiation" | "Won" | "Lost" | "Consultation Scheduled" | "Proposal Sent" | "Closed";
+  followUpDate?: string;
+  notesLog?: { date: string; note: string; author?: string }[];
 }
 
 export interface InventoryItem {
@@ -129,6 +131,7 @@ export interface Project {
   plantsUsed: string[];
   servicesUsed: string[];
   isFeatured?: boolean;
+  status?: "COMPLETED" | "ONGOING" | "CONCEPT";
 }
 
 export interface CartItem {
@@ -168,21 +171,21 @@ export interface SiteContent {
 
 export const defaultSiteContent: SiteContent = {
   heroImage: "/images/courtyard-modern.jpg",
-  heroBadge: "Architectural Botanical Engineering",
+  heroBadge: "Horticultural Landscape Execution · Pune",
   heroHeadline: "growth",
   heroDescription:
-    "Where architectural landscape master planning meets Western Maharashtra's premier 14-acre specimen nursery.",
-  heroStatCount: "500+ Specimens",
-  heroStatLabel: "Acclimatized avenue trees & palms ready for direct site installation.",
-  primaryButtonText: "Explore Nursery Stock",
+    "Professional landscape design, plantation execution, and ongoing botanical care across Pune and Western Maharashtra.",
+  heroStatCount: "Pune & PCMC",
+  heroStatLabel: "Dedicated operational staging and site execution network.",
+  primaryButtonText: "Explore Services",
   secondaryButtonText: "Book Site Consultation",
-  introHeadline: "Landscapes for Architecture",
+  introHeadline: "Transforming Spaces Through Thoughtful Landscaping",
   introDescription:
-    "Where horticultural engineering meets enduring architectural spaces. Cultivated for Western Maharashtra's climate.",
-  bannerBadge: "Start Your Botanical Transformation",
-  bannerHeadline: "Build with Green Gallery",
+    "From corporate campuses and residential developments to private villas and balcony gardens, we deliver tailored landscape solutions built for Pune's climate.",
+  bannerBadge: "Start Your Botanical Project",
+  bannerHeadline: "Partner with GreenGallery",
   bannerDescription:
-    "Review CAD drawings with our landscape directors, reserve specimen trees from our 14-acre bays, or request formal developer BOQ pricing.",
+    "Review site plans with our team, enquire about plant supply from our staging depot, or request formal developer BOQ pricing.",
   showcaseRow1: [
     {
       id: "work-1",

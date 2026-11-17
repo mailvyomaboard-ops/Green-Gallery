@@ -144,6 +144,7 @@ export const initialProjects: Project[] = [
     location: "Koregaon Park, Pune",
     year: 2024,
     areaSqFt: 18500,
+    status: "COMPLETED",
     clientName: "Private Villa Estate",
     coverImage: "/images/courtyard-modern.jpg",
     brief: "Monolithic geometric concrete stepping slabs, dark charcoal river-stone gravel margins, manicured Bermuda lawn, architectural tree specimens, and a sunken hearth fire pit with integrated evening warm uplighting. Designed and installed as a private botanical oasis.",
@@ -165,6 +166,7 @@ export const initialProjects: Project[] = [
     location: "Ravet / Punawale, Pune",
     year: 2024,
     areaSqFt: 45000,
+    status: "COMPLETED",
     clientName: "Silver Group (A Kiran Sawant Venture)",
     clientLogo: "/images/clients/silver-group.jpg",
     coverImage: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=1200&auto=format&fit=crop",
@@ -189,6 +191,7 @@ export const initialProjects: Project[] = [
     location: "Moshi / Chikhali, Pune",
     year: 2024,
     areaSqFt: 38000,
+    status: "COMPLETED",
     clientName: "Keshav Group",
     clientLogo: "/images/clients/keshav-group.jpg",
     coverImage: "https://images.unsplash.com/photo-1558904541-efa8c4a08931?q=80&w=1200&auto=format&fit=crop",
@@ -211,6 +214,7 @@ export const initialProjects: Project[] = [
     location: "Wakad, Pune",
     year: 2023,
     areaSqFt: 32000,
+    status: "COMPLETED",
     clientName: "Swastik Realty Group",
     clientLogo: "/images/clients/swastik-realty.jpg",
     coverImage: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1200&auto=format&fit=crop",
@@ -232,6 +236,7 @@ export const initialProjects: Project[] = [
     location: "Pimpri-Chinchwad, Pune",
     year: 2024,
     areaSqFt: 52000,
+    status: "COMPLETED",
     clientName: "Tayal Group",
     clientLogo: "/images/clients/tayal.jpg",
     coverImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop",
@@ -252,6 +257,7 @@ export const initialProjects: Project[] = [
     location: "Ambegaon, Pune",
     year: 2024,
     areaSqFt: 85000,
+    status: "COMPLETED",
     clientName: "Nirman Greens",
     clientLogo: "/images/clients/nirman-greens.jpg",
     coverImage: "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?q=80&w=1200&auto=format&fit=crop",
@@ -272,6 +278,7 @@ export const initialProjects: Project[] = [
     location: "Baner, Pune",
     year: 2024,
     areaSqFt: 18000,
+    status: "COMPLETED",
     clientName: "Shevi Group",
     clientLogo: "/images/clients/shevi-group.jpg",
     coverImage: "https://images.unsplash.com/photo-1598902108854-10e335adac99?q=80&w=1200&auto=format&fit=crop",
@@ -292,6 +299,7 @@ export const initialProjects: Project[] = [
     location: "Hadapsar, Pune",
     year: 2023,
     areaSqFt: 29000,
+    status: "COMPLETED",
     clientName: "Diamond Builders & Developers",
     clientLogo: "/images/clients/diamond-builders.jpg",
     coverImage: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1200&auto=format&fit=crop",
@@ -312,6 +320,7 @@ export const initialProjects: Project[] = [
     location: "Bavdhan, Pune",
     year: 2024,
     areaSqFt: 24000,
+    status: "COMPLETED",
     clientName: "Kesar Group",
     clientLogo: "/images/clients/kesar-group.jpg",
     coverImage: "https://images.unsplash.com/photo-1584467541268-b040f83be3fd?q=80&w=1200&auto=format&fit=crop",
@@ -332,6 +341,7 @@ export const initialProjects: Project[] = [
     location: "Wagholi, Pune",
     year: 2024,
     areaSqFt: 68000,
+    status: "COMPLETED",
     clientName: "Shriram Group",
     clientLogo: "/images/clients/shriram-group.jpg",
     coverImage: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&auto=format&fit=crop",
@@ -368,7 +378,7 @@ export const initialProducts: Product[] = [
       "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?q=80&w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=800&auto=format&fit=crop",
     ],
-    description: "The quintessential interior architectural plant. Prized by interior designers for its oversized, violin-shaped, deep emerald leathery leaves. Acclimatized in our Tathawade nursery under controlled shade cloth for robust domestic resilience.",
+    description: "The quintessential interior architectural plant. Prized by interior designers for its oversized, violin-shaped, deep emerald leathery leaves. Acclimatized under controlled shade environments for robust domestic resilience.",
     careGuide: {
       light: "Bright, filtered indirect sunlight. Avoid harsh direct afternoon Pune sun.",
       water: "Water thoroughly only when top 2 inches of soil feel completely dry. Good drainage is vital.",
@@ -896,52 +906,31 @@ export const initialInventory: InventoryItem[] = [
 ];
 
 // ==========================================
-// Testimonials (Developer Clients)
+// Client Endorsements & Verification Policy
 // ==========================================
-export const testimonials = [
-  {
-    quote:
-      "Green Gallery handled over 45,000 square feet of complex structural podium landscaping for our Silver Gracia project. Shubham Batule and his team delivered on time, perfectly matching our architectural elevations with 100% specimen tree survival.",
-    name: "Kiran Sawant Venture",
-    role: "Promoters & Developers",
-    company: "Silver Group, Pune",
-  },
-  {
-    quote:
-      "The multi-acre central park at Nirman Greens required an experienced botanical partner who understands Sahyadri ecology, drainage mats, and large-scale nursery supply. Green Gallery’s execution has set a benchmark for our townships.",
-    name: "Project Engineering Directorate",
-    role: "Chief Infrastructure Officer",
-    company: "Nirman Greens, Pune",
-  },
-  {
-    quote:
-      "From grand entrance avenue palms to automated micro-drip fertigation, Shubham Batule and Green Gallery have been our trusted landscape partners across our Northern Pune residential towers.",
-    name: "Executive Management",
-    role: "VP – Projects & Development",
-    company: "Keshav Group, Pune",
-  },
-];
+// Verified testimonials will be published once client approval forms are signed.
+export const testimonials: {
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+}[] = [];
 
 // ==========================================
-// Leadership & Team for About Page
+// Operational Team Structure
 // ==========================================
-export const teamMembers = [
-  {
-    name: "Shubham Batule",
-    role: "Owner & Founder",
-    bio: "Founder and director of Green Gallery. Oversees master nursery cultivation, commercial builder foliage procurement, and turnkey landscape execution across Pune and Western Maharashtra.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Sunil Kulkarni (Placeholder)",
-    role: "Director – Landscape Architecture & Civil Engineering",
-    bio: "Specializes in multi-tier podium drainage, sub-surface capillary irrigation systems, and commercial landscape project execution.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Meera Joshi (Placeholder)",
-    role: "Lead Landscape Architect",
-    bio: "Master of Landscape Architecture (CEPT). Focused on biophilic corporate atriums, endemic biodiversity, and rooftop microclimate mitigation.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
-  },
-];
+// Core operational structure guided by config/site.ts
+export const teamStructure = {
+  coreMembersCount: 9,
+  roles: [
+    "Horticultural Planning & Supervision",
+    "Site Execution & Soil Preparation",
+    "Irrigation & Technical Systems",
+    "Logistical Dispatch & Nursery Staging",
+    "Garden Maintenance & Plant Health"
+  ],
+  supportNetworks: [
+    "Flexible on-demand site labour pool across Pune & PCMC",
+    "Regional grower nurseries across Western Maharashtra"
+  ]
+};

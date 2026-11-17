@@ -4,45 +4,53 @@ import Link from "next/link";
 export default function ReturnsPolicyPage() {
   return (
     <div className="w-full pb-20">
-      <section className="bg-green-900 text-cream-50 py-12 px-4 sm:px-6 border-b border-green-700/50">
+      <section className="bg-green-950 text-white py-12 px-4 sm:px-6 border-b border-green-800">
         <div className="max-w-[1200px] mx-auto">
-          <div className="flex items-center gap-2 text-xs text-cream-50/70 mb-2">
-            <Link href="/" className="hover:text-cream-50">Home</Link>
+          <div className="flex items-center gap-2 text-xs text-white/70 mb-2">
+            <Link href="/" className="hover:text-white">Home</Link>
             <span>/</span>
-            <span className="text-gold-600">Replacement & Return Policy</span>
+            <span className="text-green-300">Replacement &amp; Return Terms</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-semibold text-cream-50">
-            Nursery Replacement & Return Policy
+          <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white">
+            Plant Inspection &amp; Replacement Policy
           </h1>
         </div>
       </section>
 
-      <section className="py-12 px-4 sm:px-6 max-w-3xl mx-auto space-y-8 text-sm text-ink-900 leading-relaxed">
+      <section className="py-12 px-4 sm:px-6 max-w-3xl mx-auto space-y-8 text-xs sm:text-sm text-ink-900 dark:text-white/80 leading-relaxed font-light">
         <div>
-          <h2 className="text-xl font-serif font-semibold text-green-900 mb-2">1. Living Specimen Inspection at Unloading</h2>
+          <h2 className="text-lg font-display font-bold text-green-950 dark:text-white mb-2">
+            1. Site Inspection upon Unloading
+          </h2>
           <p>
-            Because plants are living biological specimens sensitive to microclimate variation, we require that the recipient or site engineer inspect foliage, stems, and container integrity at the exact moment of nursery vehicle unloading.
+            Because plants are biological specimens sensitive to microclimate variations, we request that the client, site representative, or project manager inspect foliage vigour, trunk integrity, and root conditions at the moment of vehicle unloading.
           </p>
         </div>
 
         <div>
-          <h2 className="text-xl font-serif font-semibold text-green-900 mb-2">2. Immediate Transit Damage Replacement</h2>
+          <h2 className="text-lg font-display font-bold text-green-950 dark:text-white mb-2">
+            2. Transit Damage Protocol
+          </h2>
           <p>
-            If any specimen suffers broken primary branches, damaged container walls, or severe root exposure during transit, notify the driver immediately and photograph the issue. Green Gallery will arrange an identical replacement from our Tathawade bays within 48 hours at zero cost.
+            If any plant specimen sustains significant physical damage, broken leader branches, or severe container breakage during transit, note the issue on the delivery challan immediately and photograph the affected plant. GreenGallery will arrange an appropriate replacement specimen from our staging facility.
           </p>
         </div>
 
         <div>
-          <h2 className="text-xl font-serif font-semibold text-green-900 mb-2">3. 14-Day Post-Installation Survival Guarantee</h2>
+          <h2 className="text-lg font-display font-bold text-green-950 dark:text-white mb-2">
+            3. Establishment &amp; Maintenance Support
+          </h2>
           <p>
-            All specimen trees and container plants installed directly by Green Gallery horticultural crews carry a 14-day survival guarantee. If a plant exhibits terminal shock despite following provided watering schedules, our senior arborist will conduct a site visit and replace the specimen free of charge.
+            Long-term plant flourishing depends on proper watering, soil drainage, and adequate sunlight. GreenGallery provides full care orientation for all installations. Where formal ongoing garden maintenance contracts are executed, routine replacement of failed plants is provided in accordance with the specific maintenance agreement.
           </p>
         </div>
 
         <div>
-          <h2 className="text-xl font-serif font-semibold text-green-900 mb-2">4. Planters, Substrates & Hardware</h2>
+          <h2 className="text-lg font-display font-bold text-green-950 dark:text-white mb-2">
+            4. Hardscape Planters &amp; Substrates
+          </h2>
           <p>
-            Handcrafted basalt GFRC planters, drainage hardware, and unopened soil substrate sacks may be returned within 7 calendar days of receipt for a full refund or exchange, provided items remain in unused condition.
+            Non-living garden infrastructure, such as basalt finish planters, drainage mats, and unopened potting media sacks, may be returned or exchanged within 7 calendar days of receipt if found defective or uninstalled.
           </p>
         </div>
       </section>

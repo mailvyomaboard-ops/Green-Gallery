@@ -1,0 +1,10 @@
+import { NextRequest, NextResponse } from "next/server";
+import { verifyAdminSession } from "@/lib/auth";
+
+export async function GET(req: NextRequest) {
+  const isAuthenticated = verifyAdminSession(req);
+  return NextResponse.json({
+    authenticated: isAuthenticated,
+    role: isAuthenticated ? "admin" : null,
+  });
+}

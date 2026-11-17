@@ -5,137 +5,129 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { siteConfig } from "@/config/site";
-import { Check, ArrowRight, ArrowUpRight } from "lucide-react";
+import { Check, ArrowRight, ArrowUpRight, MapPin, Send } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal, gstAmount, deliveryFee, grandTotal, clearCart } = useCart();
+  const { items, subtotal, clearCart } = useCart();
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [address, setAddress] = useState("");
   const [punePincode, setPunePincode] = useState("411033");
-  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("razorpay");
+  const [notes, setNotes] = useState("");
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isProcessing, setIsProcessing] = useState(false);
-  const [orderConfirmed, setOrderConfirmed] = useState<any | null>(null);
+  const [quotationSubmitted, setQuotationSubmitted] = useState<any | null>(null);
   const [serverError, setServerError] = useState("");
 
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!customerName.trim()) errs.name = "Full name is required.";
     if (!customerPhone.trim() || !/^[0-9+() -]{8,15}$/.test(customerPhone.trim())) {
-      errs.phone = "Valid 10-digit phone number is required.";
+      errs.phone = "Valid contact phone number is required.";
     }
     if (!customerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
-      errs.email = "Valid email address is required for invoice delivery.";
+      errs.email = "Valid email address is required for sending the quotation.";
     }
-    if (!address.trim()) errs.address = "Complete street address is required.";
-    if (!/^41[12][0-9]{3}$/.test(punePincode.trim())) {
-      errs.pincode = "Delivery is restricted to Pune (Pincode starting 411xxx or 412xxx).";
-    }
+    if (!address.trim()) errs.address = "Site or delivery address is required.";
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const handlePlaceOrder = async (e: React.FormEvent) => {
+  const handleSubmitQuotation = async (e: React.FormEvent) => {
     e.preventDefault();
     setServerError("");
 
     if (!validate()) return;
     if (items.length === 0) {
-      setServerError("Cart is empty.");
+      setServerError("Your quotation basket is empty.");
       return;
     }
 
     setIsProcessing(true);
 
     try {
-      const res = await fetch("/api/checkout", {
+      const itemsBreakdown = items
+        .map((i) => `${i.productName} (${i.variantLabel || "Standard"}) x ${i.quantity} @ ₹${i.unitPrice}`)
+        .join("\n");
+
+      const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerName,
-          customerPhone,
-          customerEmail,
-          address,
-          punePincode,
-          items,
-          paymentMethod,
+          type: "quote",
+          name: customerName,
+          phone: customerPhone,
+          email: customerEmail,
+          siteLocation: `${address}, Pune - ${punePincode}`,
+          clientType: "Plant Supply & Procurement",
+          projectType: "Specimen Plant Supply",
+          notes: `Requested Items:\n${itemsBreakdown}\n\nClient Notes:\n${notes}\n\nEstimated Item Subtotal: ₹${subtotal}`,
+          sourcePage: "/store/checkout",
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to process order.");
+        throw new Error(data.error || "Failed to submit quotation enquiry.");
       }
 
-      setOrderConfirmed(data.order);
+      setQuotationSubmitted({
+        leadId: data.leadId,
+        name: customerName,
+        phone: customerPhone,
+        itemsCount: items.length,
+      });
       clearCart();
     } catch (err: any) {
-      setServerError(err.message || "An unexpected error occurred during checkout.");
+      setServerError(err.message || "An unexpected error occurred while submitting your enquiry.");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  if (orderConfirmed) {
+  if (quotationSubmitted) {
+    const whatsappMsg = `Hello GreenGallery, I submitted a plant quotation request (Enquiry Ref: ${quotationSubmitted.leadId}) for ${quotationSubmitted.itemsCount} specimen batches. Please provide availability and commercial terms.`;
+
     return (
       <div className="py-20 px-4 sm:px-6 max-w-2xl mx-auto">
-        <div className="bg-white border border-green-900/10 p-8 sm:p-12 rounded-3xl shadow-soft text-center">
-          <div className="w-16 h-16 bg-green-950 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow">
-            <Check className="w-8 h-8 text-green-400" />
+        <div className="bg-white dark:bg-[#080A09] border border-green-900/10 dark:border-white/10 p-8 sm:p-12 rounded-3xl shadow-soft text-center space-y-4">
+          <div className="w-16 h-16 bg-green-950 dark:bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 shadow">
+            <Check className="w-8 h-8 text-green-400 dark:text-white" />
           </div>
-          <span className="text-xs uppercase tracking-wider text-green-700 font-bold block mb-1">
-            Order Confirmed &amp; Logged
+          <span className="text-xs uppercase tracking-wider text-green-700 dark:text-green-400 font-bold block">
+            Quotation Request Received
           </span>
-          <h1 className="text-3xl font-display font-extrabold text-green-950 mb-2">
-            Thank you, {orderConfirmed.customerName}
+          <h1 className="text-3xl font-display font-extrabold text-green-950 dark:text-white">
+            Thank you, {quotationSubmitted.name}
           </h1>
-          <p className="text-sm text-ink-500 mb-6">
-            Order Reference: <strong className="text-green-950">{orderConfirmed.orderNumber}</strong>
+          <p className="text-xs text-ink-500 dark:text-white/60">
+            Enquiry Reference: <strong className="text-green-950 dark:text-white">{quotationSubmitted.leadId}</strong>
+          </p>
+          <p className="text-xs sm:text-sm text-ink-700 dark:text-white/80 font-light leading-relaxed max-w-md mx-auto">
+            Our nursery logistics desk in Pune is checking current rootstock availability at our Alandi facility. We will transmit an itemized quotation with freight details to your phone and email.
           </p>
 
-          <div className="bg-cream-50 p-5 rounded-2xl border border-green-900/10 text-left text-xs sm:text-sm space-y-2.5 mb-6">
-            <div className="flex justify-between">
-              <span className="text-ink-500 font-light">Total Paid / COD Amount:</span>
-              <span className="font-bold text-green-950">₹{orderConfirmed.total.toLocaleString("en-IN")}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-ink-500 font-light">Payment Status:</span>
-              <span className="font-bold text-ink-900">{orderConfirmed.paymentStatus}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-ink-500 font-light">Delivery Address:</span>
-              <span className="text-ink-900 font-medium text-right">{orderConfirmed.address}, Pune {orderConfirmed.punePincode}</span>
-            </div>
-          </div>
-
-          <p className="text-xs text-ink-700 leading-relaxed mb-6 font-light">
-            A copy of this GST invoice and delivery transit schedule has been queued for dispatch to <strong>{orderConfirmed.customerEmail}</strong>. Our Tathawade nursery logistics driver will contact you prior to arrival at {orderConfirmed.customerPhone}.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/"
-              className="w-full sm:w-auto px-6 py-3 bg-cream-50 hover:bg-cream-100 text-green-950 text-xs sm:text-sm font-bold rounded-full transition-all border border-green-900/10"
-            >
-              Return to Homepage
-            </Link>
+          <div className="pt-4 flex flex-wrap justify-center gap-3">
             <a
-              href={`https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(
-                `Hello Shubham Batule, I just placed Green Gallery order ${orderConfirmed.orderNumber} (₹${orderConfirmed.total}) for delivery in Pune. Could you confirm the dispatch date?`
-              )}`}
+              href={`https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(whatsappMsg)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-3 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs sm:text-sm font-bold rounded-full flex items-center justify-center gap-2 shadow"
+              className="px-6 py-3 rounded-full bg-green-700 hover:bg-green-600 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow"
             >
-              <span>WhatsApp Shubham to Confirm</span>
-              <ArrowUpRight className="w-4 h-4" />
+              <span>Follow Up via WhatsApp</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
+            <Link
+              href="/plants"
+              className="px-6 py-3 rounded-full bg-cream-100 dark:bg-white/10 text-green-950 dark:text-white hover:bg-cream-200 text-xs font-semibold uppercase tracking-wider"
+            >
+              Return to Catalogue
+            </Link>
           </div>
         </div>
       </div>
@@ -143,237 +135,148 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="w-full pb-20 px-3 sm:px-6 max-w-[1240px] mx-auto space-y-10">
-      <section className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-green-950 text-white p-8 sm:p-12 border border-green-800/40 shadow-2xl">
-        <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-green-300 text-xs font-bold uppercase tracking-wider mb-3">
-            <span>Direct Nursery Checkout</span>
-          </div>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            Guest Checkout &amp; Delivery Verification
-          </h1>
-        </div>
-      </section>
+    <div className="w-full pb-20 px-3 sm:px-6 max-w-[1000px] mx-auto space-y-10">
+      <div className="text-center max-w-2xl mx-auto space-y-3">
+        <span className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400">
+          Formal Project Quotation
+        </span>
+        <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-green-950 dark:text-white tracking-tight">
+          Request Plant Quotation &amp; Availability
+        </h1>
+        <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 font-light leading-relaxed">
+          Provide your delivery location and contact details. Our team will verify root health, batch quantities, and transit arrangements before issuing an itemized quotation.
+        </p>
+      </div>
 
-      <section>
-        {items.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-3xl border border-green-900/10 shadow-soft max-w-md mx-auto">
-            <p className="text-lg font-display font-bold text-green-950 mb-4">Your cart is empty.</p>
-            <Link href="/store" className="px-6 py-3 bg-green-950 text-white text-xs font-bold rounded-full">
-              Browse Store
-            </Link>
-          </div>
-        ) : (
-          <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Guest Delivery Address */}
-            <div className="lg:col-span-7 bg-white border border-green-900/10 p-6 sm:p-8 rounded-3xl shadow-soft space-y-5">
-              <h2 className="text-xl font-display font-bold text-green-950 border-b border-green-900/10 pb-3">
-                1. Delivery &amp; Contact Particulars
-              </h2>
+      <div className="bg-white dark:bg-[#080A09] rounded-3xl p-6 sm:p-10 border border-green-900/10 dark:border-white/10 shadow-soft">
+        <form onSubmit={handleSubmitQuotation} className="space-y-6">
+          {serverError && (
+            <div className="p-4 rounded-2xl bg-red-50 text-red-700 text-xs font-medium border border-red-200">
+              {serverError}
+            </div>
+          )}
 
-              {serverError && (
-                <div className="p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-2xl">
-                  {serverError}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-bold text-green-950 uppercase tracking-wider mb-1.5">
-                  Recipient Full Name <span className="text-red-700">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="e.g. Vikramaditya Bhosale"
-                  className={`w-full px-4 py-3 bg-cream-50 border ${
-                    errors.name ? "border-red-600" : "border-green-900/10 focus:border-green-600"
-                  } rounded-full text-xs sm:text-sm text-ink-900 focus:outline-none`}
-                />
-                {errors.name && <p className="text-xs text-red-700 mt-1">{errors.name}</p>}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-green-950 uppercase tracking-wider mb-1.5">
-                    Contact Phone <span className="text-red-700">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="e.g. +91 98220 00000"
-                    className={`w-full px-4 py-3 bg-cream-50 border ${
-                      errors.phone ? "border-red-600" : "border-green-900/10 focus:border-green-600"
-                    } rounded-full text-xs sm:text-sm text-ink-900 focus:outline-none`}
-                  />
-                  {errors.phone && <p className="text-xs text-red-700 mt-1">{errors.phone}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-green-950 uppercase tracking-wider mb-1.5">
-                    Email for Invoice <span className="text-red-700">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    placeholder="e.g. contact@yourfirm.com"
-                    className={`w-full px-4 py-3 bg-cream-50 border ${
-                      errors.email ? "border-red-600" : "border-green-900/10 focus:border-green-600"
-                    } rounded-full text-xs sm:text-sm text-ink-900 focus:outline-none`}
-                  />
-                  {errors.email && <p className="text-xs text-red-700 mt-1">{errors.email}</p>}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-green-950 uppercase tracking-wider mb-1.5">
-                  Pune Street / Building / Estate Address <span className="text-red-700">*</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Apartment/Villa No., Floor, Landmark, Wing..."
-                  className={`w-full px-4 py-3 bg-cream-50 border ${
-                    errors.address ? "border-red-600" : "border-green-900/10 focus:border-green-600"
-                  } rounded-2xl text-xs sm:text-sm text-ink-900 focus:outline-none`}
-                />
-                {errors.address && <p className="text-xs text-red-700 mt-1">{errors.address}</p>}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-green-950 uppercase tracking-wider mb-1.5">
-                  Pune Pincode (411xxx or 412xxx) <span className="text-red-700">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={punePincode}
-                  onChange={(e) => setPunePincode(e.target.value)}
-                  placeholder="e.g. 411033"
-                  className={`w-full px-4 py-3 bg-cream-50 border ${
-                    errors.pincode ? "border-red-600" : "border-green-900/10 focus:border-green-600"
-                  } rounded-full text-xs sm:text-sm text-ink-900 focus:outline-none`}
-                />
-                {errors.pincode && <p className="text-xs text-red-700 mt-1">{errors.pincode}</p>}
-              </div>
-
-              {/* Payment Method Selection */}
-              <div className="pt-4">
-                <h3 className="text-base font-display font-bold text-green-950 mb-3">
-                  2. Select Payment Mode
-                </h3>
-
-                <div className="space-y-3">
-                  <label
-                    onClick={() => setPaymentMethod("razorpay")}
-                    className={`flex items-start gap-3 p-4 border rounded-2xl text-xs sm:text-sm cursor-pointer transition-all ${
-                      paymentMethod === "razorpay"
-                        ? "bg-green-100/90 border-green-600 text-green-950 font-bold"
-                        : "bg-cream-50 border-green-900/10 text-ink-900"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      checked={paymentMethod === "razorpay"}
-                      onChange={() => setPaymentMethod("razorpay")}
-                      className="accent-green-950 mt-0.5"
-                    />
-                    <div>
-                      <span className="font-bold block">Razorpay (Live UPI, Cards, Netbanking)</span>
-                      <span className="text-xs text-ink-500 font-light">Instant digital payment confirmation with GST invoice generation.</span>
-                    </div>
-                  </label>
-
-                  <label
-                    onClick={() => setPaymentMethod("cod")}
-                    className={`flex items-start gap-3 p-4 border rounded-2xl text-xs sm:text-sm cursor-pointer transition-all ${
-                      paymentMethod === "cod"
-                        ? "bg-green-100/90 border-green-600 text-green-950 font-bold"
-                        : "bg-cream-50 border-green-900/10 text-ink-900"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      checked={paymentMethod === "cod"}
-                      onChange={() => setPaymentMethod("cod")}
-                      className="accent-green-950 mt-0.5"
-                    />
-                    <div>
-                      <span className="font-bold block">Cash on Delivery (Pune Metropolitan Limits Only)</span>
-                      <span className="text-xs text-ink-500 font-light">Pay our nursery logistics driver via cash or UPI upon unloading.</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block mb-1.5">
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="e.g. Rahul Sharma"
+                className={`w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-white/5 border ${
+                  errors.name ? "border-red-500" : "border-green-900/10 dark:border-white/10"
+                } text-xs text-green-950 dark:text-white focus:outline-none`}
+              />
+              {errors.name && <p className="text-[11px] text-red-500 mt-1">{errors.name}</p>}
             </div>
 
-            {/* Right Column: Order Review & Confirmation */}
-            <div className="lg:col-span-5 bg-white border border-green-900/10 p-6 sm:p-8 rounded-3xl shadow-soft space-y-4">
-              <h2 className="text-xl font-display font-bold text-green-950 border-b border-green-900/10 pb-3">
-                Order Review ({items.length} items)
-              </h2>
-
-              <div className="divide-y divide-cream-200 text-xs sm:text-sm max-h-60 overflow-y-auto pr-1">
-                {items.map((it, idx) => (
-                  <div key={idx} className="py-2.5 flex justify-between items-center">
-                    <div>
-                      <span className="font-bold text-green-950">{it.productName}</span>
-                      <span className="text-ink-500 block text-xs">
-                        Qty: {it.quantity} × ₹{it.unitPrice.toLocaleString("en-IN")}
-                      </span>
-                    </div>
-                    <span className="font-display font-bold text-green-950">
-                      ₹{(it.unitPrice * it.quantity).toLocaleString("en-IN")}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-4 border-t border-green-900/10 space-y-2 text-xs sm:text-sm">
-                <div className="flex justify-between">
-                  <span className="text-ink-500 font-light">Subtotal:</span>
-                  <span className="font-bold">₹{subtotal.toLocaleString("en-IN")}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-ink-500 font-light">GST (18%):</span>
-                  <span className="font-bold">₹{gstAmount.toLocaleString("en-IN")}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-ink-500 font-light">Delivery in Pune:</span>
-                  <span className="font-bold">{deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}</span>
-                </div>
-                <div className="pt-3 border-t border-green-900/10 flex justify-between font-display font-extrabold text-lg text-green-950">
-                  <span>Grand Total:</span>
-                  <span className="text-green-700">₹{grandTotal.toLocaleString("en-IN")}</span>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full min-h-[48px] px-6 py-3.5 bg-green-950 hover:bg-green-800 text-white font-bold text-sm rounded-full shadow transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <span>
-                  {isProcessing
-                    ? "Processing Order..."
-                    : paymentMethod === "cod"
-                    ? "Confirm Cash on Delivery Order"
-                    : `Pay ₹${grandTotal.toLocaleString("en-IN")} via Razorpay`}
-                </span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <p className="text-[11px] text-ink-500 text-center leading-relaxed font-light">
-                By placing this order, you accept the Green Gallery Pune delivery guarantee and plant acclimation policies.
-              </p>
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block mb-1.5">
+                Contact Phone / WhatsApp *
+              </label>
+              <input
+                type="tel"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                placeholder="+91 98765 43210"
+                className={`w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-white/5 border ${
+                  errors.phone ? "border-red-500" : "border-green-900/10 dark:border-white/10"
+                } text-xs text-green-950 dark:text-white focus:outline-none`}
+              />
+              {errors.phone && <p className="text-[11px] text-red-500 mt-1">{errors.phone}</p>}
             </div>
-          </form>
-        )}
-      </section>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block mb-1.5">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+                placeholder="name@domain.com"
+                className={`w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-white/5 border ${
+                  errors.email ? "border-red-500" : "border-green-900/10 dark:border-white/10"
+                } text-xs text-green-950 dark:text-white focus:outline-none`}
+              />
+              {errors.email && <p className="text-[11px] text-red-500 mt-1">{errors.email}</p>}
+            </div>
+
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block mb-1.5">
+                Pune Area / Pincode
+              </label>
+              <input
+                type="text"
+                value={punePincode}
+                onChange={(e) => setPunePincode(e.target.value)}
+                placeholder="e.g. 411045 (Baner)"
+                className="w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-white/5 border border-green-900/10 dark:border-white/10 text-xs text-green-950 dark:text-white focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block mb-1.5">
+              Site Delivery Address *
+            </label>
+            <textarea
+              rows={2}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Building name, landmark, road name..."
+              className={`w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-white/5 border ${
+                errors.address ? "border-red-500" : "border-green-900/10 dark:border-white/10"
+              } text-xs text-green-950 dark:text-white focus:outline-none`}
+            />
+            {errors.address && <p className="text-[11px] text-red-500 mt-1">{errors.address}</p>}
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block mb-1.5">
+              Special Handling, Crane Unloading or Staging Instructions (Optional)
+            </label>
+            <textarea
+              rows={2}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="e.g. Needs elevator access delivery, or staged delivery across two civil handover phases..."
+              className="w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-white/5 border border-green-900/10 dark:border-white/10 text-xs text-green-950 dark:text-white focus:outline-none"
+            />
+          </div>
+
+          {/* Items Summary Strip */}
+          <div className="p-4 rounded-2xl bg-cream-50 dark:bg-white/5 border border-green-900/10 dark:border-white/10 space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-green-950 dark:text-white block">
+              Enquiry Items Summary ({items.length} items)
+            </span>
+            <ul className="text-xs text-ink-700 dark:text-white/70 space-y-1">
+              {items.map((item, i) => (
+                <li key={i} className="flex justify-between">
+                  <span>{item.productName} ({item.variantLabel || "Standard"}) x {item.quantity}</span>
+                  <span className="font-semibold text-green-950 dark:text-white">Ref: ₹{(item.unitPrice * item.quantity).toLocaleString("en-IN")}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isProcessing}
+              className="w-full py-4 px-8 rounded-full bg-green-950 dark:bg-green-600 hover:bg-green-800 text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+              <span>{isProcessing ? "Submitting Request..." : "Submit Quotation Request"}</span>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

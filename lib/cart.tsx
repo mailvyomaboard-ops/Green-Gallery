@@ -1,11 +1,12 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { CartItem } from "./types";
+import { CartItem, Product } from "./types";
 
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
+  addItem: (product: Product, variantId?: string, quantity?: number) => void;
   updateQuantity: (productId: string, variantId: string | undefined, delta: number) => void;
   removeFromCart: (productId: string, variantId?: string) => void;
   clearCart: () => void;
@@ -60,6 +61,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const addItem = (product: Product, variantId?: string, quantity: number = 1) => {
+    const variant = product.variants?.find((v) => v.id === variantId);
+    addToCart({
+      productId: product.id,
+      variantId,
+      productName: product.name,
+      variantLabel: variant?.label,
+      unitPrice: variant ? variant.price : product.price,
+      quantity,
+      image: product.mainImage,
+    });
+  };
+
   const updateQuantity = (productId: string, variantId: string | undefined, delta: number) => {
     setItems((prev) => {
       return prev
@@ -97,6 +111,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       value={{
         items,
         addToCart,
+        addItem,
         updateQuantity,
         removeFromCart,
         clearCart,

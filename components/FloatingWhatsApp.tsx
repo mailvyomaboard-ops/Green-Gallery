@@ -8,13 +8,15 @@ export function FloatingWhatsApp() {
   const pathname = usePathname();
 
   // Adapt message based on the current page route
-  let message = "Hello Shubham Batule, I would like to book a site consultation in Pune.";
-  if (pathname.includes("/store/")) {
-    message = "Hello Shubham Batule, I am browsing your Green Gallery store catalog and have a question regarding plant stock and delivery in Pune.";
-  } else if (pathname.includes("/gallery/")) {
-    message = "Hello Shubham Batule, I was reviewing your Green Gallery portfolio and would like to discuss a similar landscape project.";
-  } else if (pathname === "/gallery") {
-    message = "Hello Shubham Batule, I am viewing your developer client portfolio and would like to discuss a commercial project.";
+  let message = siteConfig.contact.whatsappDefaultMessage;
+  if (pathname.includes("/plants") || pathname.includes("/store")) {
+    message = "Hello GreenGallery, I'm interested in plant supply and bulk procurement...";
+  } else if (pathname.includes("/projects") || pathname.includes("/gallery")) {
+    message = "Hello GreenGallery, I was reviewing your portfolio and would like to discuss a landscape project...";
+  } else if (pathname.includes("/services")) {
+    message = "Hello GreenGallery, I'm interested in your landscaping services...";
+  } else if (pathname.includes("/maintenance")) {
+    message = "Hello GreenGallery, I would like to enquire about garden maintenance packages...";
   }
 
   const encodedUrl = `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -25,7 +27,7 @@ export function FloatingWhatsApp() {
         href={encodedUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat on WhatsApp with Green Gallery"
+        aria-label="Chat on WhatsApp with GreenGallery"
         className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40 cursor-pointer"
       >
         <svg

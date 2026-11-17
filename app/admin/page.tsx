@@ -92,37 +92,46 @@ export default function AdminPage() {
   const [cmsSaving, setCmsSaving] = useState(false);
   const [cmsNotice, setCmsNotice] = useState("");
 
-  // Check saved session on mount
+  // Check session cookie on mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedAuth = sessionStorage.getItem("gg_admin_session");
-      if (savedAuth === "authenticated") {
-        setIsAuthenticated(true);
-        loadAllData();
-      }
-    }
+    fetch("/api/auth/check")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.authenticated) {
+          setIsAuthenticated(true);
+          loadAllData();
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  // Passcode verification
-  const handleLogin = (e: React.FormEvent) => {
+  // Secure Server-Side Passcode Login
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === "greengallery2026" || passcode === "admin123") {
-      setIsAuthenticated(true);
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("gg_admin_session", "authenticated");
+    setPassError("");
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        loadAllData();
+      } else {
+        setPassError(data.message || "Invalid administrative credentials.");
       }
-      setPassError("");
-      loadAllData();
-    } else {
-      setPassError("Invalid administrative passcode. Please verify credentials.");
+    } catch {
+      setPassError("Authentication server error. Please try again.");
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {}
     setIsAuthenticated(false);
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("gg_admin_session");
-    }
   };
 
   const loadAllData = async () => {
@@ -1036,7 +1045,7 @@ export default function AdminPage() {
               </div>
 
               <div className="w-full sm:w-auto flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                {(["all", "New", "Contacted", "Consultation Scheduled", "Proposal Sent", "Closed"] as const).map(
+                {(["all", "New", "Contacted", "Site Visit Scheduled", "Quotation Preparation", "Quotation Sent", "Negotiation", "Won", "Lost"] as const).map(
                   (st) => (
                     <button
                       key={st}
@@ -1075,7 +1084,7 @@ export default function AdminPage() {
                 {filteredLeads.map((lead) => {
                   const phoneClean = lead.phone.replace(/[^0-9]/g, "");
                   const waUrl = `https://wa.me/${phoneClean.length === 10 ? `91${phoneClean}` : phoneClean}?text=${encodeURIComponent(
-                    `Hello ${lead.name}, this is Shubham Batule from Green Gallery Pune regarding your inquiry for ${
+                    `Hello ${lead.name}, this is the GreenGallery team regarding your inquiry for ${
                       lead.projectType || lead.projectName || "your landscape project"
                     }.`
                   )}`;
@@ -1163,9 +1172,12 @@ export default function AdminPage() {
                           >
                             <option value="New">New</option>
                             <option value="Contacted">Contacted</option>
-                            <option value="Consultation Scheduled">Consultation Scheduled</option>
-                            <option value="Proposal Sent">Proposal Sent</option>
-                            <option value="Closed">Closed</option>
+                            <option value="Site Visit Scheduled">Site Visit Scheduled</option>
+                            <option value="Quotation Preparation">Quotation Preparation</option>
+                            <option value="Quotation Sent">Quotation Sent</option>
+                            <option value="Negotiation">Negotiation</option>
+                            <option value="Won">Won</option>
+                            <option value="Lost">Lost</option>
                           </select>
                         </div>
                       </div>
@@ -1496,10 +1508,10 @@ export default function AdminPage() {
                     <div className="w-2 h-2 rounded-full bg-green-400" />
                     <div>
                       <div className="font-bold text-white text-[11px] leading-tight">
-                        {siteContent.heroStatCount || "500+ Specimens"}
+                        {siteContent.heroStatCount || "Alandi Depot"}
                       </div>
                       <div className="text-[9px] text-cream-50/70 font-light truncate max-w-[180px]">
-                        {siteContent.heroStatLabel || "Acclimatized trees & palms"}
+                        {siteContent.heroStatLabel || "Logistical Staging Depot"}
                       </div>
                     </div>
                   </div>
@@ -1603,7 +1615,7 @@ export default function AdminPage() {
                     </label>
                     <input
                       type="text"
-                      value={siteContent.heroStatCount || "500+ Specimens"}
+                      value={siteContent.heroStatCount || "Alandi Depot"}
                       onChange={(e) => setSiteContent({ ...siteContent, heroStatCount: e.target.value })}
                       className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-semibold focus:outline-none focus:border-green-900"
                     />
@@ -1721,7 +1733,7 @@ export default function AdminPage() {
                   </label>
                   <textarea
                     rows={2}
-                    value={siteContent.bannerDescription || "Review CAD drawings with our landscape directors, reserve specimen trees from our 14-acre bays, or request formal developer BOQ pricing."}
+                    value={siteContent.bannerDescription || "Review CAD drawings with our team, enquire about plant supply from our staging depot, or request formal developer BOQ pricing."}
                     onChange={(e) => setSiteContent({ ...siteContent, bannerDescription: e.target.value })}
                     className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
                   />
@@ -2312,7 +2324,7 @@ export default function AdminPage() {
               <div className="flex items-center gap-2">
                 <a
                   href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                    `Hello ${selectedLead.name}, this is Shubham Batule from Green Gallery Pune.`
+                    `Hello ${selectedLead.name}, this is the GreenGallery team regarding your landscape inquiry.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

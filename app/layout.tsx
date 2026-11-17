@@ -76,47 +76,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // Schema.org LocalBusiness JSON-LD
-  const localBusinessSchema = {
+  const localBusinessSchema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "LandscapeArchitect",
     "name": siteConfig.name,
-    "founder": {
-      "@type": "Person",
-      "name": "Shubham Batule"
-    },
+    "description": siteConfig.description,
     "image": `${siteConfig.url}/images/frames/ezgif-frame-001.jpg`,
     "@id": siteConfig.url,
     "url": siteConfig.url,
-    "telephone": siteConfig.contact.phoneTel,
+    "telephone": siteConfig.contact.phone,
+    "email": siteConfig.contact.email,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": `${siteConfig.contact.address.line1}, ${siteConfig.contact.address.line2}`,
-      "addressLocality": siteConfig.contact.address.city,
-      "addressRegion": siteConfig.contact.address.state,
-      "postalCode": siteConfig.contact.address.pincode,
+      "addressLocality": "Pune",
+      "addressRegion": "Maharashtra",
       "addressCountry": "IN"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 18.6186,
-      "longitude": 73.7508
+      "latitude": 18.5204,
+      "longitude": 73.8567
     },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "08:30",
-        "closes": "18:30"
-      }
-    ],
-    "priceRange": "₹₹₹₹",
-    "areaServed": [
-      { "@type": "City", "name": "Pune" },
-      { "@type": "City", "name": "Lonavala" },
-      { "@type": "City", "name": "Mumbai" },
-      { "@type": "City", "name": "Nashik" }
-    ]
+    "priceRange": "₹₹₹",
+    "areaServed": siteConfig.serviceRegions.map((region) => ({
+      "@type": "AdministrativeArea",
+      "name": region,
+    }))
   };
+
+  if (siteConfig.founder.isPublished) {
+    localBusinessSchema.founder = {
+      "@type": "Person",
+      "name": siteConfig.founder.displayName,
+    };
+  }
 
   return (
     <html lang="en" className={`${newsreader.variable} ${plusJakarta.variable}`}>

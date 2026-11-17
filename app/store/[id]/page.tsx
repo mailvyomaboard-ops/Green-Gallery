@@ -56,7 +56,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     setTimeout(() => setToastMessage(false), 2500);
   };
 
-  const whatsappMessage = `Hello Shubham Batule, I am inquiring about the ${product.name} (${product.botanicalName}) listed on your Green Gallery catalog: ${siteConfig.url}/store/${product.slug}. Is this specimen currently available for site delivery in Pune?`;
+  const whatsappMessage = `Hello GreenGallery, I am inquiring about the ${product.name} (${product.botanicalName}) listed on your catalogue. Is this specimen currently available for site delivery in Pune?`;
 
   return (
     <div className="w-full pb-20">
@@ -265,7 +265,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                 rel="noopener noreferrer"
                 className="w-full min-h-[44px] px-6 py-2.5 border border-green-950 text-green-950 hover:bg-green-50 font-bold text-xs rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
-                <span>Chat with Shubham Batule on WhatsApp</span>
+                <span>Chat with GreenGallery on WhatsApp</span>
               </a>
             </div>
 

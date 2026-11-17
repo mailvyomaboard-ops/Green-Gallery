@@ -130,7 +130,7 @@ export function LeadForm({
     return Object.keys(errs).length === 0;
   };
 
-  // Build clean WhatsApp message to Shubham Batule without AI-style emojis
+  // Build clean WhatsApp message to GreenGallery team without AI-style emojis
   const buildWhatsAppMessage = () => {
     if (formType === "consultation") {
       return `*Green Gallery — Site Consultation Booking*
@@ -214,14 +214,14 @@ export function LeadForm({
         body: JSON.stringify(payload),
       });
 
-      // 2. Build direct WhatsApp URL for Shubham Batule (+91 78230 80251)
+      // 2. Build direct WhatsApp URL for GreenGallery (+91 78230 80251)
       const waText = buildWhatsAppMessage();
       const waUrl = `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(waText)}`;
       setGeneratedWhatsAppUrl(waUrl);
 
       setSubmitSuccess(true);
 
-      // 3. Immediately launch Shubham's WhatsApp in new window so lead is sent directly
+      // 3. Immediately launch GreenGallery WhatsApp in new window so lead is sent directly
       if (typeof window !== "undefined") {
         window.open(waUrl, "_blank", "noopener,noreferrer");
       }
@@ -246,10 +246,10 @@ export function LeadForm({
         </div>
         <h3 className="text-2xl font-serif font-semibold mb-2">Inquiry Saved & Ready to Send</h3>
         <p className="text-ink-900 mb-3 text-base">
-          Thank you, <strong>{name}</strong>. Your inquiry has been formatted directly for <strong>Shubham Batule (Owner & Founder, Green Gallery)</strong>.
+          Thank you, <strong>{name}</strong>. Your inquiry has been formatted directly for <strong>GreenGallery’s Operational Desk</strong>.
         </p>
         <p className="text-sm text-ink-500 mb-5">
-          If your WhatsApp did not open automatically, tap the button below to send your pre-filled inquiry to Shubham Batule's WhatsApp Business desk (+91 78230 80251).
+          If your WhatsApp did not open automatically, tap the button below to send your pre-filled inquiry to our WhatsApp desk (+91 78230 80251).
         </p>
 
         {generatedWhatsAppUrl && (
@@ -262,13 +262,13 @@ export function LeadForm({
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
               <path d="M12.031 2C6.5 2 2 6.484 2 12.008c0 1.954.563 3.782 1.536 5.334L2 22l4.82-1.499c1.488.88 3.218 1.385 5.211 1.385 5.531 0 10.031-4.484 10.031-10.008C22.062 6.484 17.562 2 12.031 2zm5.834 14.283c-.244.686-1.42 1.31-1.958 1.393-.509.078-1.157.112-3.714-.949-3.266-1.355-5.367-4.664-5.531-4.882-.158-.218-1.309-1.742-1.309-3.325 0-1.583.829-2.362 1.121-2.684.294-.323.642-.404.857-.404.214 0 .428.002.615.011.198.01.463-.075.725.556.269.646.917 2.235.998 2.398.081.163.136.353.027.57-.109.217-.163.353-.326.544-.163.19-.344.425-.49.57-.163.163-.333.34-.143.666.19.326.844 1.391 1.811 2.253 1.244 1.108 2.293 1.452 2.619 1.615.326.163.517.136.708-.082.19-.218.816-.952 1.034-1.278.217-.326.435-.272.734-.163.299.109 1.895.894 2.222 1.057.326.163.544.244.625.38.081.136.081.788-.163 1.474z" />
             </svg>
-            <span>Open in WhatsApp & Chat with Shubham Batule</span>
+            <span>Open in WhatsApp & Chat with GreenGallery</span>
           </a>
         )}
 
         <div className="pt-4 mt-4 border-t border-green-900/10 flex flex-wrap gap-4 text-xs text-ink-500">
           <span>WhatsApp Business: {siteConfig.contact.whatsappDisplay}</span>
-          <span>Founder Desk: Shubham Batule</span>
+          <span>Operating Market: Pune &amp; PCMC</span>
         </div>
       </div>
     );
@@ -298,7 +298,7 @@ export function LeadForm({
       {/* Notice indicating direct WhatsApp routing */}
       <div className="p-3 bg-green-100/50 border border-green-700/20 rounded-brand text-xs text-green-900 flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-[#25D366]" />
-        <span>Inquiries are forwarded directly to <strong>Shubham Batule's WhatsApp Business (+91 78230 80251)</strong>.</span>
+        <span>Inquiries are forwarded directly to <strong>GreenGallery WhatsApp Business (+91 78230 80251)</strong>.</span>
       </div>
 
       {/* Row 1: Common Identity */}
@@ -445,7 +445,7 @@ export function LeadForm({
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Tell Shubham Batule about existing site conditions, civil readiness, or particular species you require..."
+              placeholder="Tell our team about existing site conditions, civil readiness, or particular species you require..."
               className="w-full px-3.5 py-2.5 bg-cream-50 border border-cream-200 rounded-brand text-ink-900 text-base focus:border-green-700 focus:outline-none"
             />
           </div>
@@ -605,13 +605,13 @@ export function LeadForm({
       {formType === "general" && (
         <div>
           <label className="block text-sm font-medium text-ink-900 mb-1">
-            Message for Shubham Batule <span className="text-red-700">*</span>
+            Message for GreenGallery Team <span className="text-red-700">*</span>
           </label>
           <textarea
             rows={4}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="How can Shubham Batule and our Green Gallery team assist you today?"
+            placeholder="How can our GreenGallery horticultural team assist you today?"
             className={`w-full px-3.5 py-2.5 bg-cream-50 border ${
               errors.message ? "border-red-600" : "border-cream-200 focus:border-green-700"
             } rounded-brand text-ink-900 text-base focus:outline-none`}
@@ -622,7 +622,7 @@ export function LeadForm({
 
       {/* Consent & Data Policy notice */}
       <div className="text-xs text-ink-500 pt-1 leading-relaxed">
-        By submitting this form, you will be connected directly to Shubham Batule via WhatsApp Business to coordinate your site assessment or project inquiry.
+        By submitting this form, you will be connected directly to GreenGallery via WhatsApp Business to coordinate your site assessment or project inquiry.
       </div>
 
       {/* Submit Button */}
@@ -632,7 +632,7 @@ export function LeadForm({
         className="w-full min-h-[50px] bg-green-950 hover:bg-green-800 text-white font-bold px-6 py-3.5 rounded-full shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
       >
         {isSubmitting ? (
-          <span>Routing to Shubham Batule on WhatsApp...</span>
+          <span>Routing to GreenGallery on WhatsApp...</span>
         ) : (
           <div className="flex items-center gap-2">
             <svg className="w-5 h-5 fill-current text-[#25D366]" viewBox="0 0 24 24">
@@ -640,7 +640,7 @@ export function LeadForm({
             </svg>
             <span>
               {formType === "consultation"
-                ? "Submit & Send to Shubham on WhatsApp"
+                ? "Submit & Send on WhatsApp"
                 : formType === "quote"
                 ? "Submit Quote & Open WhatsApp"
                 : "Send Message via WhatsApp"}

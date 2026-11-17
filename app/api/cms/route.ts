@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { siteContentRepo } from "@/lib/db";
+import { verifyAdminSession } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -11,6 +12,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!verifyAdminSession(req)) {
+    return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const updated = siteContentRepo.update(body);

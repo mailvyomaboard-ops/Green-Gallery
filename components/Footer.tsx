@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
-import { Sprout } from "lucide-react";
+import { Sprout, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 
 export function Footer() {
   const router = useRouter();
@@ -34,115 +34,116 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-green-950 text-white pt-16 pb-12 border-t border-green-900/60">
+    <footer className="bg-[#11241a] text-white pt-16 pb-12 border-t border-green-900/40">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
-          {/* Column 1: Brand & Identity */}
+          {/* Column 1: Brand & Operational Summary */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center">
                 <Sprout className="w-4 h-4 text-green-200" />
               </div>
-              <h3 className="font-display text-2xl font-extrabold text-white">green gallery</h3>
+              <h3 className="font-display text-2xl font-extrabold text-white tracking-tight">GreenGallery</h3>
             </div>
             <p className="text-sm text-white/80 leading-relaxed font-light">
-              Landscape architecture, structural podium planting, specimen nursery supply, and estate grounds care across Western Maharashtra.
+              Landscape design, execution, plantation, and garden care services across Pune and Western Maharashtra.
             </p>
-            <div className="text-xs text-green-300/80 pt-2 space-y-1 font-mono">
-              <p>GSTIN: {siteConfig.contact.gstNumber}</p>
-              <p>14-Acre Nursery Bays · Tathawade, Pune</p>
+            <div className="text-xs text-green-300/90 pt-2 space-y-1.5 font-sans">
+              <p className="flex items-start gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-green-400 shrink-0 mt-0.5" />
+                <span>Operational Staging Depot: Alandi, Pune</span>
+              </p>
+              <p className="text-white/60 text-[11px] pl-5">
+                (Upcoming nursery facility along Old Mumbai–Pune Highway currently in development)
+              </p>
             </div>
           </div>
 
-          {/* Column 2: Navigation Links */}
+          {/* Column 2: Core Services */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Works & Studio</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Services</h4>
             <ul className="space-y-2 text-sm text-white/80 font-light">
               <li>
-                <Link href="/" className="hover:text-green-300 transition-colors">Home</Link>
+                <Link href="/services/commercial-landscaping" className="hover:text-green-300 transition-colors">Commercial Landscaping</Link>
               </li>
               <li>
-                <Link href="/gallery" className="hover:text-green-300 transition-colors">Developer Collaborations</Link>
+                <Link href="/services/real-estate-developer-landscaping" className="hover:text-green-300 transition-colors">Real Estate & Podiums</Link>
               </li>
               <li>
-                <Link href="/store" className="hover:text-green-300 transition-colors">Nursery Specimen Store</Link>
+                <Link href="/services/residential-landscaping" className="hover:text-green-300 transition-colors">Residential & Villa Gardens</Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-green-300 transition-colors">Consultation Booking</Link>
+                <Link href="/services/balcony-terrace-gardens" className="hover:text-green-300 transition-colors">Balcony & Terrace Gardens</Link>
+              </li>
+              <li>
+                <Link href="/services/living-walls-vertical-gardens" className="hover:text-green-300 transition-colors">Living Walls & Vertical Gardens</Link>
+              </li>
+              <li>
+                <Link href="/maintenance" className="hover:text-green-300 transition-colors">Garden Maintenance Packages</Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Nursery Policies & Care */}
+          {/* Column 3: Navigation & Legal */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Policies & Manuals</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Navigation & Policies</h4>
             <ul className="space-y-2 text-sm text-white/80 font-light">
               <li>
-                <Link href="/policies/delivery" className="hover:text-green-300 transition-colors">Delivery & Transit Terms</Link>
+                <Link href="/services" className="hover:text-green-300 transition-colors">All Services</Link>
               </li>
               <li>
-                <Link href="/policies/returns" className="hover:text-green-300 transition-colors">Replacement Assurance</Link>
+                <Link href="/projects" className="hover:text-green-300 transition-colors">Project Portfolio</Link>
               </li>
               <li>
-                <Link href="/policies/plant-care" className="hover:text-green-300 transition-colors">Pune Climate Care Manual</Link>
+                <Link href="/plants" className="hover:text-green-300 transition-colors">Plant Supply Catalogue</Link>
               </li>
               <li>
-                <a
-                  href={siteConfig.contact.address.googleBusinessProfileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-green-300 transition-colors flex items-center gap-1.5"
-                >
-                  <span>Google Business Profile</span>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
+                <Link href="/about" className="hover:text-green-300 transition-colors">About GreenGallery</Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-green-300 transition-colors">Privacy Policy</Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-green-300 transition-colors">Terms of Service</Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Contact & Operating Desk */}
+          {/* Column 4: Contact & Consultations */}
           <div className="space-y-3 text-sm text-white/80 font-light">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Founder Desk</h4>
-            <p className="leading-relaxed">
-              <strong className="font-semibold text-white">Shubham Batule</strong> (Founder)<br />
-              {siteConfig.contact.address.line1}<br />
-              {siteConfig.contact.address.line2}<br />
-              {siteConfig.contact.address.city}, {siteConfig.contact.address.state}
+            <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Get in Touch</h4>
+            <p className="text-xs text-white/70">
+              Consultations and on-site visits across PMC and PCMC by prior appointment.
             </p>
-            <div className="pt-2 space-y-1 font-mono text-xs">
-              <p>
-                <span className="text-white/60">WhatsApp: </span>
+            <div className="pt-2 space-y-2.5 text-xs">
+              <p className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-green-400 shrink-0" />
                 <a
-                  href={`https://wa.me/${siteConfig.contact.whatsappNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white underline text-green-400 font-semibold"
+                  href={`tel:${siteConfig.contact.phone}`}
+                  className="hover:text-white font-medium"
                 >
-                  {siteConfig.contact.whatsappDisplay}
+                  {siteConfig.contact.phoneDisplay}
                 </a>
               </p>
-              <p>
-                <span className="text-white/60">Email: </span>
-                <a href={`mailto:${siteConfig.contact.salesEmail}`} className="hover:text-white underline">
-                  {siteConfig.contact.salesEmail}
+              <p className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-green-400 shrink-0" />
+                <a
+                  href={`mailto:${siteConfig.contact.email}`}
+                  className="hover:text-white font-medium"
+                >
+                  {siteConfig.contact.email}
                 </a>
-              </p>
-              <p>
-                <span className="text-white/60">Hours: </span>
-                <span>{siteConfig.contact.businessHours.weekdays}</span>
               </p>
             </div>
-            <div className="pt-3 flex gap-3 text-white/80 text-xs">
-              <a href={siteConfig.social.whatsappLink} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-green-300 font-medium">
-                WhatsApp Chat
-              </a>
-              <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20">
-                Instagram
-              </a>
-              <a href={siteConfig.social.linkedin} target="_blank" rel="noopener noreferrer" className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20">
-                LinkedIn
+            <div className="pt-3">
+              <a
+                href={siteConfig.social.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-green-700 hover:bg-green-600 text-white text-xs font-semibold shadow-sm transition-all"
+              >
+                <span>WhatsApp Enquiry</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
@@ -150,10 +151,10 @@ export function Footer() {
 
         {/* Bottom Bar: Discreet 5-tap stealth access on copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-          <p onClick={handleSecretTap} className="cursor-default select-none" title="">
-            © {new Date().getFullYear()} Green Gallery. All rights reserved. Landscaping Architecture & Specimen Nursery, Pune.
+          <p onClick={handleSecretTap} className="cursor-default select-none" title="GreenGallery Pune">
+            © {new Date().getFullYear()} GreenGallery. All rights reserved. Landscaping Services in Pune.
           </p>
-          <p className="text-right">Designed for architects, builders, and estate owners.</p>
+          <p className="text-right">Serving Real Estate Developers, Commercial Properties, and Residential Estates.</p>
         </div>
       </div>
     </footer>
