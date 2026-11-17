@@ -3,36 +3,24 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { initialProjects, clientsData } from "@/lib/data";
-import { Project, ClientPartner } from "@/lib/types";
+import { clientsData } from "@/lib/data";
+import { ClientPartner } from "@/lib/types";
 import { useSiteContent } from "@/lib/useSiteContent";
 import {
   ArrowRight,
   ArrowUpRight,
   Building2,
   MapPin,
-  Calendar,
-  Layers,
-  Sprout,
-  CheckCircle2
+  CheckCircle2,
+  MessageSquare,
+  Sparkles
 } from "lucide-react";
 
 export default function ProjectsPage() {
   const { content } = useSiteContent();
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [clients, setClients] = useState<ClientPartner[]>(clientsData);
-  const [activeCategory, setActiveCategory] = useState<string>("All");
 
   useEffect(() => {
-    fetch("/api/projects")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && Array.isArray(data.projects) && data.projects.length > 0) {
-          setProjects(data.projects);
-        }
-      })
-      .catch(() => {});
-
     fetch("/api/clients")
       .then((res) => res.json())
       .then((data) => {
@@ -43,32 +31,20 @@ export default function ProjectsPage() {
       .catch(() => {});
   }, []);
 
-  const categories = [
-    "All",
-    "Residential",
-    "Commercial",
-    "Township and Large Developments",
-    "Terrace and Vertical",
-  ];
-
-  const filteredProjects =
-    activeCategory === "All"
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
-
   return (
-    <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 py-10 space-y-16">
-      {/* Portfolio Header */}
+    <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 py-10 space-y-12">
+      {/* Clean, Premium Header */}
       <div className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-green-950 text-white p-8 sm:p-12 md:p-16 border border-green-800/40 shadow-2xl">
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-green-300 text-xs font-bold uppercase tracking-wider">
-            <span>{content.projectsPageBadge || "Western Maharashtra Landscape Portfolio"}</span>
+            <Sparkles className="w-3.5 h-3.5 text-green-400" />
+            <span>{content.projectsPageBadge || "Pune & PCMC Landscape Portfolio"}</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            {content.projectsPageTitle || "Executed Projects & Case Studies"}
+            {content.projectsPageTitle || "Our Projects & Collaborations"}
           </h1>
           <p className="text-white/80 text-sm sm:text-base leading-relaxed font-light">
-            {content.projectsPageDescription || "Explore our curated landscaping case studies across Pune, PCMC, and Western Maharashtra. From podium decks and entrance avenues to private villa sanctuaries and urban terraces."}
+            {content.projectsPageDescription || "Turnkey landscape design, podium plantations, avenue tree supply, and grounds maintenance executed for leading developers and private clients across Pune."}
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">
@@ -79,101 +55,83 @@ export default function ProjectsPage() {
               <span>Discuss Your Project</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
+            <Link
+              href="/services"
+              className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs uppercase tracking-wider rounded-full transition-all border border-white/20"
+            >
+              <span>Explore Services</span>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Category Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-              activeCategory === cat
-                ? "bg-green-950 dark:bg-green-600 text-white shadow-sm"
-                : "bg-white dark:bg-white/10 text-ink-700 dark:text-white/80 hover:bg-cream-100 dark:hover:bg-white/20 border border-green-900/10 dark:border-white/10"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredProjects.map((project) => (
+      {/* Projects Grid: Pure, Clean, Authentic Project Collaborations */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {clients.map((project, idx) => (
           <div
             key={project.id}
-            className="bg-white dark:bg-[#080A09] rounded-3xl p-5 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group"
+            className="bg-white dark:bg-[#080A09] rounded-3xl p-4 sm:p-5 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col justify-between group"
           >
             <div>
-              {/* Cover Image Deck / Architectural Blueprint Header */}
-              <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-4 flex flex-col justify-between border border-green-800/30">
-                {project.coverImage ? (
-                  <Image
-                    src={project.coverImage}
-                    alt={project.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 380px"
-                  />
-                ) : (
-                  <>
-                    <div className="flex items-center justify-between z-10">
-                      <div className="px-3 py-1 rounded-full bg-white/10 dark:bg-black/60 backdrop-blur-sm text-[10px] font-bold text-green-300 uppercase tracking-wider shadow-sm flex items-center gap-1.5 border border-white/15">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                        <span>{project.status || "COMPLETED"}</span>
-                      </div>
-                      <div className="px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-sm text-[10px] font-mono text-white/90 uppercase tracking-wider border border-white/10">
-                        {project.category}
-                      </div>
-                    </div>
-                    <div className="z-10 pt-4">
-                      <span className="text-[10px] font-mono text-green-400 uppercase tracking-wider block">Scale &amp; Execution</span>
-                      <span className="text-xs font-bold text-white/95 block">{project.areaSqFt.toLocaleString("en-IN")} sq. ft. · {project.location}</span>
-                    </div>
-                  </>
-                )}
+              {/* Top Half: Dedicated 50% Image Showcase Bay */}
+              <div className="relative w-full h-48 sm:h-52 rounded-2xl bg-white dark:bg-white/95 border border-green-900/10 flex items-center justify-center p-6 overflow-hidden group-hover:scale-[1.02] transition-transform duration-300 shadow-xs mb-4">
+                <Image
+                  src={project.logo}
+                  alt={project.name}
+                  fill
+                  className="object-contain p-3"
+                  sizes="(max-width: 768px) 100vw, 360px"
+                />
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-green-950/80 backdrop-blur-sm text-[10px] font-mono font-bold text-green-300 uppercase tracking-wider border border-white/10">
+                  Project #{idx + 1}
+                </div>
               </div>
 
-              {/* Meta info */}
-              <div className="flex items-center gap-2 text-xs text-ink-500 dark:text-white/60 mb-2">
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-green-600" />
-                  {project.location}
-                </span>
-                <span>•</span>
-                <span>{project.year}</span>
+              {/* Location Pill */}
+              <div className="flex items-center gap-1.5 text-xs text-ink-500 dark:text-white/60 mb-2">
+                <MapPin className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                <span className="font-medium text-green-900 dark:text-green-300">{project.city}</span>
               </div>
 
-              <h2 className="font-display text-xl font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-2 mb-2">
-                {project.title}
+              {/* Project Title */}
+              <h2 className="font-display text-xl font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-1 mb-1">
+                {project.name}
               </h2>
 
+              {/* Tagline */}
+              {project.tagline && (
+                <p className="text-xs text-ink-500 dark:text-white/60 italic line-clamp-1 mb-2 font-light">
+                  {project.tagline}
+                </p>
+              )}
+
+              {/* Scope Description */}
               <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed line-clamp-3 mb-4">
-                {project.brief}
+                {project.description}
               </p>
 
-              {/* Plant highlights */}
-              {project.plantsUsed && project.plantsUsed.length > 0 && (
-                <div className="pt-2 border-t border-cream-200 dark:border-white/10 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 block">
-                    Key Flora
-                  </span>
-                  <p className="text-[11px] text-ink-500 dark:text-white/60 line-clamp-1 italic">
-                    {project.plantsUsed.slice(0, 3).join(", ")}
-                  </p>
+              {/* Highlights / Scope pills */}
+              {project.scope && project.scope.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-cream-200 dark:border-white/10">
+                  {project.scope.slice(0, 2).map((item, sIdx) => (
+                    <span
+                      key={sIdx}
+                      className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-cream-100 dark:bg-white/10 text-green-950 dark:text-green-200"
+                    >
+                      {item}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
 
+            {/* Direct Project Action */}
             <div className="pt-4 mt-4 border-t border-cream-200 dark:border-white/10 flex items-center justify-between">
               <Link
-                href={`/projects/${project.slug}`}
-                className="text-xs font-bold text-green-800 dark:text-green-300 hover:text-green-950 dark:hover:text-white flex items-center gap-1 group-hover:underline"
+                href={`/contact?type=quote&service=${encodeURIComponent(project.name)}`}
+                className="text-xs font-bold text-green-800 dark:text-green-300 hover:text-green-950 dark:hover:text-white flex items-center gap-1.5 group-hover:underline"
               >
-                <span>View Full Case Study</span>
+                <span>Request Project Proposal</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -181,75 +139,39 @@ export default function ProjectsPage() {
         ))}
       </div>
 
-      {/* Developer Collaboration Profiles */}
-      <section className="space-y-8 pt-8 border-t border-green-900/10 dark:border-white/10">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <span className="text-xs uppercase tracking-wider font-bold text-green-700 dark:text-green-400">
-              Institutional Collaborations
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-green-950 dark:text-white mt-1">
-              Developers &amp; Infrastructure Partners
-            </h2>
-            <p className="text-sm text-ink-700 dark:text-white/70 mt-2 max-w-2xl font-light">
-              Collaborations across Western Pune, PCMC, and Eastern IT corridors for podium landscapes, avenue trees, and scheduled grounds maintenance.
-            </p>
-          </div>
+      {/* Bottom Conversion Banner */}
+      <div className="rounded-3xl bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#061A12] p-8 sm:p-12 text-white border border-green-800/40 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="space-y-2 max-w-xl">
+          <span className="text-xs uppercase tracking-widest text-green-400 font-bold">
+            Start Your Landscape Execution
+          </span>
+          <h3 className="font-display text-2xl sm:text-3xl font-bold text-white">
+            Have an upcoming project in Pune or PCMC?
+          </h3>
+          <p className="text-xs sm:text-sm text-white/80 font-light leading-relaxed">
+            Our team assists real estate builders, architects, and private clients with BOQ validation, site visits, and direct specimen dispatch from our Alandi staging depot.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3 shrink-0">
           <Link
             href="/contact?type=quote"
-            className="self-start sm:self-auto px-6 py-3 bg-green-950 dark:bg-green-600 hover:bg-green-800 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-sm transition-all flex items-center gap-1.5"
+            className="px-6 py-3 bg-green-500 hover:bg-green-400 text-green-950 font-bold text-xs uppercase tracking-wider rounded-full shadow transition-all flex items-center gap-1.5"
           >
-            <span>Request Developer BOQ Quote</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span>Book Consultation</span>
+            <ArrowUpRight className="w-4 h-4" />
           </Link>
+          <a
+            href="https://wa.me/917823080251?text=Hello%20GreenGallery%2C%20I%20am%20interested%20in%20your%20landscape%20services..."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow transition-all flex items-center gap-1.5"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>Chat on WhatsApp</span>
+          </a>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {clients.map((client) => (
-            <div
-              key={client.id}
-              className="bg-white dark:bg-[#080A09] border border-green-900/10 dark:border-white/10 rounded-3xl p-6 flex flex-col justify-between shadow-soft hover:shadow-glow transition-all"
-            >
-              <div>
-                <div className="relative w-full h-44 rounded-2xl overflow-hidden bg-white dark:bg-white/95 border border-green-900/10 flex items-center justify-center p-5 shadow-xs mb-5">
-                  <Image
-                    src={client.logo}
-                    alt={client.name}
-                    fill
-                    className="object-contain p-3"
-                    sizes="320px"
-                  />
-                </div>
-
-                <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
-                  {client.name}
-                </h3>
-                {client.tagline && (
-                  <p className="text-xs text-ink-500 dark:text-white/60 mt-1 font-light italic">
-                    {client.tagline}
-                  </p>
-                )}
-                <p className="text-xs text-ink-700 dark:text-white/70 font-light mt-3 leading-relaxed">
-                  {client.description}
-                </p>
-              </div>
-
-              <div className="pt-4 mt-4 border-t border-cream-200 dark:border-white/10 flex items-center justify-between text-xs text-ink-500 dark:text-white/60">
-                <span className="flex items-center gap-1 font-semibold text-green-800 dark:text-green-300">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {client.city}
-                </span>
-                <Link
-                  href="/contact?type=quote"
-                  className="text-xs font-bold text-green-700 dark:text-green-400 hover:underline"
-                >
-                  Enquire Similar →
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
