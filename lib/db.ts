@@ -12,7 +12,7 @@
 import fs from "fs";
 import path from "path";
 import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages } from "./data";
-import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent } from "./types";
+import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct } from "./types";
 
 interface DatabaseSchema {
   leads: LeadSubmission[];
@@ -95,7 +95,41 @@ function readDb(): DatabaseSchema {
     if (!parsed.maintenancePackages || parsed.maintenancePackages.length === 0) {
       parsed.maintenancePackages = initialMaintenancePackages;
     }
-    // Ensure all products and inventory items have real images
+    // Ensure all products and inventory items are 100% synchronized with live stock
+    if (parsed.inventory && Array.isArray(parsed.inventory)) {
+      if (!parsed.products) parsed.products = [];
+
+      parsed.inventory.forEach((item, idx) => {
+        if (!item.image || item.image.trim() === "") {
+          item.image = `/images/frames/ezgif-frame-${String((idx % 20) + 1).padStart(3, "0")}.jpg`;
+        }
+
+        // Match existing product by linkedProductId or lowercase name
+        const prodIdx = parsed.products.findIndex(
+          (p) => (item.linkedProductId && p.id === item.linkedProductId) || p.name.toLowerCase() === item.name.toLowerCase()
+        );
+
+        if (prodIdx !== -1) {
+          const prod = parsed.products[prodIdx];
+          item.linkedProductId = prod.id;
+          prod.stockQuantity = item.quantityInStock;
+          prod.stockLabel = item.status;
+          prod.inStock = item.quantityInStock > 0;
+          if (item.price) prod.price = item.price;
+          if (item.image) {
+            prod.mainImage = item.image;
+            prod.images = [item.image];
+          }
+          if (item.name) prod.name = item.name;
+          if (item.botanicalName) prod.botanicalName = item.botanicalName;
+        } else {
+          const newProd = convertInventoryToProduct(item);
+          item.linkedProductId = newProd.id;
+          parsed.products.push(newProd);
+        }
+      });
+    }
+
     if (parsed.products) {
       parsed.products.forEach((p, idx) => {
         if (!p.mainImage || p.mainImage.trim() === "") {
@@ -103,13 +137,6 @@ function readDb(): DatabaseSchema {
         }
         if (!p.images || p.images.length === 0) {
           p.images = [p.mainImage];
-        }
-      });
-    }
-    if (parsed.inventory) {
-      parsed.inventory.forEach((item, idx) => {
-        if (!item.image || item.image.trim() === "") {
-          item.image = `/images/frames/ezgif-frame-${String((idx % 20) + 1).padStart(3, "0")}.jpg`;
         }
       });
     }
@@ -250,43 +277,9 @@ export const inventoryRepo = {
       lastUpdated: "Just now",
     };
 
-    // If price or image provided, ensure corresponding store product exists
-    if (newItem.price !== undefined || newItem.image) {
-      const newProdSlug = newItem.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const newProd: Product = {
-        id: `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        name: newItem.name,
-        botanicalName: newItem.botanicalName,
-        slug: newProdSlug || `specimen-${Date.now()}`,
-        description: newItem.description || `Premium specimen ${newItem.name} cultivated for Western Maharashtra climate.`,
-        price: newItem.price || 0,
-        category: "Trees and Palms",
-        lightRequirement: "Full Sun",
-        sizeCategory: "Specimen (6+ ft)",
-        inStock: newItem.quantityInStock > 0,
-        stockQuantity: newItem.quantityInStock,
-        stockLabel: newItem.status,
-        mainImage: newItem.image || "/images/hero-clean.webp",
-        images: newItem.image ? [newItem.image] : ["/images/hero-clean.webp"],
-        bulkThreshold: 25,
-        variants: [
-          {
-            id: `var-${Date.now()}`,
-            label: newItem.sizeOrHeight || "Specimen (6+ ft)",
-            price: newItem.price || 0,
-            inventoryQty: newItem.quantityInStock,
-          },
-        ],
-        deliveryNote: "Staged from Alandi logistics depot across Pune & PCMC.",
-        careGuide: {
-          light: newItem.lightRequirement || "Full Sun",
-          water: "Moderate watering with good drainage.",
-          height: newItem.sizeOrHeight || "6+ ft",
-        },
-      };
-      db.products.push(newProd);
-      newItem.linkedProductId = newProd.id;
-    }
+    const newProd = convertInventoryToProduct(newItem);
+    db.products.unshift(newProd);
+    newItem.linkedProductId = newProd.id;
 
     db.inventory.unshift(newItem);
     writeDb(db);
@@ -333,6 +326,7 @@ export const inventoryRepo = {
         prod.price = updated.price;
       }
       if (updated.image) {
+        prod.mainImage = updated.image;
         prod.images = [updated.image, ...(prod.images ? prod.images.filter((img) => img !== updated.image) : [])];
       }
       if (updated.name) {
@@ -353,40 +347,9 @@ export const inventoryRepo = {
       if (!updated.linkedProductId) {
         updated.linkedProductId = prod.id;
       }
-    } else if (updated.price !== undefined || updated.image) {
+    } else {
       // If no matching product exists yet, auto-create one for catalog consistency
-      const newProdSlug = updated.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const newProd: Product = {
-        id: `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        name: updated.name,
-        botanicalName: updated.botanicalName,
-        slug: newProdSlug || `specimen-${Date.now()}`,
-        description: updated.description || `Premium specimen ${updated.name} cultivated for Western Maharashtra climate.`,
-        price: updated.price || 0,
-        category: "Trees and Palms",
-        lightRequirement: "Full Sun",
-        sizeCategory: "Specimen (6+ ft)",
-        inStock: updated.quantityInStock > 0,
-        stockQuantity: updated.quantityInStock,
-        stockLabel: updated.status,
-        mainImage: updated.image || "/images/hero-clean.webp",
-        images: updated.image ? [updated.image] : ["/images/hero-clean.webp"],
-        bulkThreshold: 25,
-        variants: [
-          {
-            id: `var-${Date.now()}`,
-            label: updated.sizeOrHeight || "Specimen (6+ ft)",
-            price: updated.price || 0,
-            inventoryQty: updated.quantityInStock,
-          },
-        ],
-        deliveryNote: "Staged from Alandi logistics depot across Pune & PCMC.",
-        careGuide: {
-          light: updated.lightRequirement || "Full Sun",
-          water: "Moderate watering with good drainage.",
-          height: updated.sizeOrHeight || "6+ ft",
-        },
-      };
+      const newProd = convertInventoryToProduct(updated);
       db.products.push(newProd);
       updated.linkedProductId = newProd.id;
     }
@@ -398,7 +361,13 @@ export const inventoryRepo = {
   delete(id: string): boolean {
     const db = readDb();
     const initialLen = db.inventory.length;
+    const targetItem = db.inventory.find((i) => i.id === id);
     db.inventory = db.inventory.filter((i) => i.id !== id);
+    if (targetItem) {
+      db.products = db.products.filter(
+        (p) => p.id !== targetItem.linkedProductId && p.name.toLowerCase() !== targetItem.name.toLowerCase()
+      );
+    }
     if (db.inventory.length !== initialLen) {
       writeDb(db);
       return true;
@@ -446,7 +415,17 @@ export const productsRepo = {
 
   getBySlug(slug: string): Product | undefined {
     const db = readDb();
-    return db.products.find((p) => p.slug === slug || p.id === slug);
+    const prod = db.products.find((p) => p.slug === slug || p.id === slug);
+    if (prod) return prod;
+    const inv = db.inventory.find(
+      (i) =>
+        i.id === slug ||
+        i.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") === slug
+    );
+    if (inv) {
+      return convertInventoryToProduct(inv);
+    }
+    return undefined;
   },
 
   create(prodData: Omit<Product, "id">): Product {

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { initialProducts } from "@/lib/data";
-import { Product } from "@/lib/types";
+import { Product, InventoryItem, convertInventoryToProduct } from "@/lib/types";
 import { useSiteContent } from "@/lib/useSiteContent";
 import {
   Search,
@@ -29,14 +29,34 @@ export default function PlantsPage() {
   const [enquiryAdded, setEnquiryAdded] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/products")
+    // 1. Fetch live specimens directly from the Stock Manager
+    fetch("/api/inventory")
       .then((res) => res.json())
       .then((data) => {
-        if (data && Array.isArray(data.products) && data.products.length > 0) {
-          setProducts(data.products);
+        if (data && Array.isArray(data.items) && data.items.length > 0) {
+          setProducts(data.items.map((item: InventoryItem) => convertInventoryToProduct(item)));
+        } else {
+          // Fallback to /api/products
+          fetch("/api/products")
+            .then((r) => r.json())
+            .then((pData) => {
+              if (pData && Array.isArray(pData.products) && pData.products.length > 0) {
+                setProducts(pData.products);
+              }
+            })
+            .catch(() => {});
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        fetch("/api/products")
+          .then((r) => r.json())
+          .then((pData) => {
+            if (pData && Array.isArray(pData.products) && pData.products.length > 0) {
+              setProducts(pData.products);
+            }
+          })
+          .catch(() => {});
+      });
   }, []);
 
   const categories = [
@@ -147,7 +167,7 @@ export default function PlantsPage() {
                     {prod.stockLabel}
                   </div>
                   <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[9px] font-mono text-green-300 border border-white/10">
-                    Alandi Staged
+                    {prod.stockQuantity > 0 ? `${prod.stockQuantity} in Stock` : "Alandi Staged"}
                   </div>
                 </div>
 
@@ -166,6 +186,11 @@ export default function PlantsPage() {
                     <Sun className="w-3 h-3 text-amber-500" />
                     {prod.lightRequirement}
                   </span>
+                  {prod.variants && prod.variants[0] && prod.variants[0].label && (
+                    <span className="text-[10px] text-ink-400 dark:text-white/40 truncate">
+                      • {prod.variants[0].label}
+                    </span>
+                  )}
                 </div>
               </div>
 

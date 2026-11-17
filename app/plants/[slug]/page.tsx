@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import PlantDetailClient from "./PlantDetailClient";
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   const products = productsRepo.getAll();
   return products.map((prod) => ({

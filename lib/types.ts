@@ -100,6 +100,48 @@ export interface Product {
   isFeatured?: boolean;
 }
 
+export function convertInventoryToProduct(item: InventoryItem): Product {
+  const slug = (item.name || "specimen")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  return {
+    id: item.linkedProductId || item.id,
+    slug: slug || item.id,
+    name: item.name,
+    botanicalName: item.botanicalName,
+    category: item.category,
+    lightRequirement: "Bright Indirect / Shade",
+    sizeCategory: "Specimen (6+ ft)",
+    price: item.price || 0,
+    stockLabel: item.status,
+    inStock: item.quantityInStock > 0,
+    stockQuantity: item.quantityInStock,
+    bulkThreshold: 20,
+    mainImage: item.image || "/images/hero-clean.webp",
+    images: item.image ? [item.image] : ["/images/hero-clean.webp"],
+    description:
+      item.description ||
+      `Premium acclimatized ${item.name} (${item.botanicalName}) staged at Alandi logistics depot. Size: ${item.sizeOrHeight}, Container: ${item.potSize}.`,
+    careGuide: {
+      light: item.lightRequirement || "Bright Indirect",
+      water: "Moderate watering with good drainage.",
+      height: item.sizeOrHeight || "Standard",
+      soil: "Engineered rich organic soil mix",
+    },
+    variants: [
+      {
+        id: `var-${item.id}`,
+        label: `${item.sizeOrHeight} (${item.potSize})`,
+        price: item.price || 0,
+        inventoryQty: item.quantityInStock,
+      },
+    ],
+    deliveryNote: "Staged and conditioned at Alandi logistics depot.",
+  };
+}
+
 export interface ClientPartner {
   id: string;
   slug: string;

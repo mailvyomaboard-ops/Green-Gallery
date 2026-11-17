@@ -6,7 +6,7 @@ import { CartItem, Product } from "./types";
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
-  addItem: (product: Product, variantId?: string, quantity?: number) => void;
+  addItem: (product: Product | any, variantId?: string, quantity?: number) => void;
   updateQuantity: (productId: string, variantId: string | undefined, delta: number) => void;
   removeFromCart: (productId: string, variantId?: string) => void;
   clearCart: () => void;
@@ -61,16 +61,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const addItem = (product: Product, variantId?: string, quantity: number = 1) => {
-    const variant = product.variants?.find((v) => v.id === variantId);
+  const addItem = (product: Product | any, variantId?: string, quantity: number = 1) => {
+    const variant = product.variants?.find((v: any) => v.id === variantId);
     addToCart({
       productId: product.id,
       variantId,
       productName: product.name,
-      variantLabel: variant?.label,
-      unitPrice: variant ? variant.price : product.price,
+      variantLabel: variant?.label || product.sizeOrHeight,
+      unitPrice: variant ? variant.price : (product.price || 0),
       quantity,
-      image: product.mainImage,
+      image: product.mainImage || product.image || "/images/hero-clean.webp",
     });
   };
 

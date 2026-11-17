@@ -23,11 +23,12 @@ import {
 import { siteConfig } from "@/config/site";
 import { initialProducts, clientsData } from "@/lib/data";
 import { Hero } from "@/components/Hero";
-import { ClientPartner, SiteContent, defaultSiteContent } from "@/lib/types";
+import { ClientPartner, SiteContent, defaultSiteContent, Product, InventoryItem, convertInventoryToProduct } from "@/lib/types";
 
 export default function HomePage() {
   const [clients, setClients] = useState<ClientPartner[]>(clientsData);
   const [siteContent, setSiteContent] = useState<SiteContent>(defaultSiteContent);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>(initialProducts.slice(0, 3));
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
@@ -48,9 +49,16 @@ export default function HomePage() {
         }
       })
       .catch(() => {});
-  }, []);
 
-  const featuredProducts = initialProducts.slice(0, 3);
+    fetch("/api/inventory")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.items) && data.items.length > 0) {
+          setFeaturedProducts(data.items.slice(0, 3).map((item: InventoryItem) => convertInventoryToProduct(item)));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const truthfulFaqs = [
     {
