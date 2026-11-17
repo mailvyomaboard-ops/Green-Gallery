@@ -41,12 +41,12 @@ export function Footer() {
           {/* Column 1: Brand & Operational Summary */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-400/30 bg-black shadow-md shrink-0">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-400/40 bg-[#08150E] shadow-md shrink-0 p-0.5">
                 <Image
-                  src="/images/logo.jpg"
+                  src="/images/emblem.jpg"
                   alt="GreenGallery Emblem"
                   fill
-                  className="object-cover scale-150 -translate-y-0.5"
+                  className="object-cover rounded-full"
                   sizes="48px"
                 />
               </div>

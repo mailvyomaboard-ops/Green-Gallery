@@ -57,12 +57,29 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
 
         {/* Central Giant Punchy Headline */}
         <div className="relative z-10 my-auto py-8 sm:py-12 max-w-4xl text-center sm:text-left flex flex-col items-center sm:items-start mx-auto sm:mx-0">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-green-400 mb-3 flex items-center justify-center sm:justify-start gap-2">
-            <Sparkles className="w-4 h-4 text-green-400" />
-            {content.heroBadge && !content.heroBadge.toLowerCase().includes("pune")
-              ? content.heroBadge
-              : "Landscape Design & Botanical Execution"}
-          </span>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-amber-400/50 bg-[#08150E] shadow-2xl p-0.5 shrink-0">
+              <Image
+                src="/images/emblem.jpg"
+                alt="GreenGallery Insignia"
+                fill
+                className="object-cover rounded-full"
+                priority
+                sizes="56px"
+              />
+            </div>
+            <div className="text-left">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-green-400 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-green-400" />
+                {content.heroBadge && !content.heroBadge.toLowerCase().includes("pune")
+                  ? content.heroBadge
+                  : "Landscape Design & Botanical Execution"}
+              </span>
+              <span className="text-[11px] text-amber-200/90 font-serif italic tracking-wide block">
+                Cultivating Natural Elegance
+              </span>
+            </div>
+          </div>
 
           <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05] sm:leading-[0.95] mb-2 drop-shadow-md">
             {content.heroHeadline && content.heroHeadline.toLowerCase() !== "growth"

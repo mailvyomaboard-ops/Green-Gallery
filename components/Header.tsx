@@ -21,10 +21,10 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none shrink-0">
           <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-amber-500/40 dark:border-amber-400/50 bg-[#08150E] shadow-sm shrink-0 group-hover:scale-105 transition-all p-0.5">
             <Image
-              src="/images/logo.jpg"
-              alt="GreenGallery Logo"
+              src="/images/emblem.jpg"
+              alt="GreenGallery Emblem"
               fill
-              className="object-contain"
+              className="object-cover rounded-full"
               priority
               sizes="44px"
             />

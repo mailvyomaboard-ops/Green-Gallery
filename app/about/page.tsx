@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { useSiteContent } from "@/lib/useSiteContent";
@@ -90,6 +91,22 @@ export default function AboutPage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
             
             <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-amber-400/40 bg-[#08150E] p-0.5 shadow-md shrink-0">
+                  <Image
+                    src="/images/emblem.jpg"
+                    alt="GreenGallery Emblem"
+                    fill
+                    className="object-cover rounded-full"
+                    sizes="48px"
+                  />
+                </div>
+                <div>
+                  <div className="font-display font-bold text-white text-base leading-tight">GreenGallery</div>
+                  <div className="text-[10px] uppercase tracking-widest text-amber-300 font-medium">Cultivating Natural Elegance</div>
+                </div>
+              </div>
+
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-bold uppercase tracking-wider text-green-300 mb-4">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 <span>Operational Backbone</span>

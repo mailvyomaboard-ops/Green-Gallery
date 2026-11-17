@@ -27,6 +27,16 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
+  icons: {
+    icon: [
+      { url: "/images/emblem.jpg", type: "image/jpeg" },
+      { url: "/images/brand/emblem.jpg", type: "image/jpeg" },
+    ],
+    apple: [
+      { url: "/images/brand/emblem.jpg" },
+    ],
+    shortcut: ["/images/emblem.jpg"],
+  },
   title: {
     default: siteConfig.seo.defaultTitle,
     template: siteConfig.seo.titleTemplate,

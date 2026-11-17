@@ -928,13 +928,13 @@ export default function AdminPage() {
       <div className="w-full min-h-screen bg-cream-50 flex items-center justify-center p-4">
         <div className="w-full max-w-sm bg-white border border-[#283618]/15 rounded-brand p-8 shadow-sm">
           <div className="text-center mb-6">
-            <div className="relative w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-500/40 bg-[#08150E] p-1 shadow-xs">
+            <div className="relative w-20 h-20 mx-auto mb-3 rounded-2xl overflow-hidden border border-amber-500/40 bg-[#08150E] p-1 shadow-md">
               <Image
-                src="/images/logo.jpg"
+                src="/images/emblem.jpg"
                 alt="GreenGallery Emblem"
                 fill
-                className="object-contain"
-                sizes="64px"
+                className="object-cover rounded-xl"
+                sizes="80px"
               />
             </div>
             <h1 className="text-2xl font-serif font-bold text-green-950 tracking-tight">
@@ -1092,10 +1092,10 @@ export default function AdminPage() {
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8 rounded-full overflow-hidden border border-amber-500/40 bg-[#08150E] p-0.5 shadow-xs shrink-0">
               <Image
-                src="/images/logo.jpg"
+                src="/images/emblem.jpg"
                 alt="GreenGallery Emblem"
                 fill
-                className="object-contain"
+                className="object-cover rounded-full"
                 sizes="32px"
               />
             </div>
