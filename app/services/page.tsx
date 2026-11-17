@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { siteConfig, ServiceItem } from "@/config/site";
 import { useSiteContent } from "@/lib/useSiteContent";
@@ -8,14 +9,26 @@ import { ArrowRight, CheckCircle2, Sprout, ArrowUpRight } from "lucide-react";
 
 export default function ServicesPage() {
   const { content } = useSiteContent();
+  const [services, setServices] = useState<ServiceItem[]>(siteConfig.services);
   const [activeCategory, setActiveCategory] = useState<string>("All");
+
+  useEffect(() => {
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.services) && data.services.length > 0) {
+          setServices(data.services);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const categories = ["All", "Commercial", "Residential", "Specialized", "Maintenance"];
 
   const filteredServices =
     activeCategory === "All"
-      ? siteConfig.services
-      : siteConfig.services.filter((s) => s.category === activeCategory);
+      ? services
+      : services.filter((s) => s.category === activeCategory);
 
   return (
     <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 py-10 space-y-12">
@@ -57,18 +70,27 @@ export default function ServicesPage() {
             className="bg-white dark:bg-[#080A09] rounded-3xl p-6 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between"
           >
             <div>
-              <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-5 flex flex-col justify-between border border-green-800/30">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full bg-white/10 dark:bg-black/50 backdrop-blur-sm text-[10px] font-bold text-green-300 uppercase tracking-wider border border-white/15">
+              <div className="relative h-48 sm:h-52 w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-5 flex flex-col justify-between border border-green-800/30">
+                {service.image && (
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-60"
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                )}
+                <div className="relative z-10 flex items-center justify-between">
+                  <span className="px-3 py-1 rounded-full bg-white/20 dark:bg-black/60 backdrop-blur-md text-[10px] font-bold text-green-300 uppercase tracking-wider border border-white/20">
                     {service.category}
                   </span>
-                  <span className="text-[10px] font-mono text-green-400 bg-green-950/80 px-2 py-0.5 rounded border border-green-500/30">
+                  <span className="text-[10px] font-mono text-green-300 bg-green-950/90 px-2 py-0.5 rounded border border-green-500/40">
                     Pune Market Scope
                   </span>
                 </div>
-                <div>
-                  <span className="text-[10px] font-mono text-green-400/80 uppercase tracking-wider block">Target Property</span>
-                  <span className="text-xs font-semibold text-white/90 truncate block">{service.idealFor.split(',')[0]}</span>
+                <div className="relative z-10 bg-black/40 backdrop-blur-xs p-2 rounded-xl border border-white/10">
+                  <span className="text-[10px] font-mono text-green-400 uppercase tracking-wider block">Target Property</span>
+                  <span className="text-xs font-semibold text-white truncate block">{service.idealFor.split(',')[0]}</span>
                 </div>
               </div>
 

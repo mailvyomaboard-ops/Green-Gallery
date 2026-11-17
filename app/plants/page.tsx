@@ -121,87 +121,78 @@ export default function PlantsPage() {
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filtered.map((prod) => (
-          <Link
-            key={prod.id}
-            href={`/plants/${prod.slug}`}
-            className="bg-white dark:bg-[#080A09] rounded-3xl p-4 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group"
-          >
-            <div>
-              <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-3 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] p-4 flex flex-col justify-between text-white border border-green-800/30">
-                {prod.mainImage ? (
-                  <>
-                    <Image
-                      src={prod.mainImage}
-                      alt={prod.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 280px"
-                    />
-                    <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm text-[9px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm">
-                      {prod.stockLabel}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-green-400">
-                        <Sprout className="w-3.5 h-3.5" />
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/15 text-[9px] font-mono text-green-300">
-                        {prod.stockLabel}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-mono uppercase tracking-wider text-green-400 block">Alandi Staged</span>
-                      <span className="text-xs font-bold text-white truncate block">{prod.botanicalName}</span>
-                      <span className="text-[10px] text-white/60 font-light block mt-0.5">{prod.careGuide.height} · {prod.sizeCategory}</span>
-                    </div>
-                  </>
-                )}
-              </div>
+        {filtered.map((prod) => {
+          const plantImage =
+            prod.mainImage ||
+            (prod.images && prod.images.length > 0 && prod.images[0]) ||
+            "/images/frames/ezgif-frame-001.jpg";
 
-              <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 block mb-0.5">
-                {prod.category}
-              </span>
-              <h3 className="font-display text-base font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-1">
-                {prod.name}
-              </h3>
-              <p className="text-[11px] text-ink-500 dark:text-white/50 italic line-clamp-1 mb-2">
-                {prod.botanicalName}
-              </p>
-
-              <div className="flex items-center gap-2 text-[11px] text-ink-500 dark:text-white/60 pt-1">
-                <span className="flex items-center gap-1">
-                  <Sun className="w-3 h-3 text-amber-500" />
-                  {prod.lightRequirement}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-3 mt-3 border-t border-cream-200 dark:border-white/10 flex items-center justify-between gap-2">
+          return (
+            <Link
+              key={prod.id}
+              href={`/plants/${prod.slug}`}
+              className="bg-white dark:bg-[#080A09] rounded-3xl p-4 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group overflow-hidden"
+            >
               <div>
-                <span className="text-[10px] text-ink-500 dark:text-white/50 block">Ref. Rate</span>
-                <span className="font-display font-extrabold text-sm text-green-950 dark:text-white">
-                  ₹{prod.price.toLocaleString("en-IN")}
+                {/* 50% Card Height Dedicated Image Showcase Bay */}
+                <div className="relative w-full h-56 sm:h-60 rounded-2xl overflow-hidden mb-3 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] border border-green-800/30">
+                  <Image
+                    src={plantImage}
+                    alt={prod.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 280px"
+                  />
+                  <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-white/95 dark:bg-black/90 backdrop-blur-md text-[9px] font-bold text-green-950 dark:text-green-300 uppercase tracking-wider shadow-sm border border-white/20">
+                    {prod.stockLabel}
+                  </div>
+                  <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[9px] font-mono text-green-300 border border-white/10">
+                    Alandi Staged
+                  </div>
+                </div>
+
+                <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 block mb-0.5">
+                  {prod.category}
                 </span>
+                <h3 className="font-display text-base font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-1">
+                  {prod.name}
+                </h3>
+                <p className="text-[11px] text-ink-500 dark:text-white/50 italic line-clamp-1 mb-2">
+                  {prod.botanicalName}
+                </p>
+
+                <div className="flex items-center gap-2 text-[11px] text-ink-500 dark:text-white/60 pt-1">
+                  <span className="flex items-center gap-1">
+                    <Sun className="w-3 h-3 text-amber-500" />
+                    {prod.lightRequirement}
+                  </span>
+                </div>
               </div>
 
-              <button
-                onClick={(e) => handleAddToEnquiry(e, prod)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                  enquiryAdded === prod.id
-                    ? "bg-green-600 text-white"
-                    : "bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-300 hover:bg-green-950 hover:text-white"
-                }`}
-                title="Add to quotation enquiry list"
-              >
-                <ShoppingBag className="w-3 h-3" />
-                <span>{enquiryAdded === prod.id ? "Added!" : "Add to List"}</span>
-              </button>
-            </div>
-          </Link>
-        ))}
+              <div className="pt-3 mt-3 border-t border-cream-200 dark:border-white/10 flex items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] text-ink-500 dark:text-white/50 block">Ref. Rate</span>
+                  <span className="font-display font-extrabold text-sm text-green-950 dark:text-white">
+                    ₹{prod.price ? prod.price.toLocaleString("en-IN") : "Enquire"}
+                  </span>
+                </div>
+
+                <button
+                  onClick={(e) => handleAddToEnquiry(e, prod)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                    enquiryAdded === prod.id
+                      ? "bg-green-600 text-white"
+                      : "bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-300 hover:bg-green-950 hover:text-white"
+                  }`}
+                  title="Add to quotation enquiry list"
+                >
+                  <ShoppingBag className="w-3 h-3" />
+                  <span>{enquiryAdded === prod.id ? "Added!" : "Add to List"}</span>
+                </button>
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (

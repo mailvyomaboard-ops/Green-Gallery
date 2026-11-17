@@ -41,6 +41,8 @@ import {
   LeadSubmission,
   InventoryItem,
   ClientPartner,
+  ServiceItem,
+  MaintenancePackageItem,
   SiteContent,
   AnalyticsSummary,
   AnalyticsEvent,
@@ -53,7 +55,7 @@ export default function AdminPage() {
   const [passError, setPassError] = useState("");
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "clients" | "cms">("analytics");
+  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "cms">("analytics");
 
   // CMS Sub-page tab state
   const [cmsPageTab, setCmsPageTab] = useState<"home" | "about" | "services" | "projects" | "plants" | "maintenance" | "contact">("home");
@@ -106,7 +108,7 @@ export default function AdminPage() {
     description: "",
   });
 
-  // Builder Clients state
+  // Builder Clients & Projects state
   const [clients, setClients] = useState<ClientPartner[]>([]);
   const [showAddClientModal, setShowAddClientModal] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientPartner | null>(null);
@@ -118,6 +120,36 @@ export default function AdminPage() {
     description: "",
   });
 
+  // Services state
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [showAddServiceModal, setShowAddServiceModal] = useState(false);
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
+  const [serviceForm, setServiceForm] = useState({
+    title: "",
+    category: "Commercial" as ServiceItem["category"],
+    shortDescription: "",
+    fullDescription: "",
+    idealFor: "Builders, developers & societies across Pune & PCMC",
+    features: "Architectural CAD coordination, Engineered soil matrices, Staging from Alandi depot",
+    scope: "Topographical assessment, Soil profiling, Specimen planting, Drip irrigation",
+    image: "/images/frames/ezgif-frame-001.jpg",
+  });
+
+  // Maintenance packages state
+  const [maintenancePackages, setMaintenancePackages] = useState<MaintenancePackageItem[]>([]);
+  const [showAddPkgModal, setShowAddPkgModal] = useState(false);
+  const [editingPkg, setEditingPkg] = useState<MaintenancePackageItem | null>(null);
+  const [pkgForm, setPkgForm] = useState({
+    name: "",
+    type: "Residential" as MaintenancePackageItem["type"],
+    target: "Private Villas, Farmhouses & Penthouses in Pune, Mulshi, Lonavala",
+    frequency: "Weekly or Bi-Weekly Visits",
+    highlights: "Dedicated gardener visits, Lawn mowing, Organic vermicompost drenches, Plant health audits",
+    ctaText: "Enquire for Villa",
+    priceNote: "Custom proposal based on lawn square footage",
+    image: "/images/hero-clean.webp",
+  });
+
   // Multi-Page CMS state
   const [siteContent, setSiteContent] = useState<SiteContent>(defaultSiteContent);
   const [cmsSaving, setCmsSaving] = useState(false);
@@ -127,6 +159,10 @@ export default function AdminPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const plantImageFileInputRef = useRef<HTMLInputElement>(null);
   const editPlantImageFileInputRef = useRef<HTMLInputElement>(null);
+  const clientImageFileInputRef = useRef<HTMLInputElement>(null);
+  const serviceImageFileInputRef = useRef<HTMLInputElement>(null);
+  const pkgImageFileInputRef = useRef<HTMLInputElement>(null);
+  const heroImageFileInputRef = useRef<HTMLInputElement>(null);
 
   // Check session cookie on mount
   useEffect(() => {
@@ -173,10 +209,12 @@ export default function AdminPage() {
   const loadAllData = async () => {
     setIsRefreshing(true);
     try {
-      const [leadsRes, invRes, clientsRes, cmsRes, analyticsRes] = await Promise.all([
+      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, cmsRes, analyticsRes] = await Promise.all([
         fetch("/api/leads").then((r) => r.json()).catch(() => ({ leads: [] })),
         fetch("/api/inventory").then((r) => r.json()).catch(() => ({ items: [] })),
         fetch("/api/clients").then((r) => r.json()).catch(() => ({ clients: [] })),
+        fetch("/api/services").then((r) => r.json()).catch(() => ({ services: [] })),
+        fetch("/api/maintenance").then((r) => r.json()).catch(() => ({ packages: [] })),
         fetch("/api/cms").then((r) => r.json()).catch(() => ({ content: defaultSiteContent })),
         fetch("/api/analytics").then((r) => r.json()).catch(() => ({ summary: null, recent: [] })),
       ]);
@@ -184,6 +222,8 @@ export default function AdminPage() {
       if (leadsRes.leads) setLeads(leadsRes.leads);
       if (invRes.items) setInventory(invRes.items);
       if (clientsRes.clients) setClients(clientsRes.clients);
+      if (servicesRes.services) setServices(servicesRes.services);
+      if (maintenanceRes.packages) setMaintenancePackages(maintenanceRes.packages);
       if (cmsRes.content) setSiteContent({ ...defaultSiteContent, ...cmsRes.content });
       if (analyticsRes.summary) setAnalytics(analyticsRes.summary);
       if (analyticsRes.recent) setRecentEvents(analyticsRes.recent);
@@ -532,6 +572,149 @@ export default function AdminPage() {
   };
 
   // ---------------------------------------------------------------------------
+  // SERVICES ACTIONS
+  // ---------------------------------------------------------------------------
+  const handleSaveService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!serviceForm.title) return;
+
+    const payload = {
+      ...serviceForm,
+      features: typeof serviceForm.features === "string" ? serviceForm.features.split(",").map((s) => s.trim()).filter(Boolean) : serviceForm.features,
+      scope: typeof serviceForm.scope === "string" ? serviceForm.scope.split(",").map((s) => s.trim()).filter(Boolean) : serviceForm.scope,
+    };
+
+    try {
+      if (editingService) {
+        const res = await fetch("/api/services", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingService.id, ...payload }),
+        });
+        const data = await res.json();
+        if (data.success && data.service) {
+          setServices((prev) => prev.map((s) => (s.id === editingService.id ? data.service : s)));
+          setEditingService(null);
+          setShowAddServiceModal(false);
+        } else {
+          alert(data.error || "Failed to update service");
+        }
+      } else {
+        const res = await fetch("/api/services", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success && data.service) {
+          setServices((prev) => [data.service, ...prev]);
+          setShowAddServiceModal(false);
+          setServiceForm({
+            title: "",
+            category: "Commercial",
+            shortDescription: "",
+            fullDescription: "",
+            idealFor: "Properties in Pune & PCMC",
+            features: "Architectural CAD coordination, Engineered soil matrices, Staging from Alandi depot",
+            scope: "Topographical assessment, Soil profiling, Specimen planting, Drip irrigation",
+            image: "/images/frames/ezgif-frame-001.jpg",
+          });
+        } else {
+          alert(data.error || "Failed to create service");
+        }
+      }
+    } catch (e: any) {
+      alert("Error saving service: " + e.message);
+    }
+  };
+
+  const handleDeleteService = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete service "${title}"?`)) return;
+    try {
+      const res = await fetch(`/api/services?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        setServices((prev) => prev.filter((s) => s.id !== id));
+      } else {
+        alert(data.error || "Failed to delete service");
+      }
+    } catch (e: any) {
+      alert("Error deleting service: " + e.message);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // MAINTENANCE ACTIONS
+  // ---------------------------------------------------------------------------
+  const handleSaveMaintenancePkg = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pkgForm.name) return;
+
+    const payload = {
+      ...pkgForm,
+      highlights: typeof pkgForm.highlights === "string" ? pkgForm.highlights.split(",").map((s) => s.trim()).filter(Boolean) : pkgForm.highlights,
+    };
+
+    try {
+      if (editingPkg) {
+        const res = await fetch("/api/maintenance", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingPkg.id, ...payload }),
+        });
+        const data = await res.json();
+        if (data.success && data.package) {
+          setMaintenancePackages((prev) => prev.map((p) => (p.id === editingPkg.id ? data.package : p)));
+          setEditingPkg(null);
+          setShowAddPkgModal(false);
+        } else {
+          alert(data.error || "Failed to update package");
+        }
+      } else {
+        const res = await fetch("/api/maintenance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success && data.package) {
+          setMaintenancePackages((prev) => [...prev, data.package]);
+          setShowAddPkgModal(false);
+          setPkgForm({
+            name: "",
+            type: "Residential",
+            target: "Private residences in Pune",
+            frequency: "Weekly Visits",
+            highlights: "Gardener visits, Lawn mowing, Organic vermicompost, Plant health audits",
+            ctaText: "Enquire Now",
+            priceNote: "Custom pricing",
+            image: "/images/hero-clean.webp",
+          });
+        } else {
+          alert(data.error || "Failed to create package");
+        }
+      }
+    } catch (e: any) {
+      alert("Error saving maintenance package: " + e.message);
+    }
+  };
+
+  const handleDeleteMaintenancePkg = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete maintenance package "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/maintenance?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        setMaintenancePackages((prev) => prev.filter((p) => p.id !== id));
+      } else {
+        alert(data.error || "Failed to delete maintenance package");
+      }
+    } catch (e: any) {
+      alert("Error deleting package: " + e.message);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
   // MULTI-PAGE CMS ACTIONS
   // ---------------------------------------------------------------------------
   const handleSaveCms = async (e: React.FormEvent) => {
@@ -679,10 +862,10 @@ export default function AdminPage() {
           </div>
 
           {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1 p-1 bg-cream-50/80 rounded-brand border border-[#283618]/10">
+          <nav className="hidden xl:flex items-center gap-1 p-1 bg-cream-50/80 rounded-brand border border-[#283618]/10">
             <button
               onClick={() => setActiveTab("analytics")}
-              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "analytics"
                   ? "bg-green-900 text-cream-50 shadow-sm"
                   : "text-ink-500 hover:text-green-900"
@@ -694,7 +877,7 @@ export default function AdminPage() {
 
             <button
               onClick={() => setActiveTab("leads")}
-              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "leads"
                   ? "bg-green-900 text-cream-50 shadow-sm"
                   : "text-ink-500 hover:text-green-900"
@@ -711,7 +894,7 @@ export default function AdminPage() {
 
             <button
               onClick={() => setActiveTab("inventory")}
-              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "inventory"
                   ? "bg-green-900 text-cream-50 shadow-sm"
                   : "text-ink-500 hover:text-green-900"
@@ -725,30 +908,60 @@ export default function AdminPage() {
             </button>
 
             <button
-              onClick={() => setActiveTab("clients")}
-              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-2 ${
-                activeTab === "clients"
+              onClick={() => setActiveTab("projects")}
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "projects"
                   ? "bg-green-900 text-cream-50 shadow-sm"
                   : "text-ink-500 hover:text-green-900"
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
-              <span>Clients</span>
+              <span>Projects &amp; Clients</span>
               <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/10 text-ink-900">
                 {clients.length}
               </span>
             </button>
 
             <button
+              onClick={() => setActiveTab("services")}
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "services"
+                  ? "bg-green-900 text-cream-50 shadow-sm"
+                  : "text-ink-500 hover:text-green-900"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Services</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/10 text-ink-900">
+                {services.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("maintenance")}
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "maintenance"
+                  ? "bg-green-900 text-cream-50 shadow-sm"
+                  : "text-ink-500 hover:text-green-900"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span>Maintenance AMC</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/10 text-ink-900">
+                {maintenancePackages.length}
+              </span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("cms")}
-              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-2 ${
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "cms"
                   ? "bg-green-900 text-cream-50 shadow-sm"
                   : "text-ink-500 hover:text-green-900"
               }`}
             >
               <Layout className="w-3.5 h-3.5" />
-              <span>Site CMS (All Pages)</span>
+              <span>CMS</span>
             </button>
           </nav>
 
@@ -772,8 +985,8 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Mobile Navigation Tab Strip (Sticky Horizontal Scroll) */}
-        <div className="md:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-cream-100/90 border-t border-[#283618]/10 no-scrollbar">
+        {/* Mobile / Compact Navigation Tab Strip (Horizontal Scroll) */}
+        <div className="xl:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-cream-100/90 border-t border-[#283618]/10 no-scrollbar">
           <button
             onClick={() => setActiveTab("analytics")}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
@@ -794,7 +1007,7 @@ export default function AdminPage() {
             }`}
           >
             <Inbox className="w-3.5 h-3.5" />
-            <span>Inquiries ({leads.length})</span>
+            <span>Leads ({leads.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("inventory")}
@@ -808,15 +1021,37 @@ export default function AdminPage() {
             <span>Stock ({inventory.length})</span>
           </button>
           <button
-            onClick={() => setActiveTab("clients")}
+            onClick={() => setActiveTab("projects")}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-              activeTab === "clients"
+              activeTab === "projects"
                 ? "bg-green-900 text-white shadow-xs"
                 : "bg-white text-ink-700 border border-[#283618]/10"
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
-            <span>Clients ({clients.length})</span>
+            <span>Projects ({clients.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("services")}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              activeTab === "services"
+                ? "bg-green-900 text-white shadow-xs"
+                : "bg-white text-ink-700 border border-[#283618]/10"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Services ({services.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("maintenance")}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              activeTab === "maintenance"
+                ? "bg-green-900 text-white shadow-xs"
+                : "bg-white text-ink-700 border border-[#283618]/10"
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>AMC ({maintenancePackages.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("cms")}
@@ -827,7 +1062,7 @@ export default function AdminPage() {
             }`}
           >
             <Layout className="w-3.5 h-3.5" />
-            <span>Site CMS</span>
+            <span>CMS</span>
           </button>
         </div>
       </header>
@@ -1255,46 +1490,33 @@ export default function AdminPage() {
                   className="bg-white border border-[#283618]/10 rounded-brand p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:border-green-900/30 transition-colors"
                 >
                   <div>
-                    {/* Top image thumbnail & meta */}
-                    <div className="flex gap-3 mb-3">
-                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-cream-100 border border-[#283618]/10 shrink-0 shadow-xs">
-                        <Image
-                          src={item.image || "/images/hero-clean.webp"}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                          sizes="96px"
-                        />
+                    {/* Top 50% Dedicated Image Showcase Bay */}
+                    <div className="relative w-full h-48 sm:h-52 rounded-2xl overflow-hidden mb-3.5 bg-cream-100 border border-[#283618]/10 shadow-xs">
+                      <Image
+                        src={item.image || "/images/frames/ezgif-frame-001.jpg"}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 360px"
+                      />
+                      <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono text-green-300 border border-white/20">
+                        {item.status}
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-cream-50 text-[#283618] border border-[#283618]/10 truncate max-w-[110px]">
-                            {item.category}
-                          </span>
-                          <span
-                            className={`text-[9px] font-mono px-1.5 py-0.5 rounded border whitespace-nowrap ${
-                              item.quantityInStock <= 0
-                                ? "bg-red-50 text-red-900 border-red-200"
-                                : item.quantityInStock <= 10
-                                ? "bg-amber-50 text-amber-900 border-amber-200"
-                                : "bg-green-50 text-green-900 border-green-200"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </div>
-
-                        <h3 className="text-base font-serif font-bold text-green-950 truncate">
-                          {item.name}
-                        </h3>
-                        <p className="text-xs text-ink-500 italic font-serif truncate">
-                          {item.botanicalName}
-                        </p>
-
-                        <div className="mt-1 text-xs font-bold text-green-800">
-                          {item.price ? `₹${item.price.toLocaleString()}` : item.priceBand}
-                        </div>
+                      <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[10px] font-mono font-bold text-green-950 border border-black/10 shadow-xs">
+                        {item.price ? `₹${item.price.toLocaleString("en-IN")}` : item.priceBand}
                       </div>
+                    </div>
+
+                    <div className="mb-2">
+                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-cream-50 text-[#283618] border border-[#283618]/10 block w-fit mb-1">
+                        {item.category}
+                      </span>
+                      <h3 className="text-base font-serif font-bold text-green-950 truncate">
+                        {item.name}
+                      </h3>
+                      <p className="text-xs text-ink-500 italic font-serif truncate">
+                        {item.botanicalName}
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-xs my-2.5 py-2 px-3 bg-cream-50/60 rounded border border-[#283618]/5">
@@ -1370,17 +1592,17 @@ export default function AdminPage() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 4: CLIENT PARTNERS MANAGER                                    */}
+        {/* TAB 4: PROJECTS & DEVELOPER COLLABORATIONS MANAGER                */}
         {/* ================================================================= */}
-        {activeTab === "clients" && (
+        {(activeTab === "projects" || activeTab === "clients") && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#283618]/10">
               <div>
                 <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
-                  Developer Collaborations
+                  Developer Collaborations &amp; Portfolio
                 </span>
                 <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
-                  Builder Partners ({clients.length})
+                  Projects &amp; Client Cards ({clients.length})
                 </h2>
               </div>
               <button
@@ -1398,7 +1620,7 @@ export default function AdminPage() {
                 className="px-3.5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-medium rounded-brand shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Partner</span>
+                <span>Add Project / Client Card</span>
               </button>
             </div>
 
@@ -1409,32 +1631,32 @@ export default function AdminPage() {
                   className="bg-white border border-[#283618]/10 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:border-green-900/30 transition-colors"
                 >
                   <div>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white border border-[#283618]/10 flex items-center justify-center p-2.5 flex-shrink-0 shadow-xs">
-                        <Image
-                          src={c.logo}
-                          alt={c.name}
-                          fill
-                          className="object-contain p-1.5"
-                          sizes="80px"
-                        />
+                    {/* Top 50% Image Showcase Bay */}
+                    <div className="relative w-full h-44 sm:h-48 rounded-2xl bg-white border border-[#283618]/10 flex items-center justify-center p-4 mb-4 shadow-xs overflow-hidden">
+                      <Image
+                        src={c.logo}
+                        alt={c.name}
+                        fill
+                        className="object-contain p-2"
+                        sizes="(max-width: 768px) 100vw, 360px"
+                      />
+                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-green-950/80 backdrop-blur-md text-[9px] font-mono font-bold text-green-300 uppercase tracking-wider border border-white/10">
+                        Project #{idx + 1}
                       </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] font-mono text-green-800 bg-green-50 px-1.5 py-0.2 rounded font-bold">
-                            #{idx + 1}
-                          </span>
-                          <h3 className="text-base font-serif font-semibold text-green-900 truncate">
-                            {c.name}
-                          </h3>
-                        </div>
-                        {c.tagline && (
-                          <p className="text-xs text-ink-500 italic truncate">{c.tagline}</p>
-                        )}
-                        <span className="inline-block mt-1 text-[10px] font-mono text-[#283618] bg-cream-50 border border-[#283618]/10 px-2 py-0.2 rounded">
+                    </div>
+
+                    <div className="min-w-0 mb-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-base font-serif font-semibold text-green-900 truncate">
+                          {c.name}
+                        </h3>
+                        <span className="text-[10px] font-mono text-[#283618] bg-cream-50 border border-[#283618]/10 px-2 py-0.5 rounded shrink-0">
                           {c.city}
                         </span>
                       </div>
+                      {c.tagline && (
+                        <p className="text-xs text-ink-500 italic truncate mt-0.5">{c.tagline}</p>
+                      )}
                     </div>
 
                     <p className="text-xs text-ink-900/80 leading-relaxed line-clamp-3 mb-4 font-light">
@@ -1455,13 +1677,225 @@ export default function AdminPage() {
                         });
                         setShowAddClientModal(true);
                       }}
-                      className="px-2.5 py-1 border border-[#283618]/15 hover:bg-cream-200/50 text-green-900 rounded cursor-pointer transition-colors"
+                      className="px-3 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer transition-colors"
                     >
-                      Edit
+                      Edit Card
                     </button>
                     <button
                       onClick={() => handleDeleteClient(c.id, c.name)}
-                      className="text-red-700 hover:text-red-900 cursor-pointer"
+                      className="text-red-700 hover:text-red-900 cursor-pointer font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* TAB 5: SERVICES MANAGER                                           */}
+        {/* ================================================================= */}
+        {activeTab === "services" && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#283618]/10">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
+                  Landscaping Offerings
+                </span>
+                <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
+                  Service Cards ({services.length})
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setServiceForm({
+                    title: "",
+                    category: "Commercial",
+                    shortDescription: "",
+                    fullDescription: "",
+                    idealFor: "Builders & developers in Pune",
+                    features: "Architectural CAD integration, Soil matrices, Turnkey staging",
+                    scope: "Topographical assessment, Planting, Drip irrigation",
+                    image: "/images/frames/ezgif-frame-001.jpg",
+                  });
+                  setEditingService(null);
+                  setShowAddServiceModal(true);
+                }}
+                className="px-3.5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-medium rounded-brand shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Service Card</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((s) => (
+                <div
+                  key={s.id}
+                  className="bg-white border border-[#283618]/10 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:border-green-900/30 transition-colors"
+                >
+                  <div>
+                    {/* Top 50% Image Showcase Bay */}
+                    <div className="relative w-full h-44 sm:h-48 rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] border border-green-800/30 shadow-xs">
+                      {s.image && (
+                        <Image
+                          src={s.image}
+                          alt={s.title}
+                          fill
+                          className="object-cover opacity-75"
+                          sizes="(max-width: 768px) 100vw, 360px"
+                        />
+                      )}
+                      <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono text-green-300 border border-white/20">
+                        {s.category}
+                      </div>
+                    </div>
+
+                    <h3 className="text-base font-serif font-bold text-green-950 mb-1 truncate">
+                      {s.title}
+                    </h3>
+                    <p className="text-xs text-ink-700/80 line-clamp-2 mb-3 font-light">
+                      {s.shortDescription}
+                    </p>
+
+                    <div className="text-[10px] text-ink-500 font-mono bg-cream-50 p-2 rounded border border-[#283618]/5 mb-3 truncate">
+                      Target: {s.idealFor}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#283618]/10 flex items-center justify-between text-xs">
+                    <button
+                      onClick={() => {
+                        setEditingService(s);
+                        setServiceForm({
+                          title: s.title,
+                          category: s.category,
+                          shortDescription: s.shortDescription,
+                          fullDescription: s.fullDescription,
+                          idealFor: s.idealFor,
+                          features: Array.isArray(s.features) ? s.features.join(", ") : "",
+                          scope: Array.isArray(s.scope) ? s.scope.join(", ") : "",
+                          image: s.image || "/images/frames/ezgif-frame-001.jpg",
+                        });
+                        setShowAddServiceModal(true);
+                      }}
+                      className="px-3 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer transition-colors"
+                    >
+                      Edit Card
+                    </button>
+                    <button
+                      onClick={() => handleDeleteService(s.id, s.title)}
+                      className="text-red-700 hover:text-red-900 cursor-pointer font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* TAB 6: MAINTENANCE AMC PACKAGES MANAGER                           */}
+        {/* ================================================================= */}
+        {activeTab === "maintenance" && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#283618]/10">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
+                  Annual Maintenance Contracts
+                </span>
+                <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
+                  Maintenance Package Cards ({maintenancePackages.length})
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setPkgForm({
+                    name: "",
+                    type: "Residential",
+                    target: "Villas & Penthouses in Pune",
+                    frequency: "Weekly Visits",
+                    highlights: "Dedicated gardener, Mowing, Organic vermicompost, Plant health check",
+                    ctaText: "Enquire for Villa",
+                    priceNote: "Custom pricing based on lawn area",
+                    image: "/images/hero-clean.webp",
+                  });
+                  setEditingPkg(null);
+                  setShowAddPkgModal(true);
+                }}
+                className="px-3.5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-medium rounded-brand shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Maintenance Package</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {maintenancePackages.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className="bg-white border border-[#283618]/10 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:border-green-900/30 transition-colors"
+                >
+                  <div>
+                    {/* Top 50% Image Showcase Bay */}
+                    <div className="relative w-full h-44 sm:h-48 rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] border border-green-800/30 shadow-xs">
+                      {pkg.image && (
+                        <Image
+                          src={pkg.image}
+                          alt={pkg.name}
+                          fill
+                          className="object-cover opacity-75"
+                          sizes="(max-width: 768px) 100vw, 360px"
+                        />
+                      )}
+                      <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono text-green-300 border border-white/20">
+                        {pkg.type} AMC
+                      </div>
+                    </div>
+
+                    <h3 className="text-base font-serif font-bold text-green-950 mb-1 truncate">
+                      {pkg.name}
+                    </h3>
+                    <p className="text-xs text-ink-700/80 mb-2 font-light">
+                      {pkg.target}
+                    </p>
+                    <div className="text-[10px] font-mono text-ink-500 mb-2">
+                      Cadence: {pkg.frequency}
+                    </div>
+                    {pkg.priceNote && (
+                      <div className="text-[11px] font-bold text-green-900 bg-green-50 p-2 rounded border border-green-200 mb-3">
+                        {pkg.priceNote}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t border-[#283618]/10 flex items-center justify-between text-xs">
+                    <button
+                      onClick={() => {
+                        setEditingPkg(pkg);
+                        setPkgForm({
+                          name: pkg.name,
+                          type: pkg.type,
+                          target: pkg.target,
+                          frequency: pkg.frequency,
+                          highlights: Array.isArray(pkg.highlights) ? pkg.highlights.join(", ") : "",
+                          ctaText: pkg.ctaText,
+                          priceNote: pkg.priceNote || "",
+                          image: pkg.image || "/images/hero-clean.webp",
+                        });
+                        setShowAddPkgModal(true);
+                      }}
+                      className="px-3 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer transition-colors"
+                    >
+                      Edit Card
+                    </button>
+                    <button
+                      onClick={() => handleDeleteMaintenancePkg(pkg.id, pkg.name)}
+                      className="text-red-700 hover:text-red-900 cursor-pointer font-medium"
                     >
                       Delete
                     </button>
@@ -1551,12 +1985,31 @@ export default function AdminPage() {
                         onChange={(e) => setSiteContent({ ...siteContent, heroImage: e.target.value })}
                         className="flex-1 px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
                       />
+                      <input
+                        type="file"
+                        ref={heroImageFileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, (url) => setSiteContent({ ...siteContent, heroImage: url }));
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => heroImageFileInputRef.current?.click()}
+                        disabled={uploadingImage}
+                        className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{uploadingImage ? "Uploading..." : "Upload from Computer"}</span>
+                      </button>
                       <button
                         type="button"
                         onClick={() => setSiteContent({ ...siteContent, heroImage: "/images/hero-clean.webp" })}
                         className="px-3 py-1.5 border border-[#283618]/15 hover:bg-cream-100 text-xs rounded font-mono"
                       >
-                        Reset to Clean Hero
+                        Reset Clean
                       </button>
                     </div>
                     {/* Live Preview Thumbnail */}
@@ -2533,28 +2986,53 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">City / Region *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Ambegaon / Katraj, Pune"
-                    value={clientForm.city}
-                    onChange={(e) => setClientForm({ ...clientForm, city: e.target.value })}
-                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
-                  />
-                </div>
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">City / Region *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Ambegaon / Katraj, Pune"
+                  value={clientForm.city}
+                  onChange={(e) => setClientForm({ ...clientForm, city: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Logo URL</label>
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Developer Logo / Photo *</label>
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={clientForm.logo}
                     onChange={(e) => setClientForm({ ...clientForm, logo: e.target.value })}
-                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                    placeholder="/images/clients/... or /uploads/..."
+                    className="flex-1 px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
                   />
+                  <input
+                    type="file"
+                    ref={clientImageFileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, (url) => setClientForm({ ...clientForm, logo: url }));
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => clientImageFileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? "Uploading..." : "Upload"}</span>
+                  </button>
                 </div>
+                {clientForm.logo && (
+                  <div className="relative w-full h-24 rounded-xl overflow-hidden bg-white border border-[#283618]/10 mt-2 p-2">
+                    <Image src={clientForm.logo} alt="Preview" fill className="object-contain" sizes="200px" />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -2585,6 +3063,336 @@ export default function AdminPage() {
                   className="px-5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-bold uppercase tracking-wider rounded shadow-xs cursor-pointer"
                 >
                   {editingClient ? "Update Partner" : "Save Partner"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================= */}
+      {/* MODAL 5: ADD / EDIT LANDSCAPING SERVICE                           */}
+      {/* ================================================================= */}
+      {showAddServiceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-[#283618]/15 rounded-2xl p-5 sm:p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#283618]/10 mb-4">
+              <h3 className="text-base font-serif font-bold text-green-900">
+                {editingService ? `Edit ${editingService.title}` : "Add Landscaping Service Card"}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAddServiceModal(false);
+                  setEditingService(null);
+                }}
+                className="text-ink-500 hover:text-ink-900 cursor-pointer p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveService} className="space-y-3">
+              {/* Service Cover Image with Local Upload */}
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Service Image *</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={serviceForm.image}
+                    onChange={(e) => setServiceForm({ ...serviceForm, image: e.target.value })}
+                    placeholder="/images/frames/... or /uploads/..."
+                    className="flex-1 px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                  />
+                  <input
+                    type="file"
+                    ref={serviceImageFileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, (url) => setServiceForm({ ...serviceForm, image: url }));
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => serviceImageFileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? "Uploading..." : "Upload"}</span>
+                  </button>
+                </div>
+                {serviceForm.image && (
+                  <div className="relative w-full h-28 rounded-xl overflow-hidden bg-cream-100 border border-[#283618]/10 mt-2">
+                    <Image src={serviceForm.image} alt="Preview" fill className="object-cover" sizes="400px" />
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Service Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Podium Landscape Greening"
+                    value={serviceForm.title}
+                    onChange={(e) => setServiceForm({ ...serviceForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Category</label>
+                  <select
+                    value={serviceForm.category}
+                    onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  >
+                    <option value="Commercial">Commercial</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Specialized">Specialized</option>
+                    <option value="Maintenance">Maintenance</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Short Description (for card)</label>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="Summary shown on the service card..."
+                  value={serviceForm.shortDescription}
+                  onChange={(e) => setServiceForm({ ...serviceForm, shortDescription: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Target Property / Ideal For</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Builders, high-rise societies, and corporate parks in Pune"
+                  value={serviceForm.idealFor}
+                  onChange={(e) => setServiceForm({ ...serviceForm, idealFor: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Key Features (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="CAD integration, Soil matrices, Drip networks"
+                    value={serviceForm.features}
+                    onChange={(e) => setServiceForm({ ...serviceForm, features: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Scope Points (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Excavation, Planting, Irrigation assembly"
+                    value={serviceForm.scope}
+                    onChange={(e) => setServiceForm({ ...serviceForm, scope: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[#283618]/10 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddServiceModal(false);
+                    setEditingService(null);
+                  }}
+                  className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-900 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-bold uppercase tracking-wider rounded shadow-xs cursor-pointer"
+                >
+                  {editingService ? "Update Service Card" : "Save Service Card"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================= */}
+      {/* MODAL 6: ADD / EDIT MAINTENANCE PACKAGE                           */}
+      {/* ================================================================= */}
+      {showAddPkgModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-[#283618]/15 rounded-2xl p-5 sm:p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#283618]/10 mb-4">
+              <h3 className="text-base font-serif font-bold text-green-900">
+                {editingPkg ? `Edit ${editingPkg.name}` : "Add Maintenance AMC Package"}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAddPkgModal(false);
+                  setEditingPkg(null);
+                }}
+                className="text-ink-500 hover:text-ink-900 cursor-pointer p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveMaintenancePkg} className="space-y-3">
+              {/* Package Cover Image with Local Upload */}
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Package Photo *</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={pkgForm.image}
+                    onChange={(e) => setPkgForm({ ...pkgForm, image: e.target.value })}
+                    placeholder="/images/... or /uploads/..."
+                    className="flex-1 px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                  />
+                  <input
+                    type="file"
+                    ref={pkgImageFileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, (url) => setPkgForm({ ...pkgForm, image: url }));
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => pkgImageFileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{uploadingImage ? "Uploading..." : "Upload"}</span>
+                  </button>
+                </div>
+                {pkgForm.image && (
+                  <div className="relative w-full h-28 rounded-xl overflow-hidden bg-cream-100 border border-[#283618]/10 mt-2">
+                    <Image src={pkgForm.image} alt="Preview" fill className="object-cover" sizes="400px" />
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Package Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Society AMC Comprehensive Care"
+                    value={pkgForm.name}
+                    onChange={(e) => setPkgForm({ ...pkgForm, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Contract Type</label>
+                  <select
+                    value={pkgForm.type}
+                    onChange={(e) => setPkgForm({ ...pkgForm, type: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  >
+                    <option value="Residential">Residential</option>
+                    <option value="Society">Society</option>
+                    <option value="Commercial">Commercial</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Target Property</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Gated communities & CHS in Pune"
+                    value={pkgForm.target}
+                    onChange={(e) => setPkgForm({ ...pkgForm, target: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Cadence / Frequency</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Weekly or Bi-Weekly Visits"
+                    value={pkgForm.frequency}
+                    onChange={(e) => setPkgForm({ ...pkgForm, frequency: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Highlights (comma separated)</label>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="Dedicated gardener, Lawn mowing, Organic vermicompost drenches, Plant health audits"
+                  value={pkgForm.highlights}
+                  onChange={(e) => setPkgForm({ ...pkgForm, highlights: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Button CTA Text</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Request Society Proposal"
+                    value={pkgForm.ctaText}
+                    onChange={(e) => setPkgForm({ ...pkgForm, ctaText: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Pricing Note</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Custom quote based on society lawn area"
+                    value={pkgForm.priceNote}
+                    onChange={(e) => setPkgForm({ ...pkgForm, priceNote: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[#283618]/10 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddPkgModal(false);
+                    setEditingPkg(null);
+                  }}
+                  className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-900 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-bold uppercase tracking-wider rounded shadow-xs cursor-pointer"
+                >
+                  {editingPkg ? "Update Package" : "Save Package"}
                 </button>
               </div>
             </form>

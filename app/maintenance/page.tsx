@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { MaintenancePackageItem } from "@/lib/types";
+import { initialMaintenancePackages } from "@/lib/data";
 import { useSiteContent } from "@/lib/useSiteContent";
 import {
   Scissors,
@@ -21,6 +23,18 @@ import {
 
 export default function MaintenancePage() {
   const { content } = useSiteContent();
+  const [packages, setPackages] = useState<MaintenancePackageItem[]>(initialMaintenancePackages);
+
+  useEffect(() => {
+    fetch("/api/maintenance")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.packages) && data.packages.length > 0) {
+          setPackages(data.packages);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const maintenanceFeatures = [
     {
@@ -42,54 +56,6 @@ export default function MaintenancePage() {
       icon: ShieldAlert,
       title: "Organic Pest & Disease Control",
       desc: "Preventive neem-oil foliar sprays, beneficial soil bio-agents, and non-toxic treatments safe for residents and pets."
-    }
-  ];
-
-  const packages = [
-    {
-      name: "Residential Villa & Bungalow Care",
-      icon: Home,
-      target: "Private Villas, Farmhouses & Penthouses in Pune, Mulshi, Lonavala",
-      frequency: "Weekly or Bi-Weekly Visits",
-      highlights: [
-        "Dedicated gardener visits supervised by a senior horticulturist",
-        "Lawn mowing, edging, and ornamental bed weeding",
-        "Fertilization cycle using vermicompost and micronutrient drenches",
-        "Indoor and balcony plant cleaning, misting, and rotation",
-        "Priority plant replacement assistance"
-      ],
-      ctaText: "Enquire for Villa",
-      type: "Residential"
-    },
-    {
-      name: "Apartment & Housing Society AMC",
-      icon: Building2,
-      target: "Cooperative Housing Societies (CHS) & Gated Communities",
-      frequency: "Scheduled Monthly / Retainer Contracts",
-      highlights: [
-        "Comprehensive common area and walking track groundskeeping",
-        "Society clubhouse and amenity garden rejuvenation",
-        "Transparent managing committee maintenance logbooks",
-        "Water conservation advisory and STP water compatibility checks",
-        "Monsoon drainage clearance and seasonal replanting drives"
-      ],
-      ctaText: "Request Society Proposal",
-      type: "Society"
-    },
-    {
-      name: "Corporate & Commercial Plaza AMC",
-      icon: Briefcase,
-      target: "IT Campuses, Commercial Plazas, Hotels & Showrooms",
-      frequency: "Full-Time Deployment or Structured Weekly Rosters",
-      highlights: [
-        "Uniformed, trained on-site gardening technicians",
-        "Entrance focal planting and VIP lounge greenery maintenance",
-        "Adherence to corporate EHS and safety compliance standards",
-        "Monthly audit reports with photographic progress tracking",
-        "Emergency storm damage and fallen limb assistance"
-      ],
-      ctaText: "Request Commercial Tender",
-      type: "Commercial"
     }
   ];
 
@@ -140,50 +106,75 @@ export default function MaintenancePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {packages.map((pkg, idx) => (
-            <div
-              key={idx}
-              className="bg-white dark:bg-[#080A09] rounded-3xl p-7 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center gap-2.5 mb-4">
-                  <div className="w-9 h-9 rounded-2xl bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 flex items-center justify-center">
-                    <pkg.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 block">
-                      {pkg.type}
-                    </span>
-                    <h3 className="font-display text-lg font-bold text-green-950 dark:text-white">
-                      {pkg.name}
-                    </h3>
-                  </div>
-                </div>
+          {packages.map((pkg, idx) => {
+            const IconComponent =
+              pkg.type === "Residential"
+                ? Home
+                : pkg.type === "Society"
+                ? Building2
+                : Briefcase;
 
-                <div className="text-xs text-ink-500 dark:text-white/60 mb-4 pb-3 border-b border-cream-200 dark:border-white/10 space-y-1">
-                  <p><strong>Target:</strong> {pkg.target}</p>
-                  <p><strong>Cadence:</strong> {pkg.frequency}</p>
-                </div>
-
-                <div className="space-y-2.5 mb-6">
-                  {pkg.highlights.map((h, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs text-ink-700 dark:text-white/80">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
-                      <span>{h}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Link
-                href={`/contact?type=quote&service=${encodeURIComponent(pkg.name)}`}
-                className="w-full py-3 bg-green-950 dark:bg-green-600 hover:bg-green-800 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow text-center flex items-center justify-center gap-1.5 transition-colors"
+            return (
+              <div
+                key={pkg.id || idx}
+                className="bg-white dark:bg-[#080A09] rounded-3xl p-6 sm:p-7 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group"
               >
-                <span>{pkg.ctaText}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          ))}
+                <div>
+                  {pkg.image && (
+                    <div className="relative h-44 sm:h-48 w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-green-950 via-[#0B2B1E] to-[#040E0A] border border-green-800/30">
+                      <Image
+                        src={pkg.image}
+                        alt={pkg.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-70"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                      />
+                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-bold text-green-300 uppercase tracking-wider border border-white/15">
+                        {pkg.type}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <div className="w-9 h-9 rounded-2xl bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 flex items-center justify-center shrink-0">
+                      <IconComponent className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 block">
+                        {pkg.type} AMC
+                      </span>
+                      <h3 className="font-display text-lg font-bold text-green-950 dark:text-white">
+                        {pkg.name}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-ink-500 dark:text-white/60 mb-4 pb-3 border-b border-cream-200 dark:border-white/10 space-y-1">
+                    <p><strong>Target:</strong> {pkg.target}</p>
+                    <p><strong>Cadence:</strong> {pkg.frequency}</p>
+                    {pkg.priceNote && <p className="text-green-800 dark:text-green-300 font-medium"><strong>Pricing:</strong> {pkg.priceNote}</p>}
+                  </div>
+
+                  <div className="space-y-2.5 mb-6">
+                    {pkg.highlights.map((h, i) => (
+                      <div key={i} className="flex items-start gap-2 text-xs text-ink-700 dark:text-white/80">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                        <span>{h}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Link
+                  href={`/contact?type=quote&service=${encodeURIComponent(pkg.name)}`}
+                  className="w-full py-3 bg-green-950 dark:bg-green-600 hover:bg-green-800 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow text-center flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span>{pkg.ctaText}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
 

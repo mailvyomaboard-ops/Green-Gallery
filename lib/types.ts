@@ -148,6 +148,33 @@ export interface CartItem {
   image: string;
 }
 
+export interface ServiceItem {
+  id: string;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  category: "Commercial" | "Residential" | "Specialized" | "Maintenance";
+  features: string[];
+  scope: string[];
+  deliverables: string[];
+  idealFor: string;
+  image?: string;
+  faq?: { q: string; a: string }[];
+}
+
+export interface MaintenancePackageItem {
+  id: string;
+  name: string;
+  target: string;
+  frequency: string;
+  highlights: string[];
+  ctaText: string;
+  type: "Residential" | "Society" | "Commercial";
+  image?: string;
+  priceNote?: string;
+}
+
 export interface ShowcaseItem {
   id: string;
   image: string;

@@ -11,8 +11,8 @@
 
 import fs from "fs";
 import path from "path";
-import { initialProjects, initialProducts, initialInventory, clientsData } from "./data";
-import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent } from "./types";
+import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages } from "./data";
+import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent } from "./types";
 
 interface DatabaseSchema {
   leads: LeadSubmission[];
@@ -21,6 +21,8 @@ interface DatabaseSchema {
   projects: Project[];
   orders: Order[];
   clients?: ClientPartner[];
+  services?: ServiceItem[];
+  maintenancePackages?: MaintenancePackageItem[];
   siteContent?: SiteContent;
   analytics?: AnalyticsEvent[];
 }
@@ -85,6 +87,38 @@ function readDb(): DatabaseSchema {
           (p) => p.id !== "proj-shriram" && p.slug !== "shriram-green-acres" && !p.title.toLowerCase().includes("shriram")
         );
       }
+    }
+    // Ensure services and maintenancePackages are initialized
+    if (!parsed.services || parsed.services.length === 0) {
+      parsed.services = initialServices;
+    }
+    if (!parsed.maintenancePackages || parsed.maintenancePackages.length === 0) {
+      parsed.maintenancePackages = initialMaintenancePackages;
+    }
+    // Ensure all products and inventory items have real images
+    if (parsed.products) {
+      parsed.products.forEach((p, idx) => {
+        if (!p.mainImage || p.mainImage.trim() === "") {
+          p.mainImage = `/images/frames/ezgif-frame-${String((idx % 20) + 1).padStart(3, "0")}.jpg`;
+        }
+        if (!p.images || p.images.length === 0) {
+          p.images = [p.mainImage];
+        }
+      });
+    }
+    if (parsed.inventory) {
+      parsed.inventory.forEach((item, idx) => {
+        if (!item.image || item.image.trim() === "") {
+          item.image = `/images/frames/ezgif-frame-${String((idx % 20) + 1).padStart(3, "0")}.jpg`;
+        }
+      });
+    }
+    if (parsed.projects) {
+      parsed.projects.forEach((proj, idx) => {
+        if (!proj.coverImage || proj.coverImage.trim() === "") {
+          proj.coverImage = `/images/frames/ezgif-frame-${String((idx % 20) + 1).padStart(3, "0")}.jpg`;
+        }
+      });
     }
     if (!parsed.siteContent) {
       parsed.siteContent = defaultSiteContent;
@@ -547,6 +581,114 @@ export const clientsRepo = {
     const initialLen = db.clients.length;
     db.clients = db.clients.filter((c) => c.id !== id && c.slug !== id);
     if (db.clients.length !== initialLen) {
+      writeDb(db);
+      return true;
+    }
+    return false;
+  },
+};
+
+// -------------------------------------------------------------
+// SERVICES REPOSITORY (Dynamic Services & Execution Scopes)
+// -------------------------------------------------------------
+
+export const servicesRepo = {
+  getAll(): ServiceItem[] {
+    const db = readDb();
+    return db.services && db.services.length > 0 ? db.services : initialServices;
+  },
+
+  getById(id: string): ServiceItem | undefined {
+    const db = readDb();
+    const list = db.services && db.services.length > 0 ? db.services : initialServices;
+    return list.find((s) => s.id === id || s.slug === id);
+  },
+
+  create(serviceData: Omit<ServiceItem, "id">): ServiceItem {
+    const db = readDb();
+    if (!db.services) db.services = [...initialServices];
+    const newService: ServiceItem = {
+      ...serviceData,
+      id: `srv-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    };
+    db.services.push(newService);
+    writeDb(db);
+    return newService;
+  },
+
+  update(id: string, updates: Partial<ServiceItem>): ServiceItem | null {
+    const db = readDb();
+    if (!db.services) db.services = [...initialServices];
+    const index = db.services.findIndex((s) => s.id === id || s.slug === id);
+    if (index === -1) return null;
+    db.services[index] = {
+      ...db.services[index],
+      ...updates,
+    };
+    writeDb(db);
+    return db.services[index];
+  },
+
+  delete(id: string): boolean {
+    const db = readDb();
+    if (!db.services) db.services = [...initialServices];
+    const initialLen = db.services.length;
+    db.services = db.services.filter((s) => s.id !== id && s.slug !== id);
+    if (db.services.length !== initialLen) {
+      writeDb(db);
+      return true;
+    }
+    return false;
+  },
+};
+
+// -------------------------------------------------------------
+// MAINTENANCE REPOSITORY (Annual Maintenance Contract Packages)
+// -------------------------------------------------------------
+
+export const maintenanceRepo = {
+  getAll(): MaintenancePackageItem[] {
+    const db = readDb();
+    return db.maintenancePackages && db.maintenancePackages.length > 0 ? db.maintenancePackages : initialMaintenancePackages;
+  },
+
+  getById(id: string): MaintenancePackageItem | undefined {
+    const db = readDb();
+    const list = db.maintenancePackages && db.maintenancePackages.length > 0 ? db.maintenancePackages : initialMaintenancePackages;
+    return list.find((m) => m.id === id);
+  },
+
+  create(pkgData: Omit<MaintenancePackageItem, "id">): MaintenancePackageItem {
+    const db = readDb();
+    if (!db.maintenancePackages) db.maintenancePackages = [...initialMaintenancePackages];
+    const newPkg: MaintenancePackageItem = {
+      ...pkgData,
+      id: `pkg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    };
+    db.maintenancePackages.push(newPkg);
+    writeDb(db);
+    return newPkg;
+  },
+
+  update(id: string, updates: Partial<MaintenancePackageItem>): MaintenancePackageItem | null {
+    const db = readDb();
+    if (!db.maintenancePackages) db.maintenancePackages = [...initialMaintenancePackages];
+    const index = db.maintenancePackages.findIndex((m) => m.id === id);
+    if (index === -1) return null;
+    db.maintenancePackages[index] = {
+      ...db.maintenancePackages[index],
+      ...updates,
+    };
+    writeDb(db);
+    return db.maintenancePackages[index];
+  },
+
+  delete(id: string): boolean {
+    const db = readDb();
+    if (!db.maintenancePackages) db.maintenancePackages = [...initialMaintenancePackages];
+    const initialLen = db.maintenancePackages.length;
+    db.maintenancePackages = db.maintenancePackages.filter((m) => m.id !== id);
+    if (db.maintenancePackages.length !== initialLen) {
       writeDb(db);
       return true;
     }
