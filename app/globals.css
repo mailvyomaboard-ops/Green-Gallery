@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* 🌿 Saturated Botanical Greens (Light Mode) */
+  --green-950: #061A12; /* Deep midnight jungle */
+  --green-900: #0B2B1E; /* Rich rainforest deep emerald */
+  --green-800: #0E3D2B; /* Saturated botanical green */
+  --green-700: #13553C; /* Vibrant lush foliage green */
+  --green-600: #197351; /* Saturated leaf emerald */
+  --green-500: #1FA372; /* Radiant tropical sprout */
+  --green-400: #2DD48F; /* Vivid emerald accent */
+  --green-200: #A7F3D0; /* Mint leaf border */
+  --green-100: #DCFCE7; /* Fresh botanical tint */
+
+  /* 🏛️ Fresh Modern Alabaster Canvas */
+  --cream-50: #EEF3F0;  /* Crisp light botanical mineral / bone-white canvas */
+  --cream-100: #FFFFFF; /* Pure crisp white elevated surface */
+  --cream-200: #D8E5DD; /* Hairline borders & soft dividers */
+
+  /* 🍂 Warm Accents (used sparingly) */
+  --orange-woody: #C86D2A; /* Warm terracotta cedar */
+  --orange-cedar: #A55319;
+  --orange-amber: #EAA15D;
+  --gold-600: #C86D2A;
+
+  /* 🖋️ Contrast Ink */
+  --ink-900: #071710; /* Deep pine-charcoal */
+  --ink-700: #1C3529;
+  --ink-500: #3E5A4D; /* Subdued botanical slate */
+}
+
+/* 🌙 JET BLACK & BRIGHT SATURATED BOTANICAL DARK MODE */
+.dark {
+  /* 🌿 Super-Bright Saturated Botanical Emeralds */
+  --green-950: #020805; /* Deepest black-pine */
+  --green-900: #063820; /* Dark rich forest */
+  --green-800: #0A5C34; /* Saturated deep emerald */
+  --green-700: #00C853; /* Pure vivid green */
+  --green-600: #00E676; /* Super-bright saturated laser emerald */
+  --green-500: #00FF87; /* Radiant vivid neon sprout */
+  --green-400: #39FF78; /* Hyper-bright saturated lime-leaf */
+  --green-200: #0D2D1B; /* Dark subtle emerald border */
+  --green-100: #051A0F; /* Dark mint badge surface */
+
+  /* 🌌 Jet Black Pure Canvas (OLED #000000) */
+  --cream-50: #000000;  /* 100% Jet Black Background */
+  --cream-100: #080A09; /* Obsidian Jet Black Card Surface */
+  --cream-200: rgba(255, 255, 255, 0.12); /* Crisp hairline border */
+
+  /* 🍂 Warm Luminous Amber in Dark Mode */
+  --orange-woody: #F59E0B;
+  --orange-cedar: #D97706;
+  --orange-amber: #FBBF24;
+  --gold-600: #F59E0B;
+
+  /* 🖋️ Inverted High-Contrast Ink */
+  --ink-900: #FFFFFF; /* Pure crisp white headlines & text */
+  --ink-700: #E0EAE4; /* High-contrast clean body copy */
+  --ink-500: #9EB5AA; /* Legible muted sage captions */
+}
+
+/* Dark mode auto-adjustments for pure white backgrounds & dark text */
+.dark .bg-white {
+  background-color: var(--cream-100) !important;
+}
+
+.dark .bg-white\/80,
+.dark .bg-white\/90,
+.dark .bg-white\/95 {
+  background-color: rgba(8, 10, 9, 0.92) !important;
+}
+
+.dark .text-green-950 {
+  color: var(--ink-900) !important;
+}
+
+.dark .text-ink-900 {
+  color: var(--ink-900) !important;
+}
+
+.dark .text-ink-700 {
+  color: var(--ink-700) !important;
+}
+
+.dark .border-green-900\/10,
+.dark .border-cream-200 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .shadow-soft,
+.dark .shadow-island {
+  box-shadow: 0 10px 30px -10px rgba(0, 230, 118, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--cream-50);
+    color: var(--ink-900);
+    font-family: var(--font-source-sans), system-ui, -apple-system, sans-serif;
+    transition: background-color 240ms ease, color 240ms ease;
+  }
+
+  body {
+    background-color: var(--cream-50);
+    color: var(--ink-900);
+    font-size: 16px;
+    line-height: 26px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background-color 240ms ease, color 240ms ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-source-sans), system-ui, -apple-system, sans-serif;
+    color: var(--green-900);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: var(--ink-900);
+  }
+
+  h1 {
+    font-size: 38px;
+    line-height: 44px;
+    font-weight: 800;
+  }
+
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 64px;
+      line-height: 68px;
+    }
+  }
+
+  h2 {
+    font-size: 30px;
+    line-height: 36px;
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
+    h2 {
+      font-size: 42px;
+      line-height: 48px;
+    }
+  }
+
+  h3 {
+    font-size: 22px;
+    line-height: 28px;
+    font-weight: 600;
+  }
+
+  @media (min-width: 768px) {
+    h3 {
+      font-size: 26px;
+      line-height: 32px;
+    }
+  }
+
+  p {
+    max-width: 70ch;
+  }
+
+  /* Accessible high-contrast focus outline */
+  :focus-visible {
+    outline: 2px solid var(--green-500);
+    outline-offset: 2px;
+  }
+}
+
+/* Micro-transitions conforming to 150-200ms motion limit */
+a, button, input, select, textarea {
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* 120fps GPU-Accelerated Infinite Marquees */
+@keyframes marquee-scroll-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes marquee-scroll-right {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll-left 36s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll-right 36s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-slow {
+  animation-duration: 48s;
+}
+
+.marquee-pause:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
