@@ -77,7 +77,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
           <div className="bg-white/10 backdrop-blur-md border border-white/20 p-3 sm:p-4 rounded-2xl flex items-center gap-4 max-w-sm">
             <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-green-900 border border-white/20 shrink-0">
               <Image
-                src="/images/plants/areca-palm.jpg"
+                src="/images/frames/ezgif-frame-003.jpg"
                 alt="Acclimatized specimen palm"
                 fill
                 className="object-cover"
