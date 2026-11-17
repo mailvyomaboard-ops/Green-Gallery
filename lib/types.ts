@@ -495,3 +495,21 @@ export interface Order {
   razorpayPaymentId?: string;
   createdAt: string;
 }
+
+export interface AdminSettings {
+  passcode: string;
+  securityQuestion: string;
+  securityAnswer: string;
+  recoveryEmail: string;
+  emergencyKey: string;
+  lastPasscodeChange: string;
+}
+
+export const defaultAdminSettings: AdminSettings = {
+  passcode: "S@batule123",
+  securityQuestion: "What is your registered administrator email address?",
+  securityAnswer: "mail.vyomaboard@gmail.com",
+  recoveryEmail: "greengallery.landscapers@gmail.com",
+  emergencyKey: "GG-SEC-RECOVERY-2026",
+  lastPasscodeChange: new Date().toISOString(),
+};

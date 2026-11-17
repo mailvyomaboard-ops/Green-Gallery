@@ -12,7 +12,7 @@
 import fs from "fs";
 import path from "path";
 import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages } from "./data";
-import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct } from "./types";
+import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct, AdminSettings, defaultAdminSettings } from "./types";
 
 interface DatabaseSchema {
   leads: LeadSubmission[];
@@ -25,6 +25,7 @@ interface DatabaseSchema {
   maintenancePackages?: MaintenancePackageItem[];
   siteContent?: SiteContent;
   analytics?: AnalyticsEvent[];
+  adminSettings?: AdminSettings;
 }
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -163,6 +164,17 @@ function readDb(): DatabaseSchema {
     }
     if (!parsed.analytics) {
       parsed.analytics = [];
+    }
+    if (!parsed.adminSettings) {
+      parsed.adminSettings = defaultAdminSettings;
+    } else {
+      parsed.adminSettings = {
+        ...defaultAdminSettings,
+        ...parsed.adminSettings,
+      };
+      if (!parsed.adminSettings.passcode || parsed.adminSettings.passcode === "PuneGreen2026") {
+        parsed.adminSettings.passcode = "S@batule123";
+      }
     }
     return parsed;
   } catch (error) {
@@ -866,5 +878,44 @@ export const ordersRepo = {
     db.orders.unshift(newOrder);
     writeDb(db);
     return newOrder;
+  },
+};
+
+// -------------------------------------------------------------
+// ADMIN SETTINGS REPOSITORY
+// -------------------------------------------------------------
+
+export const adminSettingsRepo = {
+  get(): AdminSettings {
+    const db = readDb();
+    return db.adminSettings || defaultAdminSettings;
+  },
+
+  update(updates: Partial<AdminSettings>): AdminSettings {
+    const db = readDb();
+    const current = db.adminSettings || defaultAdminSettings;
+    const updated: AdminSettings = {
+      ...current,
+      ...updates,
+      lastPasscodeChange: updates.passcode ? new Date().toISOString() : current.lastPasscodeChange,
+    };
+    db.adminSettings = updated;
+    writeDb(db);
+    return updated;
+  },
+
+  getSanitized(): {
+    securityQuestion: string;
+    recoveryEmail: string;
+    hasEmergencyKey: boolean;
+    lastPasscodeChange: string;
+  } {
+    const s = this.get();
+    return {
+      securityQuestion: s.securityQuestion,
+      recoveryEmail: s.recoveryEmail,
+      hasEmergencyKey: Boolean(s.emergencyKey && s.emergencyKey.length > 0),
+      lastPasscodeChange: s.lastPasscodeChange,
+    };
   },
 };

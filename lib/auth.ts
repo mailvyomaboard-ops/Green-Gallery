@@ -10,13 +10,22 @@
 
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { adminSettingsRepo } from "./db";
 
 const SESSION_COOKIE_NAME = "gg_admin_session";
 const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
 // Default fallback secret for development; in production, set ADMIN_SESSION_SECRET
 const SECRET = process.env.ADMIN_SESSION_SECRET || "gg-pune-secure-admin-auth-token-key-2026";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSCODE || "PuneGreen2026";
+
+export function getAdminPasscode(): string {
+  try {
+    const settings = adminSettingsRepo.get();
+    return settings.passcode || process.env.ADMIN_PASSCODE || "S@batule123";
+  } catch {
+    return process.env.ADMIN_PASSCODE || "S@batule123";
+  }
+}
 
 export interface SessionPayload {
   role: "admin";
@@ -119,18 +128,49 @@ export function verifyAdminSession(req: NextRequest): boolean {
 }
 
 /**
- * Checks plaintext passcode using timing-safe comparison.
+ * Checks passcode using cryptographically timing-safe constant-length SHA-256 digest comparison.
+ * Big-O: O(1) constant time.
  */
 export function verifyAdminPasscode(passcode: string): boolean {
   if (!passcode || typeof passcode !== "string") return false;
-  const targetBuffer = Buffer.from(passcode);
-  const validBuffer = Buffer.from(ADMIN_PASSWORD);
 
-  if (targetBuffer.length !== validBuffer.length) {
+  const currentPasscode = getAdminPasscode();
+
+  // Hash both inputs using SHA-256 to ensure identical fixed buffer lengths for timingSafeEqual
+  const inputHash = crypto.createHash("sha256").update(passcode.trim()).digest();
+  const validHash = crypto.createHash("sha256").update(currentPasscode.trim()).digest();
+
+  return crypto.timingSafeEqual(inputHash, validHash);
+}
+
+/**
+ * Validates security question answer or emergency recovery key.
+ * Big-O: O(1) constant time.
+ */
+export function verifyRecoveryCredential(answerOrKey: string): boolean {
+  if (!answerOrKey || typeof answerOrKey !== "string") return false;
+  try {
+    const settings = adminSettingsRepo.get();
+    const cleanInput = answerOrKey.trim().toLowerCase();
+
+    // Check against security answer
+    const answerHash = crypto.createHash("sha256").update((settings.securityAnswer || "").trim().toLowerCase()).digest();
+    const inputHash = crypto.createHash("sha256").update(cleanInput).digest();
+    if (crypto.timingSafeEqual(inputHash, answerHash)) return true;
+
+    // Check against recovery email
+    const emailHash = crypto.createHash("sha256").update((settings.recoveryEmail || "").trim().toLowerCase()).digest();
+    if (crypto.timingSafeEqual(inputHash, emailHash)) return true;
+
+    // Check against emergency key
+    const rawInputHash = crypto.createHash("sha256").update(answerOrKey.trim()).digest();
+    const keyHash = crypto.createHash("sha256").update((settings.emergencyKey || "").trim()).digest();
+    if (crypto.timingSafeEqual(rawInputHash, keyHash)) return true;
+
+    return false;
+  } catch {
     return false;
   }
-
-  return crypto.timingSafeEqual(targetBuffer, validBuffer);
 }
 
 /**

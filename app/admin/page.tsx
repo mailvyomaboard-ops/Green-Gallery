@@ -36,6 +36,14 @@ import {
   ExternalLink,
   ChevronRight,
   Info,
+  Settings,
+  KeyRound,
+  Lock,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  AlertCircle,
+  HelpCircle,
 } from "lucide-react";
 import {
   LeadSubmission,
@@ -55,7 +63,31 @@ export default function AdminPage() {
   const [passError, setPassError] = useState("");
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "cms">("analytics");
+  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "cms" | "settings">("analytics");
+
+  // Settings & Passcode Security state
+  const [settingsData, setSettingsData] = useState<{
+    securityQuestion: string;
+    recoveryEmail: string;
+    hasEmergencyKey: boolean;
+    lastPasscodeChange: string;
+  } | null>(null);
+  const [currentPasscode, setCurrentPasscode] = useState("");
+  const [newPasscode, setNewPasscode] = useState("");
+  const [confirmPasscode, setConfirmPasscode] = useState("");
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [isChangingPasscode, setIsChangingPasscode] = useState(false);
+  const [passcodeStatus, setPasscodeStatus] = useState<{ type: "success" | "error" | null; message: string }>({ type: null, message: "" });
+
+  // Emergency Recovery Mode (on Login and inside Settings)
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const [recoveryCredential, setRecoveryCredential] = useState("");
+  const [recoveryNewPass, setRecoveryNewPass] = useState("");
+  const [recoveryConfirmPass, setRecoveryConfirmPass] = useState("");
+  const [recoveryStatus, setRecoveryStatus] = useState<{ type: "success" | "error" | null; message: string }>({ type: null, message: "" });
+  const [isRecovering, setIsRecovering] = useState(false);
+  const [showEmergencyKeyInSettings, setShowEmergencyKeyInSettings] = useState(false);
 
   // CMS Sub-page tab state
   const [cmsPageTab, setCmsPageTab] = useState<"home" | "about" | "services" | "projects" | "plants" | "maintenance" | "contact">("home");
@@ -199,6 +231,121 @@ export default function AdminPage() {
     }
   };
 
+  // Secure Passcode Change Handler with Previous Passcode Verification
+  const handleChangePasscode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasscodeStatus({ type: null, message: "" });
+
+    if (!currentPasscode || !newPasscode || !confirmPasscode) {
+      setPasscodeStatus({ type: "error", message: "Please fill in all passcode fields." });
+      return;
+    }
+
+    if (newPasscode !== confirmPasscode) {
+      setPasscodeStatus({ type: "error", message: "New passcode and confirmation do not match." });
+      return;
+    }
+
+    if (newPasscode.length < 6) {
+      setPasscodeStatus({ type: "error", message: "New passcode must be at least 6 characters." });
+      return;
+    }
+
+    setIsChangingPasscode(true);
+    try {
+      const res = await fetch("/api/admin/settings/change-passcode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPasscode,
+          newPasscode,
+          confirmPasscode,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPasscodeStatus({ type: "success", message: "Passcode updated successfully! Next login requires this new passcode." });
+        setCurrentPasscode("");
+        setNewPasscode("");
+        setConfirmPasscode("");
+        // Refresh settings state
+        fetch("/api/admin/settings")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.success && d.settings) setSettingsData(d.settings);
+          })
+          .catch(() => {});
+      } else {
+        setPasscodeStatus({ type: "error", message: data.error || "Failed to change passcode. Verify previous passcode." });
+      }
+    } catch {
+      setPasscodeStatus({ type: "error", message: "Network connection failure while updating passcode." });
+    } finally {
+      setIsChangingPasscode(false);
+    }
+  };
+
+  // Emergency Passcode Recovery Handler
+  const handleRecoverPasscode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecoveryStatus({ type: null, message: "" });
+
+    if (!recoveryCredential || !recoveryNewPass || !recoveryConfirmPass) {
+      setRecoveryStatus({ type: "error", message: "All fields are required for recovery." });
+      return;
+    }
+
+    if (recoveryNewPass !== recoveryConfirmPass) {
+      setRecoveryStatus({ type: "error", message: "New passcode and confirmation do not match." });
+      return;
+    }
+
+    if (recoveryNewPass.length < 6) {
+      setRecoveryStatus({ type: "error", message: "New passcode must be at least 6 characters." });
+      return;
+    }
+
+    setIsRecovering(true);
+    try {
+      const res = await fetch("/api/admin/settings/recover-passcode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recoveryCredential,
+          newPasscode: recoveryNewPass,
+          confirmPasscode: recoveryConfirmPass,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setRecoveryStatus({ type: "success", message: data.message || "Passcode successfully reset! Logging you in..." });
+        setPasscode(recoveryNewPass);
+        setTimeout(async () => {
+          // Auto login with new passcode
+          const loginRes = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ passcode: recoveryNewPass }),
+          });
+          const loginData = await loginRes.json();
+          if (loginRes.ok && loginData.success) {
+            setIsAuthenticated(true);
+            setIsRecoveryMode(false);
+            loadAllData();
+          } else {
+            setIsRecoveryMode(false);
+          }
+        }, 1200);
+      } else {
+        setRecoveryStatus({ type: "error", message: data.error || "Invalid recovery verification credential." });
+      }
+    } catch {
+      setRecoveryStatus({ type: "error", message: "Network failure while processing recovery." });
+    } finally {
+      setIsRecovering(false);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -209,7 +356,7 @@ export default function AdminPage() {
   const loadAllData = async () => {
     setIsRefreshing(true);
     try {
-      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, cmsRes, analyticsRes] = await Promise.all([
+      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
         fetch("/api/leads").then((r) => r.json()).catch(() => ({ leads: [] })),
         fetch("/api/inventory").then((r) => r.json()).catch(() => ({ items: [] })),
         fetch("/api/clients").then((r) => r.json()).catch(() => ({ clients: [] })),
@@ -217,6 +364,7 @@ export default function AdminPage() {
         fetch("/api/maintenance").then((r) => r.json()).catch(() => ({ packages: [] })),
         fetch("/api/cms").then((r) => r.json()).catch(() => ({ content: defaultSiteContent })),
         fetch("/api/analytics").then((r) => r.json()).catch(() => ({ summary: null, recent: [] })),
+        fetch("/api/admin/settings").then((r) => r.json()).catch(() => ({ settings: null })),
       ]);
 
       if (leadsRes.leads) setLeads(leadsRes.leads);
@@ -227,6 +375,7 @@ export default function AdminPage() {
       if (cmsRes.content) setSiteContent({ ...defaultSiteContent, ...cmsRes.content });
       if (analyticsRes.summary) setAnalytics(analyticsRes.summary);
       if (analyticsRes.recent) setRecentEvents(analyticsRes.recent);
+      if (settingsRes && settingsRes.settings) setSettingsData(settingsRes.settings);
     } finally {
       setIsRefreshing(false);
     }
@@ -779,12 +928,12 @@ export default function AdminPage() {
       <div className="w-full min-h-screen bg-cream-50 flex items-center justify-center p-4">
         <div className="w-full max-w-sm bg-white border border-[#283618]/15 rounded-brand p-8 shadow-sm">
           <div className="text-center mb-6">
-            <div className="relative w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-500/30 bg-black shadow-xs">
+            <div className="relative w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-500/40 bg-[#08150E] p-1 shadow-xs">
               <Image
                 src="/images/logo.jpg"
                 alt="GreenGallery Emblem"
                 fill
-                className="object-cover scale-150 -translate-y-0.5"
+                className="object-contain"
                 sizes="64px"
               />
             </div>
@@ -792,38 +941,139 @@ export default function AdminPage() {
               GreenGallery
             </h1>
             <p className="text-[11px] text-amber-800 font-medium tracking-wide">
-              Cultivating Natural Elegance
+              {isRecoveryMode ? "Security Verification & Recovery" : "Cultivating Natural Elegance"}
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-medium text-[#283618] uppercase tracking-wider mb-1.5 font-mono">
-                Access Passcode
-              </label>
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passcode"
-                autoFocus
-                className="w-full px-3.5 py-2.5 bg-cream-50/60 border border-[#283618]/15 rounded-brand text-xs font-mono tracking-wider focus:outline-none focus:border-green-900 transition-colors"
-              />
-              {passError && <p className="text-[11px] text-red-700 mt-1.5 font-medium">{passError}</p>}
-            </div>
+          {!isRecoveryMode ? (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-medium text-[#283618] uppercase tracking-wider mb-1.5 font-mono">
+                  Access Passcode
+                </label>
+                <input
+                  type="password"
+                  value={passcode}
+                  onChange={(e) => setPasscode(e.target.value)}
+                  placeholder="Enter passcode"
+                  autoFocus
+                  className="w-full px-3.5 py-2.5 bg-cream-50/60 border border-[#283618]/15 rounded-brand text-xs font-mono tracking-wider focus:outline-none focus:border-green-900 transition-colors"
+                />
+                {passError && <p className="text-[11px] text-red-700 mt-1.5 font-medium">{passError}</p>}
+              </div>
 
-            <button
-              type="submit"
-              className="w-full py-2.5 bg-green-900 hover:bg-[#1f2b13] text-cream-50 font-medium text-xs tracking-wider uppercase rounded-brand shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Verify Access</span>
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="w-full py-2.5 bg-green-900 hover:bg-[#1f2b13] text-cream-50 font-medium text-xs tracking-wider uppercase rounded-brand shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span>Verify Access</span>
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRecoveryMode(true);
+                    setPassError("");
+                  }}
+                  className="text-[11px] text-green-800 hover:text-green-950 font-medium underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Forgot passcode? Use emergency recovery
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleRecoverPasscode} className="space-y-3.5">
+              <div>
+                <label className="block text-[11px] font-medium text-[#283618] uppercase tracking-wider mb-1 font-mono">
+                  Registered Security Verification *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={recoveryCredential}
+                  onChange={(e) => setRecoveryCredential(e.target.value)}
+                  placeholder="Administrator email or recovery key"
+                  className="w-full px-3 py-2 bg-cream-50/60 border border-[#283618]/15 rounded-brand text-xs focus:outline-none focus:border-green-900"
+                />
+                <p className="text-[10px] text-ink-500 mt-0.5">
+                  e.g. Registered operational email or emergency key.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-[#283618] uppercase tracking-wider mb-1 font-mono">
+                  New Passcode *
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={recoveryNewPass}
+                  onChange={(e) => setRecoveryNewPass(e.target.value)}
+                  placeholder="Minimum 6 characters"
+                  className="w-full px-3 py-2 bg-cream-50/60 border border-[#283618]/15 rounded-brand text-xs font-mono focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-[#283618] uppercase tracking-wider mb-1 font-mono">
+                  Confirm New Passcode *
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={recoveryConfirmPass}
+                  onChange={(e) => setRecoveryConfirmPass(e.target.value)}
+                  placeholder="Re-enter new passcode"
+                  className="w-full px-3 py-2 bg-cream-50/60 border border-[#283618]/15 rounded-brand text-xs font-mono focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              {recoveryStatus.message && (
+                <div
+                  className={`p-2.5 rounded-lg text-xs font-medium flex items-center gap-1.5 ${
+                    recoveryStatus.type === "success"
+                      ? "bg-green-50 border border-green-200 text-green-800"
+                      : "bg-red-50 border border-red-200 text-red-800"
+                  }`}
+                >
+                  {recoveryStatus.type === "success" ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  <span>{recoveryStatus.message}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isRecovering}
+                className="w-full py-2.5 bg-green-900 hover:bg-[#1f2b13] text-cream-50 font-medium text-xs tracking-wider uppercase rounded-brand shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>{isRecovering ? "Verifying..." : "Reset Passcode & Unlock"}</span>
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRecoveryMode(false);
+                    setRecoveryStatus({ type: null, message: "" });
+                  }}
+                  className="text-[11px] text-ink-500 hover:text-ink-800 font-medium underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Back to standard passcode login
+                </button>
+              </div>
+            </form>
+          )}
 
           <div className="mt-8 pt-4 border-t border-[#283618]/10 text-center">
             <p className="text-[10px] text-ink-500 font-mono">
-              Administrative Desk · Pune Operations
+              Administrative Desk · Governance Security
             </p>
           </div>
         </div>
@@ -840,12 +1090,12 @@ export default function AdminPage() {
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#283618]/10 shadow-xs">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-amber-500/30 bg-black shadow-xs shrink-0">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-amber-500/40 bg-[#08150E] p-0.5 shadow-xs shrink-0">
               <Image
                 src="/images/logo.jpg"
                 alt="GreenGallery Emblem"
                 fill
-                className="object-cover scale-150 -translate-y-0.5"
+                className="object-contain"
                 sizes="32px"
               />
             </div>
@@ -963,6 +1213,18 @@ export default function AdminPage() {
               <Layout className="w-3.5 h-3.5" />
               <span>CMS</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "settings"
+                  ? "bg-green-900 text-cream-50 shadow-sm"
+                  : "text-ink-500 hover:text-green-900"
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Settings</span>
+            </button>
           </nav>
 
           {/* Quick Actions */}
@@ -1063,6 +1325,17 @@ export default function AdminPage() {
           >
             <Layout className="w-3.5 h-3.5" />
             <span>CMS</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              activeTab === "settings"
+                ? "bg-green-900 text-white shadow-xs"
+                : "bg-white text-ink-700 border border-[#283618]/10"
+            }`}
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span>Settings</span>
           </button>
         </div>
       </header>
@@ -2556,6 +2829,245 @@ export default function AdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* TAB 8: ADMINISTRATIVE SETTINGS & SECURITY GOVERNANCE              */}
+        {/* ================================================================= */}
+        {activeTab === "settings" && (
+          <div className="space-y-8 max-w-4xl">
+            {/* Header */}
+            <div className="pb-4 border-b border-[#283618]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
+                  Governance &amp; Access Security
+                </span>
+                <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
+                  Administrative Settings
+                </h2>
+                <p className="text-xs text-ink-500 font-light mt-1">
+                  Configure administrative passcodes, verify emergency credentials, and manage operational contacts.
+                </p>
+              </div>
+            </div>
+
+            {/* CARD 1: PASSCODE MANAGEMENT (WITH PREVIOUS PASSCODE VERIFICATION) */}
+            <div className="bg-white border border-[#283618]/10 rounded-brand p-6 shadow-xs space-y-5">
+              <div className="flex items-start justify-between gap-4 pb-3 border-b border-[#283618]/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-900 shrink-0">
+                    <KeyRound className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-serif font-bold text-green-900">
+                      Change Access Passcode
+                    </h3>
+                    <p className="text-xs text-ink-500 font-light mt-0.5">
+                      To protect administrative integrity, you must enter your previous passcode before saving a new one.
+                    </p>
+                  </div>
+                </div>
+                {settingsData?.lastPasscodeChange && (
+                  <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono text-ink-500 bg-cream-50 px-2.5 py-1 rounded border border-[#283618]/10">
+                    <Clock className="w-3 h-3 text-green-800" />
+                    Last changed: {new Date(settingsData.lastPasscodeChange).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+
+              {passcodeStatus.message && (
+                <div
+                  className={`p-3.5 rounded-xl text-xs font-medium flex items-center gap-2 ${
+                    passcodeStatus.type === "success"
+                      ? "bg-green-50 border border-green-300 text-green-900"
+                      : "bg-red-50 border border-red-300 text-red-900"
+                  }`}
+                >
+                  {passcodeStatus.type === "success" ? (
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-green-700" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-700" />
+                  )}
+                  <span>{passcodeStatus.message}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleChangePasscode} className="space-y-4 max-w-xl">
+                {/* Field 1: Previous Passcode */}
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-green-900 mb-1">
+                    Previous Passcode *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPass ? "text" : "password"}
+                      required
+                      value={currentPasscode}
+                      onChange={(e) => setCurrentPasscode(e.target.value)}
+                      placeholder="Enter your current passcode"
+                      className="w-full pl-3 pr-10 py-2.5 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPass(!showCurrentPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-800"
+                    >
+                      {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-ink-400 mt-1">
+                    Verified cryptographically with constant-time equality check.
+                  </p>
+                </div>
+
+                {/* Field 2 & 3: New Passcode & Confirmation */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase tracking-wider text-green-900 mb-1">
+                      New Passcode *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showNewPass ? "text" : "password"}
+                        required
+                        value={newPasscode}
+                        onChange={(e) => setNewPasscode(e.target.value)}
+                        placeholder="At least 6 characters"
+                        className="w-full pl-3 pr-10 py-2.5 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPass(!showNewPass)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-800"
+                      >
+                        {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase tracking-wider text-green-900 mb-1">
+                      Confirm New Passcode *
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={confirmPasscode}
+                      onChange={(e) => setConfirmPasscode(e.target.value)}
+                      placeholder="Re-enter new passcode"
+                      className="w-full px-3 py-2.5 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+                  <button
+                    type="submit"
+                    disabled={isChangingPasscode}
+                    className="px-6 py-2.5 bg-green-900 hover:bg-[#1f2b13] text-cream-50 font-bold text-xs uppercase tracking-wider rounded-brand shadow-sm transition-all cursor-pointer flex items-center gap-2"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>{isChangingPasscode ? "Verifying & Updating..." : "Update Passcode"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRecoveryMode(true);
+                      setRecoveryStatus({ type: null, message: "" });
+                    }}
+                    className="text-xs text-amber-900 hover:text-amber-950 font-medium underline underline-offset-2 transition-colors cursor-pointer"
+                  >
+                    Forgot previous passcode? Use Security Recovery
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* CARD 2: EMERGENCY RECOVERY & VERIFICATION INFO */}
+            <div className="bg-white border border-[#283618]/10 rounded-brand p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-[#283618]/10">
+                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-900 shrink-0">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-green-900">
+                    Emergency Passcode Recovery Verification
+                  </h3>
+                  <p className="text-xs text-ink-500 font-light mt-0.5">
+                    If you forget your previous passcode, you can unlock and reset it with your verified administrator credentials.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div className="p-4 rounded-xl bg-cream-50 border border-[#283618]/10 space-y-1">
+                  <span className="font-mono uppercase text-[10px] text-green-800 font-bold block">
+                    Registered Security Email / Answer
+                  </span>
+                  <p className="font-mono text-sm text-green-950 font-semibold break-all">
+                    {settingsData?.recoveryEmail || "mail.vyomaboard@gmail.com"}
+                  </p>
+                  <p className="text-[11px] text-ink-500">
+                    Used to verify identity on the &ldquo;Forgot Passcode&rdquo; emergency reset prompt.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-cream-50 border border-[#283618]/10 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono uppercase text-[10px] text-green-800 font-bold block">
+                      Master Emergency Recovery Key
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowEmergencyKeyInSettings(!showEmergencyKeyInSettings)}
+                      className="text-[10px] text-green-900 underline font-medium cursor-pointer"
+                    >
+                      {showEmergencyKeyInSettings ? "Mask" : "Reveal Key"}
+                    </button>
+                  </div>
+                  <p className="font-mono text-sm text-green-950 font-semibold">
+                    {showEmergencyKeyInSettings ? "GG-SEC-RECOVERY-2026" : "GG-SEC-••••••••"}
+                  </p>
+                  <p className="text-[11px] text-ink-500">
+                    Keep this key private in your password manager for offline recovery.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 3: OPERATIONS & NOTIFICATIONS DESK */}
+            <div className="bg-white border border-[#283618]/10 rounded-brand p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-[#283618]/10">
+                <div className="w-10 h-10 rounded-full bg-cream-100 flex items-center justify-center text-green-900 shrink-0">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-green-900">
+                    Administrative Notification Defaults
+                  </h3>
+                  <p className="text-xs text-ink-500 font-light mt-0.5">
+                    Lead inquiries and developer tender RFQs are dispatched to these registered coordinates.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono">
+                <div className="p-3 bg-cream-50/50 rounded-lg border border-[#283618]/10">
+                  <span className="text-[10px] text-ink-400 uppercase block mb-0.5">Desk Phone</span>
+                  <span className="font-bold text-green-950">+91 78230 80251</span>
+                </div>
+                <div className="p-3 bg-cream-50/50 rounded-lg border border-[#283618]/10">
+                  <span className="text-[10px] text-ink-400 uppercase block mb-0.5">Lead Inquiries Email</span>
+                  <span className="font-bold text-green-950 truncate block">greengallery.landscapers@gmail.com</span>
+                </div>
+                <div className="p-3 bg-cream-50/50 rounded-lg border border-[#283618]/10">
+                  <span className="text-[10px] text-ink-400 uppercase block mb-0.5">Staging Depot</span>
+                  <span className="font-bold text-green-950">Alandi, Pune</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </main>
