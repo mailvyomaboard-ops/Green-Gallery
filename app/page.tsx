@@ -165,7 +165,10 @@ export default function HomePage() {
                 <Building2 className="w-3.5 h-3.5" />
                 <span>{siteContent.b2bBadge || "Commercial & Real Estate Solutions"}</span>
               </span>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              <h2
+                style={{ color: "#ffffff" }}
+                className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white dark:text-white tracking-tight leading-tight"
+              >
                 {siteContent.b2bSectionTitle || "Turnkey Foliage & Landscaping for Developers"}
               </h2>
               <p className="text-white/80 text-sm sm:text-base font-light leading-relaxed">
