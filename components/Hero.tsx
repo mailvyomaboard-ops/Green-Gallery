@@ -4,13 +4,12 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { defaultSiteContent, SiteContent } from "@/lib/types";
-import { ArrowUpRight, Sparkles, MapPin, Leaf, Compass, ShieldCheck, Activity, BarChart3, Check } from "lucide-react";
+import { ArrowUpRight, Sparkles, MapPin, Leaf, Compass, ShieldCheck } from "lucide-react";
 
 export function Hero({ initialContent }: { initialContent?: SiteContent }) {
   const [content, setContent] = useState<SiteContent>(initialContent || defaultSiteContent);
   const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const [activeMetricTab, setActiveMetricTab] = useState<"Weekly" | "Batch" | "Soil pH">("Weekly");
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,37 +45,14 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
   const scrollProgress = Math.min(1, Math.max(0, scrollY / heroHeight));
   const bgTranslateY = scrollY * 0.18; // Plane 1: Background canopy
   const foliageTranslateY = scrollY * 0.32; // Plane 2: Floating leaf elements
-  const cardTranslateY = -scrollY * 0.08; // Plane 3: Floating vitality card counter-drift
   const heroScale = 1 - scrollProgress * 0.02; // Global subtle zoom-out
   const heroOpacity = 1 - scrollProgress * 0.15; // Focus fade
-
-  // Metric tab datasets for the Solv-style floating card
-  const metricsData = {
-    Weekly: [
-      { label: "Root Mass", val: 96, color: "bg-emerald-400" },
-      { label: "Canopy", val: 98, color: "bg-emerald-500" },
-      { label: "Hydration", val: 94, color: "bg-emerald-300" },
-      { label: "Acclimation", val: 99, color: "bg-amber-300" },
-    ],
-    Batch: [
-      { label: "Alandi Depot", val: 98, color: "bg-emerald-400" },
-      { label: "Site Staged", val: 95, color: "bg-emerald-500" },
-      { label: "Quarantined", val: 92, color: "bg-emerald-300" },
-      { label: "Dispatch Ready", val: 100, color: "bg-amber-300" },
-    ],
-    "Soil pH": [
-      { label: "Pumice Media", val: 6.8, max: 8, color: "bg-emerald-400", display: "6.8 pH" },
-      { label: "Coco Substrate", val: 6.5, max: 8, color: "bg-emerald-500", display: "6.5 pH" },
-      { label: "Organic Compost", val: 7.0, max: 8, color: "bg-emerald-300", display: "7.0 pH" },
-      { label: "Podium Blend", val: 6.6, max: 8, color: "bg-amber-300", display: "6.6 pH" },
-    ],
-  };
 
   return (
     <section ref={heroRef} className="px-3 sm:px-6 pt-2 pb-8 max-w-[1280px] mx-auto overflow-hidden">
       {/* 
         Saturated Rainforest Canopy Hero Box:
-        Framed in deep lush foliage with Solv-style floating interactive cards & MAI-style typography
+        Framed in deep lush foliage with natural spatial depth, graceful typography and 120fps motion
       */}
       <div
         style={{
@@ -84,7 +60,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
           opacity: heroOpacity,
           willChange: "transform, opacity",
         }}
-        className="relative w-full min-h-[640px] sm:min-h-[700px] md:min-h-[760px] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-[#04110A] shadow-2xl flex flex-col justify-between p-6 sm:p-10 md:p-14 border border-emerald-500/25 transition-transform duration-75 ease-out"
+        className="relative w-full min-h-[580px] sm:min-h-[640px] md:min-h-[700px] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-[#04110A] shadow-2xl flex flex-col justify-between p-6 sm:p-10 md:p-14 border border-emerald-500/25 transition-transform duration-75 ease-out"
       >
         {/* PLANE 1: PARALLAX BOTANICAL CANOPY BACKGROUND */}
         <div
@@ -162,167 +138,75 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
           </div>
         </div>
 
-        {/* CENTRAL SECTION: SPLIT GRID (TYPOGRAPHY LEFT + SOLV FLOATING BENTO RIGHT) */}
-        <div className="relative z-20 my-auto py-6 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* LEFT: MAI-STYLE EDITORIAL TYPOGRAPHY */}
-          <div
-            className={`lg:col-span-7 space-y-5 text-center sm:text-left transition-all duration-1000 delay-150 ease-out ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-          >
-            {/* Botanical Insignia & Brand Tag */}
-            <div className="flex items-center justify-center sm:justify-start gap-3.5 group">
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-amber-400/60 bg-[#08150E] shadow-2xl p-0.5 shrink-0 animate-pulse-glow transition-transform group-hover:scale-105 duration-300">
-                <Image
-                  src="/images/emblem.jpg"
-                  alt="GreenGallery Insignia"
-                  fill
-                  className="object-cover rounded-full"
-                  priority
-                  sizes="56px"
-                />
-              </div>
-              <div className="text-left">
-                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 font-mono">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
-                  <span>Cultivating Living Environments</span>
-                </span>
-                <span className="text-xs sm:text-sm text-amber-200/90 font-serif italic tracking-wide block">
-                  Turnkey Landscapes • Commercial &amp; Residential
-                </span>
-              </div>
+        {/* CENTRAL SECTION: SPACIOUS ELEGANT BOTANICAL CORE */}
+        <div
+          className={`relative z-20 my-auto py-8 sm:py-12 max-w-4xl text-center sm:text-left flex flex-col items-center sm:items-start mx-auto sm:mx-0 transition-all duration-1000 delay-150 ease-out ${
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
+        >
+          {/* Botanical Insignia & Brand Tag */}
+          <div className="flex items-center justify-center sm:justify-start gap-3.5 mb-5 group">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-amber-400/60 bg-[#08150E] shadow-2xl p-0.5 shrink-0 animate-pulse-glow transition-transform group-hover:scale-105 duration-300">
+              <Image
+                src="/images/emblem.jpg"
+                alt="GreenGallery Insignia"
+                fill
+                className="object-cover rounded-full"
+                priority
+                sizes="56px"
+              />
             </div>
-
-            {/* Main Display Headline: Modern Sans */}
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.02] sm:leading-[0.92] drop-shadow-md">
-              {content.heroHeadline && content.heroHeadline.toLowerCase() !== "growth"
-                ? content.heroHeadline
-                : "Green Gallery"}
-            </h1>
-
-            {/* Editorial Serif Subtitle (MAI style graceful italic) */}
-            <div className="text-xl sm:text-3xl md:text-4xl font-serif italic text-amber-200/95 font-light tracking-wide drop-shadow leading-snug">
-              Living Architecture &amp; Botanical Precision
-            </div>
-
-            {/* Crisp Body Lead */}
-            <p className="text-white/85 text-sm sm:text-base md:text-lg font-light max-w-xl leading-relaxed drop-shadow mx-auto sm:mx-0">
-              {content.heroDescription ||
-                "From large-scale commercial developer podiums to private villa sanctuaries. We design, source, plant, and nurture enduring green environments across Pune and Maharashtra."}
-            </p>
-
-            {/* Planterly Key Indicators */}
-            <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs font-mono text-emerald-300/80">
-              <span className="flex items-center gap-1.5">
-                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Native &amp; Acclimatized Species</span>
+            <div className="text-left">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 font-mono">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
+                <span>Cultivating Living Environments</span>
               </span>
-              <span className="hidden sm:inline text-white/30">•</span>
-              <span className="flex items-center gap-1.5">
-                <Compass className="w-3.5 h-3.5 text-amber-300" />
-                <span>3D Planning &amp; Civil Coordination</span>
-              </span>
-              <span className="hidden sm:inline text-white/30">•</span>
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Guaranteed Plant Health</span>
+              <span className="text-xs sm:text-sm text-amber-200/90 font-serif italic tracking-wide block">
+                Turnkey Landscapes • Commercial &amp; Residential
               </span>
             </div>
           </div>
 
-          {/* RIGHT: SOLV-STYLE FLOATING INTERACTIVE BENTO CARD */}
-          <div
-            style={{
-              transform: `translate3d(0, ${cardTranslateY}px, 0)`,
-              willChange: "transform",
-            }}
-            className={`lg:col-span-5 flex justify-center lg:justify-end transition-all duration-1000 delay-300 ease-out ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            <div className="w-full max-w-sm rounded-3xl bg-white/95 dark:bg-[#0B1A13]/95 text-ink-900 dark:text-white p-5 sm:p-6 shadow-2xl border border-emerald-500/30 backdrop-blur-xl animate-card-float hover:shadow-glow transition-all duration-300 group">
-              {/* Card Header with Live Vitality Badge */}
-              <div className="flex items-center justify-between gap-2 pb-3 border-b border-green-900/10 dark:border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                    <Activity className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="font-display font-bold text-sm text-green-950 dark:text-white leading-tight">
-                      Botanical Vitality
-                    </h4>
-                    <span className="text-[10px] text-ink-500 dark:text-white/60 font-mono">
-                      Alandi Logistics Staging
-                    </span>
-                  </div>
-                </div>
+          {/* Main Display Headline: Modern Sans */}
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.02] sm:leading-[0.92] mb-3 drop-shadow-md">
+            {content.heroHeadline && content.heroHeadline.toLowerCase() !== "growth"
+              ? content.heroHeadline
+              : "Green Gallery"}
+          </h1>
 
-                <div className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold font-mono">
-                  +99.4%
-                </div>
-              </div>
+          {/* Editorial Serif Subtitle (MAI style graceful italic) */}
+          <div className="text-xl sm:text-3xl md:text-4xl font-serif italic text-amber-200/95 font-light tracking-wide mb-5 drop-shadow leading-snug">
+            Living Architecture &amp; Botanical Precision
+          </div>
 
-              {/* Solv-Style Filter Pills */}
-              <div className="flex items-center gap-1.5 my-3 p-1 rounded-xl bg-cream-100 dark:bg-black/30 border border-green-900/10 dark:border-white/10">
-                {(["Weekly", "Batch", "Soil pH"] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveMetricTab(tab)}
-                    className={`flex-1 py-1 px-2 rounded-lg text-[10px] font-bold transition-all ${
-                      activeMetricTab === tab
-                        ? "bg-green-950 dark:bg-emerald-600 text-white shadow-xs"
-                        : "text-ink-600 dark:text-white/70 hover:text-green-950 dark:hover:text-white"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
+          {/* Crisp Body Lead */}
+          <p className="text-white/85 text-sm sm:text-base md:text-lg font-light max-w-2xl leading-relaxed drop-shadow mx-auto sm:mx-0">
+            {content.heroDescription ||
+              "From large-scale commercial developer podiums to private villa sanctuaries. We design, source, plant, and nurture enduring green environments across Pune and Maharashtra."}
+          </p>
 
-              {/* Interactive Animated Metric Bars */}
-              <div className="space-y-2.5 pt-1">
-                {metricsData[activeMetricTab].map((item, idx) => {
-                  const percentage = "max" in item ? (item.val / (item.max || 8)) * 100 : item.val;
-                  return (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex justify-between text-[11px] font-medium text-ink-700 dark:text-white/80">
-                        <span>{item.label}</span>
-                        <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                          {"display" in item ? item.display : `${item.val}%`}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full rounded-full bg-cream-200/60 dark:bg-white/10 overflow-hidden">
-                        <div
-                          style={{ width: `${percentage}%` }}
-                          className={`h-full rounded-full ${item.color} animate-bar-grow transition-all duration-500`}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Bottom Card Summary Pill */}
-              <div className="mt-4 pt-3 border-t border-green-900/10 dark:border-white/10 flex items-center justify-between text-[11px] text-ink-600 dark:text-white/70">
-                <span className="flex items-center gap-1 font-mono text-[10px]">
-                  <Check className="w-3 h-3 text-emerald-500" />
-                  <span>100% Acclimatized Stock</span>
-                </span>
-                <Link
-                  href="/plants"
-                  className="font-bold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-0.5 text-[10px]"
-                >
-                  <span>View Nursery</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
+          {/* Planterly Key Indicators */}
+          <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs font-mono text-emerald-300/80">
+            <span className="flex items-center gap-1.5">
+              <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Native &amp; Acclimatized Species</span>
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5 text-amber-300" />
+              <span>3D Planning &amp; Civil Coordination</span>
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Guaranteed Plant Health</span>
+            </span>
           </div>
         </div>
 
         {/* BOTTOM CONTROLS & FLOATING ISLANDS */}
         <div
-          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-5 sm:gap-6 pt-5 border-t border-white/10 w-full transition-all duration-1000 delay-450 ease-out ${
+          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-5 sm:gap-6 pt-5 border-t border-white/10 w-full transition-all duration-1000 delay-300 ease-out ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
