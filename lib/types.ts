@@ -250,6 +250,8 @@ export interface Review {
   project?: string;
   date: string;
   verified: boolean;
+  approved?: boolean;
+  authorToken?: string;
   createdAt: string;
 }
 

@@ -13,7 +13,8 @@ import {
   Building2,
   Quote,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  UserCheck
 } from "lucide-react";
 import { Review } from "@/lib/types";
 import { initialReviews } from "@/lib/data";
@@ -24,6 +25,7 @@ export function ReviewsSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [visitorToken, setVisitorToken] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Form state
@@ -36,11 +38,36 @@ export function ReviewsSection() {
   const [comment, setComment] = useState("");
 
   useEffect(() => {
-    fetch("/api/reviews")
+    // 1. Initialize or load unique visitor token from localStorage
+    let token = "";
+    try {
+      token = localStorage.getItem("gg_visitor_token") || "";
+      if (!token) {
+        token = `vt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        localStorage.setItem("gg_visitor_token", token);
+      }
+      setVisitorToken(token);
+    } catch {}
+
+    // 2. Fetch reviews from API passing the visitor's authorToken
+    const url = token ? `/api/reviews?authorToken=${encodeURIComponent(token)}` : "/api/reviews";
+    fetch(url)
       .then((res) => res.json())
       .then((data) => {
         if (data && Array.isArray(data.reviews) && data.reviews.length > 0) {
-          setReviews(data.reviews);
+          // Merge with any locally saved pending reviews as offline fallback
+          try {
+            const localSaved: Review[] = JSON.parse(localStorage.getItem("gg_my_reviews") || "[]");
+            const combined = [...data.reviews];
+            localSaved.forEach((localRev) => {
+              if (!combined.some((r) => r.id === localRev.id)) {
+                combined.unshift(localRev);
+              }
+            });
+            setReviews(combined);
+          } catch {
+            setReviews(data.reviews);
+          }
         }
       })
       .catch(() => {});
@@ -56,7 +83,7 @@ export function ReviewsSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !comment.trim()) {
-      setSubmitError("Please provide your name and review comment.");
+      setSubmitError("Please provide your name and review message.");
       return;
     }
 
@@ -65,16 +92,18 @@ export function ReviewsSection() {
     setSubmitSuccess(false);
 
     try {
+      const currentToken = visitorToken || `vt_${Date.now()}`;
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          role: role.trim() || "Client",
+          role: role.trim() || "Visitor",
           company: company.trim() || undefined,
           rating,
           comment: comment.trim(),
           project: project.trim() || "Landscape & Botanical Services",
+          authorToken: currentToken,
         }),
       });
 
@@ -83,8 +112,15 @@ export function ReviewsSection() {
         throw new Error(data.error || "Failed to submit review.");
       }
 
-      // Optimistically add new review to start of list
-      setReviews((prev) => [data.review, ...prev]);
+      // Prepend the new review into reviews state for this visitor
+      setReviews((prev) => [data.review, ...prev.filter((r) => r.id !== data.review.id)]);
+
+      // Save to visitor's localStorage
+      try {
+        const existing = JSON.parse(localStorage.getItem("gg_my_reviews") || "[]");
+        localStorage.setItem("gg_my_reviews", JSON.stringify([data.review, ...existing]));
+      } catch {}
+
       setSubmitSuccess(true);
       setName("");
       setRole("");
@@ -105,14 +141,38 @@ export function ReviewsSection() {
     }
   };
 
+  // Duplicate items for continuous seamless loop
+  const marqueeItems = [...reviews, ...reviews];
+
   return (
-    <section className="relative w-full py-8 sm:py-12 border-t border-green-900/10 dark:border-white/10">
+    <section className="relative w-full py-10 sm:py-16 border-t border-green-900/10 dark:border-white/10 overflow-hidden">
+      {/* Dynamic Keyframes for 120fps GPU infinite marquee */}
+      <style jsx global>{`
+        @keyframes infiniteReviewsScroll {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+        .reviews-marquee-track {
+          display: flex;
+          width: max-content;
+          animation: infiniteReviewsScroll 48s linear infinite;
+          will-change: transform;
+        }
+        .reviews-marquee-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
       <div className="max-w-[1360px] mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-green-700 dark:text-emerald-400 mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400 mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
               <span>Verified Client Experiences &amp; Endorsements</span>
             </div>
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-green-950 dark:text-white tracking-tight">
@@ -153,95 +213,112 @@ export function ReviewsSection() {
                 setSubmitSuccess(false);
                 setSubmitError("");
               }}
-              className="px-4 py-2.5 rounded-full bg-green-950 hover:bg-green-900 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2.5 rounded-full bg-green-950 hover:bg-green-900 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-glow transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Leave a Review</span>
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Horizontal Side-Scroller Carousel */}
-        <div
-          ref={scrollRef}
-          className="flex items-stretch gap-5 overflow-x-auto pb-4 pt-2 snap-x snap-mandatory scroll-smooth no-scrollbar"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {reviews.map((rev) => (
-            <div
-              key={rev.id}
-              className="w-[300px] sm:w-[380px] shrink-0 snap-start bg-white dark:bg-[#07110B] rounded-3xl p-6 sm:p-7 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all flex flex-col justify-between group"
-            >
-              <div>
-                {/* Header: Stars + Verified Badge */}
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`w-4 h-4 ${
-                          star <= rev.rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "fill-gray-200 text-gray-200 dark:fill-gray-800 dark:text-gray-800"
-                        }`}
-                      />
-                    ))}
+      {/* INFINITE SIDE-SCROLLING MARQUEE CONTAINER */}
+      <div
+        ref={scrollRef}
+        className="w-full overflow-x-auto py-2 no-scrollbar cursor-grab active:cursor-grabbing"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        <div className="reviews-marquee-track gap-6 px-4">
+          {marqueeItems.map((rev, idx) => {
+            const isMyReview = Boolean(
+              rev.authorToken && visitorToken && rev.authorToken === visitorToken
+            );
+
+            return (
+              <div
+                key={`${rev.id}-${idx}`}
+                className={`w-[320px] sm:w-[390px] shrink-0 bg-white/90 dark:bg-[#07130D] rounded-3xl p-6 sm:p-7 border ${
+                  isMyReview
+                    ? "border-amber-500/60 shadow-amber-500/10 shadow-lg ring-1 ring-amber-400/40"
+                    : "border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow"
+                } transition-all duration-300 flex flex-col justify-between group select-none`}
+              >
+                <div>
+                  {/* Header: Stars + Verified / Author Badge */}
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            star <= rev.rating
+                              ? "fill-amber-400 text-amber-400"
+                              : "fill-gray-200 text-gray-200 dark:fill-gray-800 dark:text-gray-800"
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    {isMyReview ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-amber-900 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-400/40 font-bold">
+                        <UserCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                        <span>Your Review</span>
+                      </span>
+                    ) : rev.verified ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-medium">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        <span>Verified Client</span>
+                      </span>
+                    ) : null}
                   </div>
 
-                  {rev.verified && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      <span>Verified Client</span>
+                  {/* Project Tag if provided */}
+                  {rev.project && (
+                    <div className="mb-3">
+                      <span className="text-[10px] font-mono text-emerald-800 dark:text-emerald-300 font-semibold bg-cream-100 dark:bg-white/5 px-2.5 py-1 rounded-md border border-green-900/10 dark:border-white/10 block truncate">
+                        {rev.project}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Review Quote Text */}
+                  <p className="text-xs sm:text-sm text-ink-800 dark:text-white/85 leading-relaxed font-light italic mb-5">
+                    &ldquo;{rev.comment}&rdquo;
+                  </p>
+                </div>
+
+                {/* Reviewer Bio & Date */}
+                <div className="pt-4 border-t border-cream-200 dark:border-white/10 flex items-center justify-between gap-3">
+                  <div className="truncate">
+                    <div className="font-display font-bold text-sm text-green-950 dark:text-white truncate">
+                      {rev.name}
+                    </div>
+                    <div className="text-[11px] text-ink-600 dark:text-white/60 truncate">
+                      {rev.role}
+                      {rev.company ? ` · ${rev.company}` : ""}
+                    </div>
+                  </div>
+
+                  {rev.date && (
+                    <span className="text-[10px] font-mono text-ink-400 dark:text-white/40 shrink-0">
+                      {rev.date}
                     </span>
                   )}
                 </div>
-
-                {/* Project Tag if provided */}
-                {rev.project && (
-                  <div className="mb-3">
-                    <span className="text-[10px] font-mono text-emerald-800 dark:text-emerald-300 font-semibold bg-cream-100 dark:bg-white/5 px-2.5 py-1 rounded-md border border-green-900/10 dark:border-white/10 block truncate">
-                      {rev.project}
-                    </span>
-                  </div>
-                )}
-
-                {/* Review Quote Text */}
-                <p className="text-xs sm:text-sm text-ink-800 dark:text-white/85 leading-relaxed font-light italic mb-5">
-                  &ldquo;{rev.comment}&rdquo;
-                </p>
               </div>
-
-              {/* Reviewer Bio & Date */}
-              <div className="pt-4 border-t border-cream-200 dark:border-white/10 flex items-center justify-between gap-3">
-                <div className="truncate">
-                  <div className="font-display font-bold text-sm text-green-950 dark:text-white truncate">
-                    {rev.name}
-                  </div>
-                  <div className="text-[11px] text-ink-600 dark:text-white/60 truncate">
-                    {rev.role}
-                    {rev.company ? ` · ${rev.company}` : ""}
-                  </div>
-                </div>
-
-                {rev.date && (
-                  <span className="text-[10px] font-mono text-ink-400 dark:text-white/40 shrink-0">
-                    {rev.date}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom helper prompt */}
-        <div className="mt-3 flex items-center justify-between text-[11px] text-ink-500 dark:text-white/50 px-1">
-          <span>← Swipe or scroll horizontally to explore all client reviews →</span>
-          <span>{reviews.length} total reviews verified</span>
+            );
+          })}
         </div>
       </div>
 
+      {/* Helper Bar */}
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 mt-3 flex items-center justify-between text-[11px] text-ink-500 dark:text-white/50">
+        <span>Hover over any review card to pause infinite scroll</span>
+        <span>{reviews.length} total client reviews</span>
+      </div>
+
       {/* =================================================================== */}
-      {/* PUBLIC REVIEW SUBMISSION MODAL ("ANYONE CAN PLACE A REVIEW THERE")    */}
+      {/* PUBLIC REVIEW SUBMISSION MODAL                                      */}
       {/* =================================================================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
@@ -270,7 +347,7 @@ export function ReviewsSection() {
                 <div>
                   <div className="font-bold text-sm">Thank You for Your Feedback!</div>
                   <p className="mt-0.5">
-                    Your review has been published and added to our client showcase.
+                    Your review has been received and added immediately to your personal rotation on this device!
                   </p>
                 </div>
               </div>
@@ -299,16 +376,16 @@ export function ReviewsSection() {
                       className="p-1 cursor-pointer focus:outline-none transition-transform hover:scale-110"
                     >
                       <Star
-                        className={`w-6 h-6 ${
+                        className={`w-7 h-7 ${
                           star <= (hoverRating || rating)
-                            ? "fill-amber-400 text-amber-400"
-                            : "fill-gray-200 text-gray-300 dark:fill-gray-800 dark:text-gray-700"
-                        }`}
+                            ? "fill-amber-400 text-amber-400 drop-shadow-sm"
+                            : "fill-gray-200 text-gray-200 dark:fill-gray-800 dark:text-gray-800"
+                        } transition-colors`}
                       />
                     </button>
                   ))}
-                  <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 ml-2">
-                    {rating} out of 5 Stars
+                  <span className="ml-2 text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+                    {hoverRating || rating} / 5 Stars
                   </span>
                 </div>
               </div>
@@ -316,92 +393,97 @@ export function ReviewsSection() {
               {/* Name & Role */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
                     Your Name *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Vikram Sharma"
+                    placeholder="e.g. Ramesh Kulkarni"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/15 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1">
-                    Role / Capacity
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
+                    Role / Title
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Villa Owner / Principal Architect"
+                    placeholder="e.g. Villa Owner / Project Lead"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/15 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
-              {/* Organization & Project Scope */}
+              {/* Company / Society & Project */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1">
-                    Company / Society / Location
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
+                    Company / Society / Estate
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Koregaon Park / Baner Society"
+                    placeholder="e.g. Baner Hills Estate"
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/15 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1">
-                    Project / Service Availed
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
+                    Project Scope Handled
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Podium Landscape / Villa Garden"
+                    placeholder="e.g. Terrace Garden Execution"
                     value={project}
                     onChange={(e) => setProject(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/15 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               {/* Review Comment */}
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
                   Your Review &amp; Feedback *
                 </label>
                 <textarea
-                  required
                   rows={4}
-                  placeholder="Share your experience working with Green Gallery regarding design quality, plant health, timely execution, and ongoing care..."
+                  required
+                  placeholder="Share details of your experience with GreenGallery's team, plant quality, scheduling, or landscape execution..."
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/15 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500 leading-relaxed"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500 leading-relaxed"
                 />
+              </div>
+
+              <div className="p-3 rounded-xl bg-cream-100/60 dark:bg-white/5 border border-green-900/10 dark:border-white/10 text-[11px] text-ink-600 dark:text-white/60">
+                Notice: Your review will be immediately visible to you in the side-scroller on this device, and sent to GreenGallery operations for editorial verification.
               </div>
 
               <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs text-ink-500 dark:text-white/60 hover:text-ink-900 cursor-pointer"
+                  className="px-4 py-2 rounded-full text-xs text-ink-600 dark:text-white/70 hover:bg-cream-100 dark:hover:bg-white/10 font-medium transition-colors"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-full bg-green-950 hover:bg-green-900 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-glow transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2.5 rounded-full bg-green-950 hover:bg-green-900 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>{isSubmitting ? "Submitting..." : "Publish Review"}</span>
+                  <span>{isSubmitting ? "Submitting..." : "Submit Review"}</span>
                 </button>
               </div>
             </form>

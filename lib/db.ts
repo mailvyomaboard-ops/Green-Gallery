@@ -117,6 +117,16 @@ function readDb(): DatabaseSchema {
     }
     if (!parsed.reviews || parsed.reviews.length === 0) {
       parsed.reviews = initialReviews;
+    } else {
+      // Ensure the 7 flagship reviews exist and are approved
+      initialReviews.forEach((initRev) => {
+        const found = parsed.reviews!.find((r) => r.id === initRev.id);
+        if (!found) {
+          parsed.reviews!.push(initRev);
+        } else {
+          if (found.approved === undefined) found.approved = true;
+        }
+      });
     }
     // Ensure all products and inventory items are 100% synchronized with live stock
     if (parsed.inventory && Array.isArray(parsed.inventory)) {
@@ -1047,18 +1057,33 @@ export const architectureRepo = {
 
 export const reviewsRepo = {
   /**
-   * Returns all client reviews, sorted by creation date (newest first).
+   * Returns client reviews filtered by visibility.
+   * - If isAdmin: returns all reviews (both approved and pending moderation).
+   * - If visitor: returns all approved reviews PLUS any pending review authored by this visitor (authorToken).
    * Time Complexity: O(N log N) sort. Space Complexity: O(N).
    */
-  getAll(): Review[] {
+  getAll(authorToken?: string, isAdmin?: boolean): Review[] {
     const db = readDb();
     const reviews = db.reviews || initialReviews;
-    return [...reviews].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    let filtered = reviews;
+    if (!isAdmin) {
+      filtered = reviews.filter((r) => {
+        // Show if approved (or legacy reviews without approved field set)
+        if (r.approved !== false) return true;
+        // Show if authored by this specific visitor
+        if (authorToken && r.authorToken && r.authorToken === authorToken) return true;
+        return false;
+      });
+    }
+
+    return [...filtered].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   },
 
   /**
-   * Creates and persists a new public review.
-   * Input is thoroughly sanitized to prevent XSS / markup injection.
+   * Creates and persists a new review.
+   * If submitted by Admin, approved defaults to true.
+   * If submitted by a public visitor, approved defaults to false, and authorToken is bound.
    * Time Complexity: O(N) atomic file write. Space Complexity: O(1).
    */
   create(data: {
@@ -1068,6 +1093,10 @@ export const reviewsRepo = {
     rating: number;
     comment: string;
     project?: string;
+    date?: string;
+    verified?: boolean;
+    approved?: boolean;
+    authorToken?: string;
   }): Review {
     const db = readDb();
     if (!db.reviews) {
@@ -1076,7 +1105,7 @@ export const reviewsRepo = {
 
     const id = `rev-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
     const now = new Date();
-    const monthYear = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+    const monthYear = data.date?.trim() || now.toLocaleString("en-US", { month: "long", year: "numeric" });
     const clampedRating = Math.max(1, Math.min(5, Math.round(Number(data.rating) || 5)));
 
     const newReview: Review = {
@@ -1088,13 +1117,32 @@ export const reviewsRepo = {
       comment: data.comment?.trim().substring(0, 1000) || "",
       project: data.project?.trim().substring(0, 150) || undefined,
       date: monthYear,
-      verified: true,
+      verified: data.verified !== undefined ? Boolean(data.verified) : true,
+      approved: data.approved !== undefined ? Boolean(data.approved) : false,
+      authorToken: data.authorToken,
       createdAt: now.toISOString(),
     };
 
     db.reviews.unshift(newReview);
     writeDb(db);
     return newReview;
+  },
+
+  /**
+   * Updates an existing review (Admin operations: edit author, rating, text, or approval).
+   */
+  update(id: string, updates: Partial<Review>): Review | null {
+    const db = readDb();
+    if (!db.reviews) db.reviews = [...initialReviews];
+    const index = db.reviews.findIndex((r) => r.id === id);
+    if (index === -1) return null;
+
+    db.reviews[index] = {
+      ...db.reviews[index],
+      ...updates,
+    };
+    writeDb(db);
+    return db.reviews[index];
   },
 
   /**
@@ -1122,6 +1170,19 @@ export const reviewsRepo = {
     const rev = db.reviews.find((r) => r.id === id);
     if (!rev) return null;
     rev.verified = !rev.verified;
+    writeDb(db);
+    return rev;
+  },
+
+  /**
+   * Toggles approved status for a review.
+   */
+  toggleApproved(id: string): Review | null {
+    const db = readDb();
+    if (!db.reviews) return null;
+    const rev = db.reviews.find((r) => r.id === id);
+    if (!rev) return null;
+    rev.approved = !rev.approved;
     writeDb(db);
     return rev;
   },

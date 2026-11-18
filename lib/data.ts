@@ -1156,6 +1156,7 @@ export const initialReviews: Review[] = [
     project: "Central Park Landscape Execution (85,000 sq. ft.)",
     date: "October 2024",
     verified: true,
+    approved: true,
     createdAt: "2024-10-15T00:00:00Z"
   },
   {
@@ -1168,6 +1169,7 @@ export const initialReviews: Review[] = [
     project: "Cantilevered Biophilic Podium Architecture",
     date: "September 2024",
     verified: true,
+    approved: true,
     createdAt: "2024-09-20T00:00:00Z"
   },
   {
@@ -1180,6 +1182,7 @@ export const initialReviews: Review[] = [
     project: "Private Architectural Villa Garden (18,500 sq. ft.)",
     date: "November 2024",
     verified: true,
+    approved: true,
     createdAt: "2024-11-02T00:00:00Z"
   },
   {
@@ -1192,6 +1195,7 @@ export const initialReviews: Review[] = [
     project: "Silver Gracia Signature Podium Deck",
     date: "August 2024",
     verified: true,
+    approved: true,
     createdAt: "2024-08-18T00:00:00Z"
   },
   {
@@ -1204,6 +1208,7 @@ export const initialReviews: Review[] = [
     project: "Society Common Grounds Rejuvenation & AMC",
     date: "November 2024",
     verified: true,
+    approved: true,
     createdAt: "2024-11-10T00:00:00Z"
   },
   {
@@ -1216,7 +1221,21 @@ export const initialReviews: Review[] = [
     project: "Aromatic Fragrance Courtyard & Slope Stabilization",
     date: "July 2024",
     verified: true,
+    approved: true,
     createdAt: "2024-07-28T00:00:00Z"
+  },
+  {
+    id: "rev-7",
+    name: "Rohan & Priyadarshini Khandelwal",
+    role: "Penthouse Residents",
+    company: "Shevi Sky Terraces, Balewadi",
+    rating: 5,
+    comment: "Our 2,400 sq. ft. rooftop was transformed into a breathtaking sanctuary with weather-hardy lightweight planters, automated cooling mist lines, and clumping privacy bamboo hedges. Exceptional attention to aesthetic detail.",
+    project: "Sky Terrace Penthouse Botanical Haven",
+    date: "December 2024",
+    verified: true,
+    approved: true,
+    createdAt: "2024-12-05T00:00:00Z"
   }
 ];
 

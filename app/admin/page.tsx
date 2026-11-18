@@ -224,6 +224,19 @@ export default function AdminPage() {
 
   // Client Reviews state
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [reviewForm, setReviewForm] = useState({
+    name: "",
+    role: "Client",
+    company: "",
+    rating: 5,
+    comment: "",
+    project: "",
+    date: "",
+    verified: true,
+    approved: true,
+  });
 
   // Multi-Page CMS state
   const [siteContent, setSiteContent] = useState<SiteContent>(defaultSiteContent);
@@ -1160,6 +1173,119 @@ export default function AdminPage() {
   // ---------------------------------------------------------------------------
   // CLIENT REVIEWS & FEEDBACK ACTIONS
   // ---------------------------------------------------------------------------
+  const openReviewModal = (rev?: Review) => {
+    if (rev) {
+      setEditingReview(rev);
+      setReviewForm({
+        name: rev.name || "",
+        role: rev.role || "Client",
+        company: rev.company || "",
+        rating: rev.rating || 5,
+        comment: rev.comment || "",
+        project: rev.project || "",
+        date: rev.date || "",
+        verified: rev.verified !== undefined ? rev.verified : true,
+        approved: rev.approved !== false,
+      });
+    } else {
+      setEditingReview(null);
+      const now = new Date();
+      const monthYear = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+      setReviewForm({
+        name: "",
+        role: "Client",
+        company: "",
+        rating: 5,
+        comment: "",
+        project: "Landscape & Botanical Execution",
+        date: monthYear,
+        verified: true,
+        approved: true,
+      });
+    }
+    setShowReviewModal(true);
+  };
+
+  const handleSaveReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name.trim() || !reviewForm.comment.trim()) {
+      alert("Name and review feedback comment are required.");
+      return;
+    }
+
+    try {
+      if (editingReview) {
+        const res = await fetch("/api/reviews", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: editingReview.id,
+            ...reviewForm,
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.review) {
+          setReviews((prev) => prev.map((r) => (r.id === editingReview.id ? data.review : r)));
+          setShowReviewModal(false);
+          setEditingReview(null);
+        } else {
+          alert(data.error || "Failed to update review");
+        }
+      } else {
+        const res = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(reviewForm),
+        });
+        const data = await res.json();
+        if (data.success && data.review) {
+          setReviews((prev) => [data.review, ...prev]);
+          setShowReviewModal(false);
+        } else {
+          alert(data.error || "Failed to create review");
+        }
+      }
+    } catch (e: any) {
+      alert("Error saving review: " + e.message);
+    }
+  };
+
+  const handleToggleApprovedReview = async (id: string) => {
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "toggleApproved" }),
+      });
+      const data = await res.json();
+      if (data.success && data.review) {
+        setReviews((prev) => prev.map((r) => (r.id === id ? data.review : r)));
+      } else {
+        alert(data.error || "Failed to update review approval status");
+      }
+    } catch (e: any) {
+      alert("Error updating review approval: " + e.message);
+    }
+  };
+
+  const handleToggleVerifiedReview = async (id: string) => {
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "toggleVerified" }),
+      });
+      const data = await res.json();
+      if (data.success && data.review) {
+        setReviews((prev) => prev.map((r) => (r.id === id ? data.review : r)));
+      } else {
+        alert(data.error || "Failed to update review status");
+      }
+    } catch (e: any) {
+      alert("Error updating review: " + e.message);
+    }
+  };
+
   const handleDeleteReview = async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete review from "${name}"?`)) return;
     try {
@@ -1172,20 +1298,6 @@ export default function AdminPage() {
       }
     } catch (e: any) {
       alert("Error deleting review: " + e.message);
-    }
-  };
-
-  const handleToggleVerifiedReview = async (id: string) => {
-    try {
-      const res = await fetch(`/api/reviews?id=${encodeURIComponent(id)}`, { method: "PATCH" });
-      const data = await res.json();
-      if (data.success && data.review) {
-        setReviews((prev) => prev.map((r) => (r.id === id ? data.review : r)));
-      } else {
-        alert(data.error || "Failed to update review status");
-      }
-    } catch (e: any) {
-      alert("Error updating review: " + e.message);
     }
   };
 
@@ -2787,94 +2899,162 @@ export default function AdminPage() {
             <div className="pb-4 border-b border-[#283618]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
-                  Client Feedback &amp; Testimonials
+                  Client Feedback, Testimonials &amp; Moderation
                 </span>
                 <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
                   Client Reviews &amp; Endorsements ({reviews.length})
                 </h2>
                 <p className="text-xs text-ink-600 mt-1">
-                  Reviews submitted through the homepage horizontal feedback scroller. You can toggle verification or delete spam.
+                  Manage infinite marquee reviews. Public visitor submissions appear here for moderation, and are visible to the author on their device.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <span className="text-xs font-mono font-semibold text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-full">
-                  ★ Average Rating: {(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)).toFixed(1)} / 5.0
+                  ★ Avg Rating: {(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)).toFixed(1)} / 5.0
                 </span>
+
+                <button
+                  type="button"
+                  onClick={() => openReviewModal()}
+                  className="px-3.5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-medium rounded-brand shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add New Review</span>
+                </button>
               </div>
+            </div>
+
+            {/* Status Metric Pills */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-medium">
+                {reviews.filter((r) => r.approved !== false).length} Approved &amp; Live for All
+              </span>
+              <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-medium">
+                {reviews.filter((r) => r.approved === false).length} Pending Moderation (Private to Author)
+              </span>
             </div>
 
             {/* Reviews List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reviews.map((rev) => (
-                <div
-                  key={rev.id}
-                  className="bg-white border border-[#283618]/15 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow"
-                >
-                  <div className="space-y-3">
-                    {/* Stars + Verified Status */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`w-3.5 h-3.5 ${
-                              star <= rev.rating
-                                ? "fill-amber-400 text-amber-400"
-                                : "fill-gray-200 text-gray-200"
+              {reviews.map((rev) => {
+                const isPending = rev.approved === false;
+
+                return (
+                  <div
+                    key={rev.id}
+                    className={`bg-white border ${
+                      isPending ? "border-amber-400 ring-1 ring-amber-300" : "border-[#283618]/15"
+                    } rounded-brand p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow`}
+                  >
+                    <div className="space-y-3">
+                      {/* Top Badges: Stars + Approval Status + Verified Status */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-3.5 h-3.5 ${
+                                star <= rev.rating
+                                  ? "fill-amber-400 text-amber-400"
+                                  : "fill-gray-200 text-gray-200"
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          {isPending ? (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-bold">
+                              Pending Approval
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300">
+                              ✓ Live
+                            </span>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => handleToggleVerifiedReview(rev.id)}
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${
+                              rev.verified
+                                ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                                : "bg-gray-100 text-gray-600 border-gray-300"
                             }`}
-                          />
-                        ))}
+                            title="Click to toggle verified badge"
+                          >
+                            {rev.verified ? "Verified" : "Unverified"}
+                          </button>
+                        </div>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleToggleVerifiedReview(rev.id)}
-                        className={`text-[10px] font-mono px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${
-                          rev.verified
-                            ? "bg-emerald-50 text-emerald-800 border-emerald-300"
-                            : "bg-gray-100 text-gray-600 border-gray-300"
-                        }`}
-                        title="Click to toggle verified badge"
-                      >
-                        {rev.verified ? "✓ Verified" : "Unverified"}
-                      </button>
+                      {/* Review text */}
+                      <p className="text-xs text-ink-800 font-light italic leading-relaxed">
+                        &ldquo;{rev.comment}&rdquo;
+                      </p>
+
+                      {/* Project tag */}
+                      {rev.project && (
+                        <div className="text-[10px] font-mono text-emerald-800 bg-emerald-50/70 px-2 py-0.5 rounded border border-emerald-200 truncate">
+                          Scope: {rev.project}
+                        </div>
+                      )}
+
+                      {rev.authorToken && (
+                        <div className="text-[9px] font-mono text-ink-400 truncate">
+                          Author Token: {rev.authorToken.substring(0, 16)}... (Visible to author on device)
+                        </div>
+                      )}
                     </div>
 
-                    {/* Review text */}
-                    <p className="text-xs text-ink-800 font-light italic leading-relaxed">
-                      &ldquo;{rev.comment}&rdquo;
-                    </p>
-
-                    {/* Project tag */}
-                    {rev.project && (
-                      <div className="text-[10px] font-mono text-emerald-800 bg-emerald-50/70 px-2 py-0.5 rounded border border-emerald-200 truncate">
-                        Scope: {rev.project}
+                    {/* Reviewer Details & Actions */}
+                    <div className="pt-4 mt-4 border-t border-[#283618]/10 space-y-3">
+                      <div className="truncate">
+                        <div className="font-serif font-bold text-green-950 truncate">{rev.name}</div>
+                        <div className="text-[11px] text-ink-600 truncate">
+                          {rev.role}
+                          {rev.company ? ` · ${rev.company}` : ""}
+                        </div>
+                        <div className="text-[10px] font-mono text-ink-400 mt-0.5">{rev.date}</div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Reviewer Details & Delete */}
-                  <div className="pt-4 mt-4 border-t border-[#283618]/10 flex items-center justify-between gap-3 text-xs">
-                    <div className="truncate">
-                      <div className="font-serif font-bold text-green-950 truncate">{rev.name}</div>
-                      <div className="text-[11px] text-ink-600 truncate">
-                        {rev.role}
-                        {rev.company ? ` · ${rev.company}` : ""}
+                      <div className="flex items-center justify-between gap-1.5 pt-1 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openReviewModal(rev)}
+                            className="px-2.5 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer flex items-center gap-1 text-[11px]"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>Edit</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleToggleApprovedReview(rev.id)}
+                            className={`px-2.5 py-1 rounded border font-medium cursor-pointer text-[11px] transition-colors ${
+                              isPending
+                                ? "bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600"
+                                : "bg-cream-100 text-ink-700 hover:bg-cream-200 border-[#283618]/15"
+                            }`}
+                          >
+                            {isPending ? "Approve for Public" : "Unapprove"}
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteReview(rev.id, rev.name)}
+                          className="px-2.5 py-1 text-red-700 hover:bg-red-50 rounded border border-red-200 cursor-pointer text-[11px] font-medium transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
-                      <div className="text-[10px] font-mono text-ink-400 mt-0.5">{rev.date}</div>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteReview(rev.id, rev.name)}
-                      className="px-2.5 py-1 text-red-700 hover:bg-red-50 rounded border border-red-200 cursor-pointer text-[11px] font-medium shrink-0 transition-colors"
-                    >
-                      Delete
-                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {reviews.length === 0 && (
@@ -5157,6 +5337,168 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+      {/* ================================================================= */}
+      {/* MODAL 6: ADD / EDIT CLIENT REVIEW                                 */}
+      {/* ================================================================= */}
+      {showReviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-[#283618]/15 rounded-2xl p-5 sm:p-7 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#283618]/10 mb-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-800 font-bold">
+                  Testimonial Operations
+                </span>
+                <h3 className="text-lg font-serif font-bold text-green-950">
+                  {editingReview ? `Edit Review from ${editingReview.name}` : "Add New Client Review"}
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowReviewModal(false);
+                  setEditingReview(null);
+                }}
+                className="text-ink-500 hover:text-ink-900 cursor-pointer p-1 rounded-lg hover:bg-cream-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveReview} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Client Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Rajeev Deshmukh"
+                    value={reviewForm.name}
+                    onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Role / Designation</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Project Director / Villa Owner"
+                    value={reviewForm.role}
+                    onChange={(e) => setReviewForm({ ...reviewForm, role: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Company / Society / Estate</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Nirman Greens / Baner Residence"
+                    value={reviewForm.company}
+                    onChange={(e) => setReviewForm({ ...reviewForm, company: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Rating (1 to 5 Stars)</label>
+                  <select
+                    value={reviewForm.rating}
+                    onChange={(e) => setReviewForm({ ...reviewForm, rating: Number(e.target.value) || 5 })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  >
+                    <option value={5}>★★★★★ 5 Stars (Exceptional)</option>
+                    <option value={4}>★★★★☆ 4 Stars (Very Good)</option>
+                    <option value={3}>★★★☆☆ 3 Stars (Good)</option>
+                    <option value={2}>★★☆☆☆ 2 Stars (Fair)</option>
+                    <option value={1}>★☆☆☆☆ 1 Star (Poor)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Project Scope / Tag</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Central Park Landscape (85k sq. ft.)"
+                    value={reviewForm.project}
+                    onChange={(e) => setReviewForm({ ...reviewForm, project: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Review Date</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. October 2024"
+                    value={reviewForm.date}
+                    onChange={(e) => setReviewForm({ ...reviewForm, date: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-ink-700 mb-1">Review Feedback Comment *</label>
+                <textarea
+                  rows={4}
+                  required
+                  placeholder="Review narrative and botanical feedback..."
+                  value={reviewForm.comment}
+                  onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900 leading-relaxed"
+                />
+              </div>
+
+              {/* Status Toggles */}
+              <div className="grid grid-cols-2 gap-3 p-3 bg-cream-50 rounded-xl border border-[#283618]/10 text-xs">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={reviewForm.verified}
+                    onChange={(e) => setReviewForm({ ...reviewForm, verified: e.target.checked })}
+                    className="w-4 h-4 text-green-900 rounded focus:ring-green-900"
+                  />
+                  <span className="font-medium text-ink-800">Verified Client Badge</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={reviewForm.approved}
+                    onChange={(e) => setReviewForm({ ...reviewForm, approved: e.target.checked })}
+                    className="w-4 h-4 text-green-900 rounded focus:ring-green-900"
+                  />
+                  <span className="font-medium text-ink-800">Approved for Public Showcase</span>
+                </label>
+              </div>
+
+              <div className="pt-3 border-t border-[#283618]/10 flex items-center justify-end gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReviewModal(false);
+                    setEditingReview(null);
+                  }}
+                  className="px-4 py-2 text-ink-500 hover:text-ink-900 cursor-pointer font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-green-950 hover:bg-green-900 text-white font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer transition-all"
+                >
+                  {editingReview ? "Save Review Changes" : "Publish Review"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ================================================================= */}
       {selectedLead && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
