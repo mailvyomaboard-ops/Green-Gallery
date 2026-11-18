@@ -4,7 +4,8 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { defaultSiteContent, SiteContent } from "@/lib/types";
-import { ArrowUpRight, Sparkles, MapPin, ChevronDown, Leaf, Compass, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, Sparkles, MapPin, Leaf, Compass, ShieldCheck, Box } from "lucide-react";
+import { Botanical3DViewer } from "./Botanical3DViewer";
 
 export function Hero({ initialContent }: { initialContent?: SiteContent }) {
   const [content, setContent] = useState<SiteContent>(initialContent || defaultSiteContent);
@@ -48,10 +49,10 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
   const heroOpacity = 1 - scrollProgress * 0.15; // Smooth focus transition
 
   return (
-    <section ref={heroRef} className="px-3 sm:px-6 pt-2 pb-8 max-w-[1240px] mx-auto overflow-hidden">
+    <section ref={heroRef} className="px-3 sm:px-6 pt-2 pb-8 max-w-[1280px] mx-auto overflow-hidden">
       {/* 
         Saturated Rainforest Canopy Hero Box:
-        Framed in deep lush foliage with subtle scroll-linked spatial depth and 120fps motion
+        Dual-column Apple/Linear layout featuring interactive 3D WebGL botanical specimen
       */}
       <div
         style={{
@@ -59,7 +60,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
           opacity: heroOpacity,
           willChange: "transform, opacity",
         }}
-        className="relative w-full min-h-[600px] sm:min-h-[660px] md:min-h-[720px] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-[#04110A] shadow-2xl flex flex-col justify-between p-6 sm:p-10 md:p-14 border border-emerald-500/25 transition-transform duration-75 ease-out"
+        className="relative w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-[#04110A] shadow-2xl flex flex-col justify-between p-6 sm:p-10 md:p-12 border border-emerald-500/25 transition-transform duration-75 ease-out"
       >
         {/* PARALLAX BOTANICAL CANOPY BACKGROUND */}
         <div
@@ -75,7 +76,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
             fill
             priority
             className="object-cover object-center"
-            sizes="(max-width: 1240px) 100vw, 1240px"
+            sizes="(max-width: 1280px) 100vw, 1280px"
           />
           {/* Multi-layered cinematic rich emerald gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#030E07]/85 via-[#082216]/65 to-[#04110A]/95" />
@@ -84,27 +85,22 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
 
         {/* ORGANIC BOTANICAL FLOATING LEAF MOTIFS (120FPS GPU SWAY) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-10 opacity-70">
-          {/* Floating Leaf 1: Top Right */}
           <div className="absolute -top-12 -right-12 w-64 h-64 animate-botanical-sway text-emerald-400/15">
             <svg viewBox="0 0 200 200" fill="currentColor" className="w-full h-full drop-shadow-xl">
               <path d="M42.7,-72.1C54.9,-67.2,64.2,-55.8,71.2,-43.3C78.2,-30.8,82.8,-17.2,82.1,-3.9C81.4,9.4,75.4,22.4,68.4,34.8C61.4,47.2,53.4,59,42.2,66.8C31,74.6,16.5,78.4,2.2,75.1C-12.1,71.8,-26.2,61.4,-38.4,51.8C-50.6,42.2,-60.9,33.4,-68.8,21.9C-76.7,10.4,-82.2,-3.8,-79.8,-16.9C-77.4,-30,-67.1,-42,-55.1,-47.3C-43.1,-52.6,-29.4,-51.2,-17,-56.3C-4.6,-61.4,6.5,-73,19.2,-77.3C31.9,-81.6,46.2,-78.6,42.7,-72.1Z" transform="translate(100 100)" />
             </svg>
           </div>
-
-          {/* Floating Leaf 2: Bottom Left */}
           <div className="absolute -bottom-20 -left-16 w-80 h-80 animate-botanical-sway-slow text-emerald-600/10">
             <svg viewBox="0 0 200 200" fill="currentColor" className="w-full h-full">
               <path d="M45.7,-76.3C58.3,-71.4,67.1,-57.9,73.4,-43.8C79.7,-29.7,83.5,-15,82.2,-0.7C80.9,13.6,74.5,27.5,66.6,39.9C58.7,52.3,49.3,63.2,37.3,70.8C25.3,78.4,10.7,82.7,-3.7,88.4C-18.1,94.1,-32.3,101.2,-43.8,94.8C-55.3,88.4,-64.1,68.5,-71.2,51.1C-78.3,33.7,-83.7,18.8,-83.2,4.1C-82.7,-10.6,-76.3,-25.1,-68.1,-37.8C-59.9,-50.5,-49.9,-61.4,-37.8,-66.6C-25.7,-71.8,-11.5,-71.3,2.7,-75.4C16.9,-79.5,33.1,-81.2,45.7,-76.3Z" transform="translate(100 100)" />
             </svg>
           </div>
-
-          {/* Micro Ambient Botanical Vein Grid */}
           <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:32px_32px] opacity-10" />
         </div>
 
         {/* TOP STATUS BAR: DUAL PILLS */}
         <div
-          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 w-full text-center sm:text-left transition-all duration-700 ease-out ${
+          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 w-full text-center sm:text-left mb-6 transition-all duration-700 ease-out ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
           }`}
         >
@@ -121,138 +117,128 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
             </span>
           </div>
 
-          {/* Right Pill: Staging Logistics Depot */}
-          <div className="hidden sm:inline-flex items-center gap-2 text-xs font-sans text-emerald-200/90 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-emerald-500/20 shadow-xs">
-            <MapPin className="w-3.5 h-3.5 text-emerald-400 animate-bounce" />
-            <span className="font-mono text-[11px]">Central Staging Depot • Alandi, Pune</span>
+          {/* Right Pill: 3D Lab Notification */}
+          <div className="inline-flex items-center gap-2 text-xs font-sans text-emerald-200/90 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-emerald-500/20 shadow-xs">
+            <Box className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
+            <span className="font-mono text-[11px]">Interactive 3D Botanical Engine • Drag to Orbit</span>
           </div>
         </div>
 
-        {/* CENTRAL HERO TYPOGRAPHIC CORE */}
-        <div
-          className={`relative z-20 my-auto py-8 sm:py-12 max-w-4xl text-center sm:text-left flex flex-col items-center sm:items-start mx-auto sm:mx-0 transition-all duration-1000 delay-150 ease-out ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          {/* Botanical Insignia & Brand Header */}
-          <div className="flex items-center gap-3.5 mb-5 group">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-amber-400/60 bg-[#08150E] shadow-2xl p-0.5 shrink-0 animate-pulse-glow transition-transform group-hover:scale-105 duration-300">
-              <Image
-                src="/images/emblem.jpg"
-                alt="GreenGallery Insignia"
-                fill
-                className="object-cover rounded-full"
-                priority
-                sizes="56px"
-              />
+        {/* CENTRAL DUAL-COLUMN GRID: TYPOGRAPHY + INTERACTIVE 3D BOTANICAL CANVAS */}
+        <div className="relative z-20 my-auto py-2 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          {/* LEFT COLUMN: TYPOGRAPHY & BRAND CORE */}
+          <div
+            className={`lg:col-span-6 text-center sm:text-left flex flex-col items-center sm:items-start transition-all duration-1000 delay-150 ease-out ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+          >
+            {/* Botanical Insignia & Brand Header */}
+            <div className="flex items-center gap-3.5 mb-4 group">
+              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-amber-400/60 bg-[#08150E] shadow-2xl p-0.5 shrink-0 animate-pulse-glow transition-transform group-hover:scale-105 duration-300">
+                <Image
+                  src="/images/emblem.jpg"
+                  alt="GreenGallery Insignia"
+                  fill
+                  className="object-cover rounded-full"
+                  priority
+                  sizes="56px"
+                />
+              </div>
+              <div className="text-left">
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 font-mono">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
+                  <span>Cultivating Living Environments</span>
+                </span>
+                <span className="text-xs sm:text-sm text-amber-200/90 font-serif italic tracking-wide block">
+                  Turnkey Landscapes • Commercial &amp; Residential
+                </span>
+              </div>
             </div>
-            <div className="text-left">
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 font-mono">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
-                <span>Cultivating Living Environments</span>
+
+            {/* Main Giant Display Headline */}
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-black tracking-tight text-white leading-[1.02] sm:leading-[0.94] mb-3 drop-shadow-md">
+              {content.heroHeadline && content.heroHeadline.toLowerCase() !== "growth"
+                ? content.heroHeadline
+                : "Green Gallery"}
+            </h1>
+
+            {/* Editorial Serif Subtitle */}
+            <div className="text-base sm:text-xl md:text-2xl font-serif italic text-amber-200/95 font-light tracking-wide mb-4 drop-shadow">
+              Living Architecture &amp; Botanical Precision
+            </div>
+
+            {/* Crisp Body Lead */}
+            <p className="text-white/85 text-xs sm:text-sm md:text-base font-light max-w-xl leading-relaxed drop-shadow mx-auto sm:mx-0 mb-6">
+              {content.heroDescription ||
+                "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban botanical retreats. We engineer, plant, and nurture enduring green landscapes across Pune and Maharashtra."}
+            </p>
+
+            {/* Planterly Key Indicators */}
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs font-mono text-emerald-300/80 mb-6">
+              <span className="flex items-center gap-1.5">
+                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Native Specimen Flora</span>
               </span>
-              <span className="text-xs sm:text-sm text-amber-200/90 font-serif italic tracking-wide block">
-                Turnkey Landscapes • Commercial &amp; Residential
+              <span className="text-white/30">•</span>
+              <span className="flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-amber-300" />
+                <span>3D Planning &amp; Civil Sync</span>
               </span>
+              <span className="text-white/30">•</span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Guaranteed Plant Health</span>
+              </span>
+            </div>
+
+            {/* Action CTAs: Apple/Linear-Styled Tactile Pill Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+              <Link
+                href="/services"
+                className="relative overflow-hidden group w-full sm:w-auto min-h-[46px] px-6 py-2.5 bg-white hover:bg-cream-50 active:scale-[0.98] text-green-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-2 border border-white/40"
+              >
+                <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000" />
+                <span className="relative z-10">{content.primaryButtonText || "Explore Services"}</span>
+                <ArrowUpRight className="relative z-10 w-4 h-4 text-green-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+
+              <Link
+                href="/contact?type=consultation"
+                className="relative overflow-hidden group w-full sm:w-auto min-h-[46px] px-6 py-2.5 bg-emerald-600/80 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-full border border-emerald-400/40 backdrop-blur-md shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <span className="relative z-10">{content.secondaryButtonText || "Book Consultation"}</span>
+              </Link>
             </div>
           </div>
 
-          {/* Main Giant Display Headline */}
-          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.02] sm:leading-[0.92] mb-3 drop-shadow-md">
-            {content.heroHeadline && content.heroHeadline.toLowerCase() !== "growth"
-              ? content.heroHeadline
-              : "Green Gallery"}
-          </h1>
-
-          {/* Editorial Serif Subtitle */}
-          <div className="text-lg sm:text-2xl md:text-3xl font-serif italic text-amber-200/95 font-light tracking-wide mb-5 drop-shadow">
-            Living Architecture &amp; Botanical Precision
-          </div>
-
-          {/* Crisp Body Lead */}
-          <p className="text-white/85 text-sm sm:text-base md:text-lg font-light max-w-2xl leading-relaxed drop-shadow mx-auto sm:mx-0">
-            {content.heroDescription ||
-              "From large-scale commercial campuses and developer podiums to private bungalow sanctuaries and urban botanical retreats. We engineer, plant, and nurture enduring green landscapes across Pune and Maharashtra."}
-          </p>
-
-          {/* Planterly Key Indicators */}
-          <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs font-mono text-emerald-300/80">
-            <span className="flex items-center gap-1.5">
-              <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Native &amp; Acclimatized Species</span>
-            </span>
-            <span className="hidden sm:inline text-white/30">•</span>
-            <span className="flex items-center gap-1.5">
-              <Compass className="w-3.5 h-3.5 text-amber-300" />
-              <span>3D Planning &amp; Civil Coordination</span>
-            </span>
-            <span className="hidden sm:inline text-white/30">•</span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Guaranteed Plant Health</span>
-            </span>
+          {/* RIGHT COLUMN: INTERACTIVE 3D WEBGL BOTANICAL CANVAS */}
+          <div
+            className={`lg:col-span-6 w-full transition-all duration-1000 delay-300 ease-out ${
+              mounted ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            }`}
+          >
+            <Botanical3DViewer
+              initialPlant="tree"
+              enableScrollRotation={true}
+              className="w-full shadow-2xl"
+            />
           </div>
         </div>
 
-        {/* BOTTOM CONTROLS & FLOATING ISLANDS */}
+        {/* BOTTOM FLOATING LOGISTICS TICKER */}
         <div
-          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-5 sm:gap-6 pt-5 border-t border-white/10 w-full transition-all duration-1000 delay-300 ease-out ${
+          className={`relative z-20 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 mt-6 border-t border-white/10 w-full transition-all duration-1000 delay-500 ease-out ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          {/* Left Inset Card: Specimen Flora Network */}
-          <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 p-3 sm:p-4 rounded-2xl flex items-center gap-4 w-full sm:max-w-sm text-left shadow-lg transition-all group">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-emerald-950 border border-emerald-400/30 shrink-0 group-hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/images/frames/ezgif-frame-003.jpg"
-                alt="Acclimatized specimen flora in GreenGallery nursery"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div>
-              <div className="font-display font-bold text-white text-sm sm:text-base leading-tight flex items-center gap-1.5">
-                <span>
-                  {content.heroStatCount && !content.heroStatCount.includes("Pune")
-                    ? content.heroStatCount
-                    : "100+ Turnkey Projects"}
-                </span>
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              </div>
-              <p className="text-white/70 text-xs font-light leading-snug mt-0.5">
-                {content.heroStatLabel ||
-                  "Dedicated logistics staging depot, verified specimen nurseries, and turnkey execution crews."}
-              </p>
-            </div>
+          <div className="flex items-center gap-3 text-xs text-white/80">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-semibold text-white">Central Logistical Staging Hub:</span>
+            <span className="text-white/70">Alandi, Pune • Plant Conditioning &amp; Direct Site Dispatch</span>
           </div>
 
-          {/* Right Action CTAs: Apple/Linear-Styled Tactile Pill Buttons */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-            {/* Primary Action Button with Tactile Hover Lift & Glossy Sheen */}
-            <Link
-              href="/services"
-              className="relative overflow-hidden group w-full sm:w-auto min-h-[48px] px-7 py-3 bg-white hover:bg-cream-50 active:scale-[0.98] text-green-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-2 border border-white/40"
-            >
-              {/* Glossy sweep effect */}
-              <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000" />
-              <span className="relative z-10">{content.primaryButtonText || "Explore Services"}</span>
-              <ArrowUpRight className="relative z-10 w-4 h-4 text-green-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </Link>
-
-            {/* Secondary Consultation Button */}
-            <Link
-              href="/contact?type=consultation"
-              className="relative overflow-hidden group w-full sm:w-auto min-h-[48px] px-7 py-3 bg-emerald-600/80 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-full border border-emerald-400/40 backdrop-blur-md shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <span className="relative z-10">{content.secondaryButtonText || "Book Consultation"}</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* AMBIENT SCROLL-DOWN INDICATOR */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center pointer-events-none opacity-60 hover:opacity-100 transition-opacity">
-          <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1 bg-black/20 backdrop-blur-xs">
-            <div className="w-1.5 h-2 rounded-full bg-emerald-400 animate-scroll-pulse" />
+          <div className="text-[11px] font-mono text-emerald-300/80">
+            <span>✦ 100+ Turnkey Projects Completed Across Pune &amp; Maharashtra</span>
           </div>
         </div>
       </div>
