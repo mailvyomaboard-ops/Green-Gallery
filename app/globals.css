@@ -199,6 +199,96 @@ a, button, input, select, textarea {
   }
 }
 
+/* 🌿 Botanical & Planterly 120fps Keyframe Animations */
+@keyframes botanical-sway {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(6px, -8px, 0) rotate(3deg);
+  }
+  50% {
+    transform: translate3d(-4px, -14px, 0) rotate(-2deg);
+  }
+  75% {
+    transform: translate3d(8px, -6px, 0) rotate(2deg);
+  }
+}
+
+@keyframes botanical-sway-slow {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(-10px, -18px, 0) rotate(-4deg) scale(1.03);
+  }
+}
+
+@keyframes botanical-breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes botanical-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(45, 212, 143, 0.2), inset 0 0 15px rgba(45, 212, 143, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(45, 212, 143, 0.45), inset 0 0 25px rgba(45, 212, 143, 0.25);
+  }
+}
+
+@keyframes hero-shimmer-sweep {
+  0% {
+    transform: translate3d(-100%, 0, 0) rotate(30deg);
+  }
+  100% {
+    transform: translate3d(200%, 0, 0) rotate(30deg);
+  }
+}
+
+@keyframes scroll-pill-pulse {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(0, 8px, 0);
+    opacity: 1;
+  }
+}
+
+.animate-botanical-sway {
+  animation: botanical-sway 12s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-botanical-sway-slow {
+  animation: botanical-sway-slow 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-botanical-breathe {
+  animation: botanical-breathe 6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-pulse-glow {
+  animation: botanical-pulse-glow 4s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+.animate-scroll-pulse {
+  animation: scroll-pill-pulse 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform, opacity;
+}
+
 .animate-marquee-left {
   display: flex;
   width: max-content;
