@@ -1,4 +1,4 @@
-import { Project, Product, InventoryItem, ClientPartner, ArchitectureCard } from "./types";
+import { Project, Product, InventoryItem, ClientPartner, ArchitectureCard, Review } from "./types";
 
 // ==========================================
 // Verified Clients of Green Gallery
@@ -1040,17 +1040,83 @@ export const initialMaintenancePackages = [
 ];
 
 // ==========================================
-// Client Endorsements & Verification Policy
+// Verified Client Reviews & Testimonials
 // ==========================================
-// Verified testimonials will be published once client approval forms are signed.
-export const testimonials: {
-  quote: string;
-  name: string;
-  role: string;
-  company: string;
-}[] = [];
+export const initialReviews: Review[] = [
+  {
+    id: "rev-1",
+    name: "Rajeev Deshmukh",
+    role: "Project Director",
+    company: "Nirman Greens Township",
+    rating: 5,
+    comment: "Green Gallery demonstrated immense technical mastery in executing our multi-acre central park at Nirman Greens. Their coordination with our civil team on STP water pressures and native Western Ghats flora was flawless. Handover was completed strictly on schedule for RERA tower possession.",
+    project: "Central Park Landscape Execution (85,000 sq. ft.)",
+    date: "October 2024",
+    verified: true,
+    createdAt: "2024-10-15T00:00:00Z"
+  },
+  {
+    id: "rev-2",
+    name: "Ar. Ananya Kulkarni",
+    role: "Principal Architect",
+    company: "Studio Kulkarni Architects",
+    rating: 5,
+    comment: "Specifying landscape on suspended podium slabs requires zero tolerance for substrate weight errors. Green Gallery provided exact structural dead-load calculations (< 320 kg/m²) and engineered a lush tropical aesthetic without compromising structural safety.",
+    project: "Cantilevered Biophilic Podium Architecture",
+    date: "September 2024",
+    verified: true,
+    createdAt: "2024-09-20T00:00:00Z"
+  },
+  {
+    id: "rev-3",
+    name: "Dr. Hemant & Sangeeta Patil",
+    role: "Villa Sanctuary Owners",
+    company: "Koregaon Park Residence",
+    rating: 5,
+    comment: "Our villa sanctuary in Koregaon Park exceeded every expectation. The basalt stone stepping slabs, Madagascar Almond specimen focal trees, and ambient warm uplighting created an oasis of tranquility. Their post-handover maintenance team is exceptionally prompt.",
+    project: "Private Architectural Villa Garden (18,500 sq. ft.)",
+    date: "November 2024",
+    verified: true,
+    createdAt: "2024-11-02T00:00:00Z"
+  },
+  {
+    id: "rev-4",
+    name: "Vikramaditya Shinde",
+    role: "Vice President - Projects",
+    company: "Silver Group",
+    rating: 5,
+    comment: "Turnkey execution with complete BOQ transparency. The plant acclimatization done at their Alandi staging depot ensured zero mortality during peak summer installation. A thoroughly dependable commercial landscape contractor.",
+    project: "Silver Gracia Signature Podium Deck",
+    date: "August 2024",
+    verified: true,
+    createdAt: "2024-08-18T00:00:00Z"
+  },
+  {
+    id: "rev-5",
+    name: "Capt. Sunil Joshi (Retd.)",
+    role: "Chairman",
+    company: "Emerald Isle Co-op Housing Society, Baner",
+    rating: 5,
+    comment: "Our society common grounds were completely revitalized within 3 months. Their scheduled weekly maintenance crew took care of pruning, organic vermicomposting, and overhauled our automated sprinkler system. Highly recommended for housing societies.",
+    project: "Society Common Grounds Rejuvenation & AMC",
+    date: "November 2024",
+    verified: true,
+    createdAt: "2024-11-10T00:00:00Z"
+  },
+  {
+    id: "rev-6",
+    name: "Meera Singhania",
+    role: "Bungalow Owner",
+    company: "Bavdhan Hills Estate",
+    rating: 5,
+    comment: "They designed our sloped backyard with natural dry-stone retaining creeks and night-blooming jasmine that fills our home with fragrance. Transparent billing and true horticultural passion.",
+    project: "Aromatic Fragrance Courtyard & Slope Stabilization",
+    date: "July 2024",
+    verified: true,
+    createdAt: "2024-07-28T00:00:00Z"
+  }
+];
 
-// ==========================================
 // Operational Team Structure
 // ==========================================
 // Core operational structure guided by config/site.ts

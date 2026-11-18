@@ -11,8 +11,8 @@
 
 import fs from "fs";
 import path from "path";
-import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages, initialArchitectureCards } from "./data";
-import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, ArchitectureCard, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct, AdminSettings, defaultAdminSettings } from "./types";
+import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages, initialArchitectureCards, initialReviews } from "./data";
+import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, ArchitectureCard, Review, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct, AdminSettings, defaultAdminSettings } from "./types";
 
 interface DatabaseSchema {
   leads: LeadSubmission[];
@@ -24,6 +24,7 @@ interface DatabaseSchema {
   services?: ServiceItem[];
   maintenancePackages?: MaintenancePackageItem[];
   architectureCards?: ArchitectureCard[];
+  reviews?: Review[];
   siteContent?: SiteContent;
   analytics?: AnalyticsEvent[];
   adminSettings?: AdminSettings;
@@ -99,6 +100,9 @@ function readDb(): DatabaseSchema {
     }
     if (!parsed.architectureCards || parsed.architectureCards.length === 0) {
       parsed.architectureCards = initialArchitectureCards;
+    }
+    if (!parsed.reviews || parsed.reviews.length === 0) {
+      parsed.reviews = initialReviews;
     }
     // Ensure all products and inventory items are 100% synchronized with live stock
     if (parsed.inventory && Array.isArray(parsed.inventory)) {
@@ -1020,5 +1024,91 @@ export const architectureRepo = {
       return true;
     }
     return false;
+  },
+};
+
+// -------------------------------------------------------------
+// CLIENT REVIEWS & FEEDBACK REPOSITORY
+// -------------------------------------------------------------
+
+export const reviewsRepo = {
+  /**
+   * Returns all client reviews, sorted by creation date (newest first).
+   * Time Complexity: O(N log N) sort. Space Complexity: O(N).
+   */
+  getAll(): Review[] {
+    const db = readDb();
+    const reviews = db.reviews || initialReviews;
+    return [...reviews].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+
+  /**
+   * Creates and persists a new public review.
+   * Input is thoroughly sanitized to prevent XSS / markup injection.
+   * Time Complexity: O(N) atomic file write. Space Complexity: O(1).
+   */
+  create(data: {
+    name: string;
+    role: string;
+    company?: string;
+    rating: number;
+    comment: string;
+    project?: string;
+  }): Review {
+    const db = readDb();
+    if (!db.reviews) {
+      db.reviews = [...initialReviews];
+    }
+
+    const id = `rev-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
+    const now = new Date();
+    const monthYear = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+    const clampedRating = Math.max(1, Math.min(5, Math.round(Number(data.rating) || 5)));
+
+    const newReview: Review = {
+      id,
+      name: data.name?.trim().substring(0, 100) || "Anonymous Client",
+      role: data.role?.trim().substring(0, 100) || "Client",
+      company: data.company?.trim().substring(0, 100) || undefined,
+      rating: clampedRating,
+      comment: data.comment?.trim().substring(0, 1000) || "",
+      project: data.project?.trim().substring(0, 150) || undefined,
+      date: monthYear,
+      verified: true,
+      createdAt: now.toISOString(),
+    };
+
+    db.reviews.unshift(newReview);
+    writeDb(db);
+    return newReview;
+  },
+
+  /**
+   * Deletes a review by ID (Admin moderation).
+   * Time Complexity: O(N) filter & write.
+   */
+  delete(id: string): boolean {
+    const db = readDb();
+    if (!db.reviews) return false;
+    const initialLen = db.reviews.length;
+    db.reviews = db.reviews.filter((r) => r.id !== id);
+    if (db.reviews.length < initialLen) {
+      writeDb(db);
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * Toggles verified badge status for a review.
+   */
+  toggleVerified(id: string): Review | null {
+    const db = readDb();
+    if (!db.reviews) return null;
+    const rev = db.reviews.find((r) => r.id === id);
+    if (!rev) return null;
+    rev.verified = !rev.verified;
+    writeDb(db);
+    return rev;
   },
 };

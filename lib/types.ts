@@ -234,6 +234,19 @@ export interface ArchitectureCard {
   updatedAt: string;
 }
 
+export interface Review {
+  id: string;
+  name: string;
+  role: string;
+  company?: string;
+  rating: number; // 1 to 5
+  comment: string;
+  project?: string;
+  date: string;
+  verified: boolean;
+  createdAt: string;
+}
+
 export interface ShowcaseItem {
   id: string;
   image: string;

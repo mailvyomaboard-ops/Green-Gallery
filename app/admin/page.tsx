@@ -48,6 +48,7 @@ import {
   Film,
   Camera,
   Play,
+  Star,
 } from "lucide-react";
 import {
   LeadSubmission,
@@ -56,6 +57,7 @@ import {
   ServiceItem,
   MaintenancePackageItem,
   ArchitectureCard,
+  Review,
   SiteContent,
   AnalyticsSummary,
   AnalyticsEvent,
@@ -68,7 +70,7 @@ export default function AdminPage() {
   const [passError, setPassError] = useState("");
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "architecture" | "cms" | "settings">("analytics");
+  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "architecture" | "reviews" | "cms" | "settings">("analytics");
 
   // Settings & Passcode Security state
   const [settingsData, setSettingsData] = useState<{
@@ -204,6 +206,9 @@ export default function AdminPage() {
     featured: false,
     order: 0,
   });
+
+  // Client Reviews state
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   // Multi-Page CMS state
   const [siteContent, setSiteContent] = useState<SiteContent>(defaultSiteContent);
@@ -381,13 +386,14 @@ export default function AdminPage() {
   const loadAllData = async () => {
     setIsRefreshing(true);
     try {
-      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, archRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
+      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, archRes, reviewsRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
         fetch("/api/leads").then((r) => r.json()).catch(() => ({ leads: [] })),
         fetch("/api/inventory").then((r) => r.json()).catch(() => ({ items: [] })),
         fetch("/api/clients").then((r) => r.json()).catch(() => ({ clients: [] })),
         fetch("/api/services").then((r) => r.json()).catch(() => ({ services: [] })),
         fetch("/api/maintenance").then((r) => r.json()).catch(() => ({ packages: [] })),
         fetch("/api/architecture").then((r) => r.json()).catch(() => ({ cards: [] })),
+        fetch("/api/reviews").then((r) => r.json()).catch(() => ({ reviews: [] })),
         fetch("/api/cms").then((r) => r.json()).catch(() => ({ content: defaultSiteContent })),
         fetch("/api/analytics").then((r) => r.json()).catch(() => ({ summary: null, recent: [] })),
         fetch("/api/admin/settings").then((r) => r.json()).catch(() => ({ settings: null })),
@@ -399,6 +405,7 @@ export default function AdminPage() {
       if (servicesRes.services) setServices(servicesRes.services);
       if (maintenanceRes.packages) setMaintenancePackages(maintenanceRes.packages);
       if (archRes.cards) setArchitectureCards(archRes.cards);
+      if (reviewsRes.reviews) setReviews(reviewsRes.reviews);
       if (cmsRes.content) setSiteContent({ ...defaultSiteContent, ...cmsRes.content });
       if (analyticsRes.summary) setAnalytics(analyticsRes.summary);
       if (analyticsRes.recent) setRecentEvents(analyticsRes.recent);
@@ -988,6 +995,38 @@ export default function AdminPage() {
   };
 
   // ---------------------------------------------------------------------------
+  // CLIENT REVIEWS & FEEDBACK ACTIONS
+  // ---------------------------------------------------------------------------
+  const handleDeleteReview = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete review from "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/reviews?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        setReviews((prev) => prev.filter((r) => r.id !== id));
+      } else {
+        alert(data.error || "Failed to delete review");
+      }
+    } catch (e: any) {
+      alert("Error deleting review: " + e.message);
+    }
+  };
+
+  const handleToggleVerifiedReview = async (id: string) => {
+    try {
+      const res = await fetch(`/api/reviews?id=${encodeURIComponent(id)}`, { method: "PATCH" });
+      const data = await res.json();
+      if (data.success && data.review) {
+        setReviews((prev) => prev.map((r) => (r.id === id ? data.review : r)));
+      } else {
+        alert(data.error || "Failed to update review status");
+      }
+    } catch (e: any) {
+      alert("Error updating review: " + e.message);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
   // MULTI-PAGE CMS ACTIONS
   // ---------------------------------------------------------------------------
   const handleSaveCms = async (e: React.FormEvent) => {
@@ -1342,6 +1381,21 @@ export default function AdminPage() {
             </button>
 
             <button
+              onClick={() => setActiveTab("reviews")}
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "reviews"
+                  ? "bg-green-900 text-cream-50 shadow-sm"
+                  : "text-ink-500 hover:text-green-900"
+              }`}
+            >
+              <Star className="w-3.5 h-3.5" />
+              <span>Reviews</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/10 text-ink-900">
+                {reviews.length}
+              </span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("cms")}
               className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "cms"
@@ -1464,6 +1518,17 @@ export default function AdminPage() {
           >
             <Compass className="w-3.5 h-3.5" />
             <span>Architecture ({architectureCards.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("reviews")}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              activeTab === "reviews"
+                ? "bg-green-900 text-white shadow-xs"
+                : "bg-white text-ink-700 border border-[#283618]/10"
+            }`}
+          >
+            <Star className="w-3.5 h-3.5" />
+            <span>Reviews ({reviews.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("cms")}
@@ -2525,6 +2590,112 @@ export default function AdminPage() {
             {architectureCards.length === 0 && (
               <div className="p-8 text-center bg-cream-50 rounded-brand border border-[#283618]/15 text-xs text-ink-600">
                 No architecture project cards created yet. Click "+ Add Architecture Card" to add your first masterplan.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* TAB 4.75: CLIENT REVIEWS & TESTIMONIALS MODERATION                */}
+        {/* ================================================================= */}
+        {activeTab === "reviews" && (
+          <div className="space-y-6">
+            <div className="pb-4 border-b border-[#283618]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
+                  Client Feedback &amp; Testimonials
+                </span>
+                <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
+                  Client Reviews &amp; Endorsements ({reviews.length})
+                </h2>
+                <p className="text-xs text-ink-600 mt-1">
+                  Reviews submitted through the homepage horizontal feedback scroller. You can toggle verification or delete spam.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-semibold text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-full">
+                  ★ Average Rating: {(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)).toFixed(1)} / 5.0
+                </span>
+              </div>
+            </div>
+
+            {/* Reviews List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {reviews.map((rev) => (
+                <div
+                  key={rev.id}
+                  className="bg-white border border-[#283618]/15 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow"
+                >
+                  <div className="space-y-3">
+                    {/* Stars + Verified Status */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-3.5 h-3.5 ${
+                              star <= rev.rating
+                                ? "fill-amber-400 text-amber-400"
+                                : "fill-gray-200 text-gray-200"
+                            }`}
+                          />
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleToggleVerifiedReview(rev.id)}
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${
+                          rev.verified
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                            : "bg-gray-100 text-gray-600 border-gray-300"
+                        }`}
+                        title="Click to toggle verified badge"
+                      >
+                        {rev.verified ? "✓ Verified" : "Unverified"}
+                      </button>
+                    </div>
+
+                    {/* Review text */}
+                    <p className="text-xs text-ink-800 font-light italic leading-relaxed">
+                      &ldquo;{rev.comment}&rdquo;
+                    </p>
+
+                    {/* Project tag */}
+                    {rev.project && (
+                      <div className="text-[10px] font-mono text-emerald-800 bg-emerald-50/70 px-2 py-0.5 rounded border border-emerald-200 truncate">
+                        Scope: {rev.project}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Reviewer Details & Delete */}
+                  <div className="pt-4 mt-4 border-t border-[#283618]/10 flex items-center justify-between gap-3 text-xs">
+                    <div className="truncate">
+                      <div className="font-serif font-bold text-green-950 truncate">{rev.name}</div>
+                      <div className="text-[11px] text-ink-600 truncate">
+                        {rev.role}
+                        {rev.company ? ` · ${rev.company}` : ""}
+                      </div>
+                      <div className="text-[10px] font-mono text-ink-400 mt-0.5">{rev.date}</div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteReview(rev.id, rev.name)}
+                      className="px-2.5 py-1 text-red-700 hover:bg-red-50 rounded border border-red-200 cursor-pointer text-[11px] font-medium shrink-0 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {reviews.length === 0 && (
+              <div className="p-8 text-center bg-cream-50 rounded-brand border border-[#283618]/15 text-xs text-ink-600">
+                No client reviews recorded yet. Reviews submitted from the homepage will appear here.
               </div>
             )}
           </div>

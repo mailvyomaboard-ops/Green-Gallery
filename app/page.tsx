@@ -22,6 +22,7 @@ import {
 import { siteConfig } from "@/config/site";
 import { initialProducts, clientsData } from "@/lib/data";
 import { Hero } from "@/components/Hero";
+import { ReviewsSection } from "@/components/ReviewsSection";
 import { ClientPartner, SiteContent, defaultSiteContent, Product, InventoryItem, convertInventoryToProduct } from "@/lib/types";
 
 export default function HomePage() {
@@ -430,7 +431,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. Conversion Banner */}
+      {/* 8. Client Feedback & Horizontal Reviews Carousel */}
+      <ReviewsSection />
+
+      {/* 9. Conversion Banner */}
       <section className="max-w-[1240px] mx-auto px-4 sm:px-6 pb-8">
         <div className="relative rounded-[2.5rem] overflow-hidden bg-green-950 p-10 sm:p-14 md:p-16 text-center text-white border border-green-800/40 shadow-2xl">
           <div className="absolute inset-0 w-full h-full pointer-events-none">
