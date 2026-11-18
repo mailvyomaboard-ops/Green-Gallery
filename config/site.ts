@@ -25,6 +25,7 @@ export interface SiteConfig {
   social: {
     whatsappLink: string;
     instagram?: string;
+    instagramHandle?: string;
     linkedin?: string;
   };
   seo: {
@@ -92,6 +93,7 @@ export const siteConfig: SiteConfig = {
   },
   navItems: [
     { label: "Home", href: "/" },
+    { label: "Architecture & Design", href: "/architecture" },
     { label: "Services", href: "/services" },
     { label: "Projects", href: "/projects" },
     { label: "Plant Supply", href: "/plants" },
@@ -101,6 +103,8 @@ export const siteConfig: SiteConfig = {
   ],
   social: {
     whatsappLink: "https://wa.me/917823080251?text=Hello%20GreenGallery%2C%20I%27m%20interested%20in%20your%20services...",
+    instagram: "https://instagram.com/greengallery.in",
+    instagramHandle: "@greengallery.in",
   },
   serviceRegions: [
     "Pune Municipal Corporation (PMC)",

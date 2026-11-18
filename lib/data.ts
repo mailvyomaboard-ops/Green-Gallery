@@ -1,4 +1,4 @@
-import { Project, Product, InventoryItem, ClientPartner } from "./types";
+import { Project, Product, InventoryItem, ClientPartner, ArchitectureCard } from "./types";
 
 // ==========================================
 // Verified Clients of Green Gallery
@@ -1068,3 +1068,109 @@ export const teamStructure = {
     "Regional grower nurseries across Western Maharashtra"
   ]
 };
+
+// ==========================================
+// Architecture & Design Multimedia Cards
+// ==========================================
+export const initialArchitectureCards: ArchitectureCard[] = [
+  {
+    id: "arch-1",
+    title: "Cantilevered Biophilic Podium Architecture",
+    subtitle: "Engineered Lightweight Matrix & Micro-Climate Moderation",
+    category: "Podium & Deck Architecture",
+    image: "/images/frames/ezgif-frame-005.jpg",
+    video: "",
+    description: "Multi-tiered suspended podium deck integrated with structural civil slabs. Engineered using ultra-lightweight volcanic pumice and coco-peat substrates to stay safely within structural dead-load boundaries while providing lush thermal insulation for the towers below.",
+    details: [
+      "Engineered load threshold: < 350 kg/m² wet saturation load",
+      "Automated weather-responsive capillary drip network",
+      "Perimeter acoustic foliage buffering against urban transit noise"
+    ],
+    tags: ["Podium Architecture", "Civil Coordination", "Lightweight Substrate", "Acoustic Buffers"],
+    scaleArea: "45,000 sq. ft.",
+    featured: true,
+    order: 1,
+    createdAt: "2024-03-15T00:00:00Z",
+    updatedAt: "2024-03-15T00:00:00Z"
+  },
+  {
+    id: "arch-2",
+    title: "Kinetic Water Feature & Sunken Courtyard Masterplan",
+    subtitle: "3D CAD Simulation & Atmospheric Lighting",
+    category: "3D Modeling & CAD",
+    image: "/images/frames/ezgif-frame-008.jpg",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    description: "A subterranean courtyard landscape sculpted from locally quarried basalt stone slabs. Integrates silent recirculating water cascades, nocturnal bio-luminescent accent uplighting, and sunken contemplation alcoves sheltered from harsh afternoon thermal glare.",
+    details: [
+      "Recirculating sub-grade water reservoir with sediment filtering",
+      "3000K warm-spectrum recessed glare-shielded lighting",
+      "Native nocturnal flowering flora for natural dusk aromatherapy"
+    ],
+    tags: ["3D Simulation", "Kinetic Water Feature", "Basalt Stone", "Nocturnal Lighting"],
+    scaleArea: "18,500 sq. ft.",
+    featured: true,
+    order: 2,
+    createdAt: "2024-04-10T00:00:00Z",
+    updatedAt: "2024-04-10T00:00:00Z"
+  },
+  {
+    id: "arch-3",
+    title: "Villa Sanctuary Botanical Elevation & Zoning",
+    subtitle: "Monolithic Geometry & Native Specimen Staging",
+    category: "Villa & Estate Architecture",
+    image: "/images/frames/ezgif-frame-011.jpg",
+    video: "",
+    description: "Bespoke architectural villa landscape harmonizing brutalist concrete geometry with delicate tropical foliage. Monolithic charcoal river-stone margins flank geometric stepping slabs leading to a sunken fire hearth framed by sculpted specimen trees.",
+    details: [
+      "Specimen focal tree: Terminalia mantaly (Madagascar Almond)",
+      "Zero-mortar permeable basalt paver walkways",
+      "Integrated subsurface stormwater percolation recharge wells"
+    ],
+    tags: ["Villa Architecture", "Brutalist Geometry", "Permeable Pavers", "Specimen Flora"],
+    scaleArea: "22,000 sq. ft.",
+    featured: true,
+    order: 3,
+    createdAt: "2024-05-20T00:00:00Z",
+    updatedAt: "2024-05-20T00:00:00Z"
+  },
+  {
+    id: "arch-4",
+    title: "Biophilic Architectural Manifesto: Civil-Horticultural Synthesis",
+    subtitle: "Technical Protocol on Structural Engineering & Micro-Climate Control",
+    category: "Master Landscape Planning",
+    image: "/images/frames/ezgif-frame-002.jpg",
+    video: "",
+    description: "Living landscapes must be treated as active building envelopes rather than cosmetic finishes. Our architectural protocols unify structural civil load calculations, waterproof anti-root membranes, MEP irrigation conduits, and STP water purification cycles directly into building schematics prior to concrete casting.",
+    details: [
+      "Root-barrier polyurethane elastomeric waterproofing membranes",
+      "STP tertiary-treated water filtration for zero freshwater waste",
+      "Calculated ambient temperature reduction of 3.2°C at ground zone"
+    ],
+    tags: ["Technical Manifesto", "MEP Conduits", "STP Recycling", "Thermal Mitigation"],
+    scaleArea: "Township Scale",
+    featured: false,
+    order: 4,
+    createdAt: "2024-06-01T00:00:00Z",
+    updatedAt: "2024-06-01T00:00:00Z"
+  },
+  {
+    id: "arch-5",
+    title: "Corporate Grand Avenue & Arterial Boulevard Modeling",
+    subtitle: "High-Throughput Dense Acoustic Buffer & Royal Palms",
+    category: "Biophilic Commercial Design",
+    image: "/images/frames/ezgif-frame-014.jpg",
+    video: "",
+    description: "Corporate plaza boulevard masterplan engineered with multi-tiered dense foliage barriers to absorb vehicle emissions, dampen arterial road decibels, and create a majestic royal avenue arrival experience for executive campuses.",
+    details: [
+      "Three-tier canopy hierarchy: Canopy trees, ornamental palms, dense evergreen understory",
+      "High particulate-matter absorption species selection",
+      "Computerized central manifold drip distribution"
+    ],
+    tags: ["Commercial Boulevard", "Acoustic Buffer", "Royal Palms", "Central Irrigation"],
+    scaleArea: "52,000 sq. ft.",
+    featured: false,
+    order: 5,
+    createdAt: "2024-07-14T00:00:00Z",
+    updatedAt: "2024-07-14T00:00:00Z"
+  }
+];

@@ -217,6 +217,23 @@ export interface MaintenancePackageItem {
   priceNote?: string;
 }
 
+export interface ArchitectureCard {
+  id: string;
+  title: string;
+  subtitle?: string;
+  category: "Podium & Deck Architecture" | "Master Landscape Planning" | "3D Modeling & CAD" | "Villa & Estate Architecture" | "Biophilic Commercial Design" | "Urban Micro-Ecosystems";
+  image?: string;
+  video?: string;
+  description: string;
+  details?: string[];
+  tags: string[];
+  scaleArea?: string;
+  featured?: boolean;
+  order?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ShowcaseItem {
   id: string;
   image: string;

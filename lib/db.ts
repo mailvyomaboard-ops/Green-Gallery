@@ -11,8 +11,8 @@
 
 import fs from "fs";
 import path from "path";
-import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages } from "./data";
-import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct, AdminSettings, defaultAdminSettings } from "./types";
+import { initialProjects, initialProducts, initialInventory, clientsData, initialServices, initialMaintenancePackages, initialArchitectureCards } from "./data";
+import { LeadSubmission, InventoryItem, Product, Project, Order, ClientPartner, ServiceItem, MaintenancePackageItem, ArchitectureCard, SiteContent, AnalyticsEvent, AnalyticsSummary, defaultSiteContent, convertInventoryToProduct, AdminSettings, defaultAdminSettings } from "./types";
 
 interface DatabaseSchema {
   leads: LeadSubmission[];
@@ -23,6 +23,7 @@ interface DatabaseSchema {
   clients?: ClientPartner[];
   services?: ServiceItem[];
   maintenancePackages?: MaintenancePackageItem[];
+  architectureCards?: ArchitectureCard[];
   siteContent?: SiteContent;
   analytics?: AnalyticsEvent[];
   adminSettings?: AdminSettings;
@@ -95,6 +96,9 @@ function readDb(): DatabaseSchema {
     }
     if (!parsed.maintenancePackages || parsed.maintenancePackages.length === 0) {
       parsed.maintenancePackages = initialMaintenancePackages;
+    }
+    if (!parsed.architectureCards || parsed.architectureCards.length === 0) {
+      parsed.architectureCards = initialArchitectureCards;
     }
     // Ensure all products and inventory items are 100% synchronized with live stock
     if (parsed.inventory && Array.isArray(parsed.inventory)) {
@@ -917,5 +921,104 @@ export const adminSettingsRepo = {
       hasEmergencyKey: Boolean(s.emergencyKey && s.emergencyKey.length > 0),
       lastPasscodeChange: s.lastPasscodeChange,
     };
+  },
+};
+
+// -------------------------------------------------------------
+// ARCHITECTURE & DESIGN SHOWCASE REPOSITORY
+// -------------------------------------------------------------
+
+export const architectureRepo = {
+  /**
+   * Returns all architecture & design showcase cards sorted by order.
+   * Time Complexity: O(N log N) sorting. Space Complexity: O(N).
+   */
+  list(): ArchitectureCard[] {
+    const db = readDb();
+    const cards = db.architectureCards || initialArchitectureCards;
+    return [...cards].sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+  },
+
+  /**
+   * Retrieves single card by ID.
+   * Time Complexity: O(N) lookup. Space Complexity: O(1).
+   */
+  getById(id: string): ArchitectureCard | null {
+    const db = readDb();
+    const cards = db.architectureCards || initialArchitectureCards;
+    return cards.find((c) => c.id === id) || null;
+  },
+
+  /**
+   * Creates a new architecture card.
+   * Time Complexity: O(N) write. Space Complexity: O(1).
+   */
+  create(data: Omit<ArchitectureCard, "id" | "createdAt" | "updatedAt">): ArchitectureCard {
+    const db = readDb();
+    if (!db.architectureCards) {
+      db.architectureCards = [...initialArchitectureCards];
+    }
+    const id = `arch-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
+    const now = new Date().toISOString();
+    const newCard: ArchitectureCard = {
+      ...data,
+      id,
+      title: data.title?.trim() || "Untitled Architecture Project",
+      category: data.category || "Master Landscape Planning",
+      description: data.description?.trim() || "",
+      image: data.image?.trim() || "",
+      video: data.video?.trim() || "",
+      tags: Array.isArray(data.tags) ? data.tags.filter(Boolean) : [],
+      details: Array.isArray(data.details) ? data.details.filter(Boolean) : [],
+      scaleArea: data.scaleArea?.trim() || "",
+      featured: Boolean(data.featured),
+      order: typeof data.order === "number" ? data.order : db.architectureCards.length + 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+    db.architectureCards.push(newCard);
+    writeDb(db);
+    return newCard;
+  },
+
+  /**
+   * Updates an existing architecture card.
+   * Time Complexity: O(N) write. Space Complexity: O(1).
+   */
+  update(id: string, updates: Partial<ArchitectureCard>): ArchitectureCard | null {
+    const db = readDb();
+    if (!db.architectureCards) {
+      db.architectureCards = [...initialArchitectureCards];
+    }
+    const idx = db.architectureCards.findIndex((c) => c.id === id);
+    if (idx === -1) return null;
+
+    const existing = db.architectureCards[idx];
+    const updated: ArchitectureCard = {
+      ...existing,
+      ...updates,
+      id: existing.id,
+      createdAt: existing.createdAt,
+      updatedAt: new Date().toISOString(),
+    };
+    db.architectureCards[idx] = updated;
+    writeDb(db);
+    return updated;
+  },
+
+  /**
+   * Deletes an architecture card.
+   * Time Complexity: O(N) write. Space Complexity: O(1).
+   */
+  delete(id: string): boolean {
+    const db = readDb();
+    if (!db.architectureCards) return false;
+    const initialLen = db.architectureCards.length;
+    db.architectureCards = db.architectureCards.filter((c) => c.id !== id);
+    if (db.architectureCards.length < initialLen) {
+      writeDb(db);
+      return true;
+    }
+    return false;
   },
 };

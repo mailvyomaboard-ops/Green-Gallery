@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home,
+  Compass,
   Layers,
   Building2,
   Sprout,
@@ -22,10 +23,10 @@ export function MobileBottomNav() {
 
   const navItems = [
     { label: "Home", href: "/", icon: Home },
+    { label: "Design", href: "/architecture", icon: Compass },
     { label: "Services", href: "/services", icon: Layers },
     { label: "Projects", href: "/projects", icon: Building2 },
     { label: "Plants", href: "/plants", icon: Sprout },
-    { label: "Care", href: "/maintenance", icon: ShieldCheck },
     { label: "Book", href: "/contact?type=consultation", icon: CalendarCheck, isSpecial: true },
   ];
 

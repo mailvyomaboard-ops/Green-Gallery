@@ -44,6 +44,10 @@ import {
   ShieldCheck,
   AlertCircle,
   HelpCircle,
+  Compass,
+  Film,
+  Camera,
+  Play,
 } from "lucide-react";
 import {
   LeadSubmission,
@@ -51,6 +55,7 @@ import {
   ClientPartner,
   ServiceItem,
   MaintenancePackageItem,
+  ArchitectureCard,
   SiteContent,
   AnalyticsSummary,
   AnalyticsEvent,
@@ -63,7 +68,7 @@ export default function AdminPage() {
   const [passError, setPassError] = useState("");
 
   // Navigation tab state
-  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "cms" | "settings">("analytics");
+  const [activeTab, setActiveTab] = useState<"analytics" | "leads" | "inventory" | "projects" | "clients" | "services" | "maintenance" | "architecture" | "cms" | "settings">("analytics");
 
   // Settings & Passcode Security state
   const [settingsData, setSettingsData] = useState<{
@@ -182,6 +187,24 @@ export default function AdminPage() {
     image: "/images/hero-clean.webp",
   });
 
+  // Architecture & Design cards state
+  const [architectureCards, setArchitectureCards] = useState<ArchitectureCard[]>([]);
+  const [showAddArchModal, setShowAddArchModal] = useState(false);
+  const [editingArchCard, setEditingArchCard] = useState<ArchitectureCard | null>(null);
+  const [archForm, setArchForm] = useState({
+    title: "",
+    subtitle: "",
+    category: "Podium & Deck Architecture" as ArchitectureCard["category"],
+    image: "",
+    video: "",
+    description: "",
+    scaleArea: "",
+    tags: "",
+    details: "",
+    featured: false,
+    order: 0,
+  });
+
   // Multi-Page CMS state
   const [siteContent, setSiteContent] = useState<SiteContent>(defaultSiteContent);
   const [cmsSaving, setCmsSaving] = useState(false);
@@ -194,6 +217,8 @@ export default function AdminPage() {
   const clientImageFileInputRef = useRef<HTMLInputElement>(null);
   const serviceImageFileInputRef = useRef<HTMLInputElement>(null);
   const pkgImageFileInputRef = useRef<HTMLInputElement>(null);
+  const archImageFileInputRef = useRef<HTMLInputElement>(null);
+  const archVideoFileInputRef = useRef<HTMLInputElement>(null);
   const heroImageFileInputRef = useRef<HTMLInputElement>(null);
 
   // Check session cookie on mount
@@ -356,12 +381,13 @@ export default function AdminPage() {
   const loadAllData = async () => {
     setIsRefreshing(true);
     try {
-      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
+      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, archRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
         fetch("/api/leads").then((r) => r.json()).catch(() => ({ leads: [] })),
         fetch("/api/inventory").then((r) => r.json()).catch(() => ({ items: [] })),
         fetch("/api/clients").then((r) => r.json()).catch(() => ({ clients: [] })),
         fetch("/api/services").then((r) => r.json()).catch(() => ({ services: [] })),
         fetch("/api/maintenance").then((r) => r.json()).catch(() => ({ packages: [] })),
+        fetch("/api/architecture").then((r) => r.json()).catch(() => ({ cards: [] })),
         fetch("/api/cms").then((r) => r.json()).catch(() => ({ content: defaultSiteContent })),
         fetch("/api/analytics").then((r) => r.json()).catch(() => ({ summary: null, recent: [] })),
         fetch("/api/admin/settings").then((r) => r.json()).catch(() => ({ settings: null })),
@@ -372,6 +398,7 @@ export default function AdminPage() {
       if (clientsRes.clients) setClients(clientsRes.clients);
       if (servicesRes.services) setServices(servicesRes.services);
       if (maintenanceRes.packages) setMaintenancePackages(maintenanceRes.packages);
+      if (archRes.cards) setArchitectureCards(archRes.cards);
       if (cmsRes.content) setSiteContent({ ...defaultSiteContent, ...cmsRes.content });
       if (analyticsRes.summary) setAnalytics(analyticsRes.summary);
       if (analyticsRes.recent) setRecentEvents(analyticsRes.recent);
@@ -864,6 +891,103 @@ export default function AdminPage() {
   };
 
   // ---------------------------------------------------------------------------
+  // ARCHITECTURE & DESIGN ACTIONS
+  // ---------------------------------------------------------------------------
+  const handleSaveArchitectureCard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!archForm.title) {
+      alert("Please provide a title for the architecture project card.");
+      return;
+    }
+
+    try {
+      const detailsArray = archForm.details
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const tagsArray = archForm.tags
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const payload = {
+        title: archForm.title,
+        subtitle: archForm.subtitle,
+        category: archForm.category,
+        image: archForm.image,
+        video: archForm.video,
+        description: archForm.description,
+        scaleArea: archForm.scaleArea,
+        tags: tagsArray,
+        details: detailsArray,
+        featured: archForm.featured,
+        order: Number(archForm.order) || 0,
+      };
+
+      if (editingArchCard) {
+        const res = await fetch("/api/architecture", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingArchCard.id, ...payload }),
+        });
+        const data = await res.json();
+        if (data.success && data.card) {
+          setArchitectureCards((prev) =>
+            prev.map((c) => (c.id === editingArchCard.id ? data.card : c))
+          );
+          setShowAddArchModal(false);
+          setEditingArchCard(null);
+        } else {
+          alert(data.error || "Failed to update card");
+        }
+      } else {
+        const res = await fetch("/api/architecture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success && data.card) {
+          setArchitectureCards((prev) => [...prev, data.card]);
+          setShowAddArchModal(false);
+          setArchForm({
+            title: "",
+            subtitle: "",
+            category: "Podium & Deck Architecture",
+            image: "",
+            video: "",
+            description: "",
+            scaleArea: "",
+            tags: "",
+            details: "",
+            featured: false,
+            order: 0,
+          });
+        } else {
+          alert(data.error || "Failed to create card");
+        }
+      }
+    } catch (e: any) {
+      alert("Error saving architecture card: " + e.message);
+    }
+  };
+
+  const handleDeleteArchitectureCard = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete architecture card "${title}"?`)) return;
+    try {
+      const res = await fetch(`/api/architecture?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        setArchitectureCards((prev) => prev.filter((c) => c.id !== id));
+      } else {
+        alert(data.error || "Failed to delete card");
+      }
+    } catch (e: any) {
+      alert("Error deleting architecture card: " + e.message);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
   // MULTI-PAGE CMS ACTIONS
   // ---------------------------------------------------------------------------
   const handleSaveCms = async (e: React.FormEvent) => {
@@ -1203,6 +1327,21 @@ export default function AdminPage() {
             </button>
 
             <button
+              onClick={() => setActiveTab("architecture")}
+              className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "architecture"
+                  ? "bg-green-900 text-cream-50 shadow-sm"
+                  : "text-ink-500 hover:text-green-900"
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Architecture &amp; Design</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-black/10 text-ink-900">
+                {architectureCards.length}
+              </span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("cms")}
               className={`px-3 py-1.5 rounded-brand text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "cms"
@@ -1314,6 +1453,17 @@ export default function AdminPage() {
           >
             <Activity className="w-3.5 h-3.5" />
             <span>AMC ({maintenancePackages.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("architecture")}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              activeTab === "architecture"
+                ? "bg-green-900 text-white shadow-xs"
+                : "bg-white text-ink-700 border border-[#283618]/10"
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Architecture ({architectureCards.length})</span>
           </button>
           <button
             onClick={() => setActiveTab("cms")}
@@ -2176,6 +2326,207 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* TAB 4.5: ARCHITECTURE & DESIGN SHOWCASE CARDS                     */}
+        {/* ================================================================= */}
+        {activeTab === "architecture" && (
+          <div className="space-y-6">
+            <div className="pb-4 border-b border-[#283618]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#283618]/70">
+                  Architectural Portfolio &amp; 3D Masterplans
+                </span>
+                <h2 className="text-2xl font-serif font-semibold text-green-900 mt-0.5">
+                  Architecture &amp; Design Cards ({architectureCards.length})
+                </h2>
+                <p className="text-xs text-ink-600 mt-1">
+                  Manage multimedia cards on the /architecture page. Each card can feature an Image, Video walkthrough, Technical Text, or all combined.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingArchCard(null);
+                    setArchForm({
+                      title: "",
+                      subtitle: "",
+                      category: "Podium & Deck Architecture",
+                      image: "/images/frames/ezgif-frame-005.jpg",
+                      video: "",
+                      description: "",
+                      scaleArea: "",
+                      tags: "Podium, 3D CAD, Civil Integration",
+                      details: "Engineered load threshold: < 350 kg/m²\nAutomated capillary drip network\nPerimeter acoustic foliage buffering",
+                      featured: false,
+                      order: architectureCards.length + 1,
+                    });
+                    setShowAddArchModal(true);
+                  }}
+                  className="px-4 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 font-bold text-xs uppercase tracking-wider rounded-brand shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Architecture Card</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Architecture Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {architectureCards.map((card) => {
+                const hasImg = Boolean(card.image && card.image.trim().length > 0);
+                const hasVid = Boolean(card.video && card.video.trim().length > 0);
+
+                return (
+                  <div
+                    key={card.id}
+                    className="bg-white border border-[#283618]/15 rounded-brand overflow-hidden shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow"
+                  >
+                    <div>
+                      {/* Media Preview Box */}
+                      <div className="relative h-44 w-full bg-[#08150E] overflow-hidden border-b border-[#283618]/10">
+                        {hasImg ? (
+                          <Image
+                            src={card.image!}
+                            alt={card.title}
+                            fill
+                            className="object-cover"
+                            sizes="380px"
+                          />
+                        ) : hasVid ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-emerald-400 gap-2 p-4">
+                            <Film className="w-8 h-8" />
+                            <span className="text-[11px] font-mono text-white/80 truncate max-w-full">
+                              Video: {card.video}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-amber-300 gap-1.5 p-4 bg-gradient-to-br from-green-950 to-[#040E0A]">
+                            <Compass className="w-7 h-7 text-emerald-400" />
+                            <span className="text-xs font-mono uppercase tracking-wider font-bold">
+                              Text-Only Manifesto Card
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Badges Overlay */}
+                        <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1">
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-black/75 text-emerald-300 border border-emerald-500/30 uppercase">
+                            {card.category}
+                          </span>
+                          {hasImg && hasVid && (
+                            <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-600 text-white font-bold">
+                              IMG + VIDEO
+                            </span>
+                          )}
+                          {!hasImg && hasVid && (
+                            <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-blue-600 text-white font-bold">
+                              VIDEO ONLY
+                            </span>
+                          )}
+                        </div>
+
+                        {card.scaleArea && (
+                          <span className="absolute bottom-2 right-2 text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 text-white border border-white/20">
+                            {card.scaleArea}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Content Area */}
+                      <div className="p-4 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-sm font-serif font-bold text-green-950 truncate">
+                            {card.title}
+                          </h3>
+                          {card.featured && (
+                            <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-bold border border-amber-300">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+
+                        {card.subtitle && (
+                          <p className="text-[11px] text-amber-900 font-serif italic truncate">
+                            {card.subtitle}
+                          </p>
+                        )}
+
+                        <p className="text-xs text-ink-700/80 font-light line-clamp-3">
+                          {card.description}
+                        </p>
+
+                        {/* Video URL indication if exists */}
+                        {hasVid && (
+                          <div className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-1 rounded truncate border border-emerald-200">
+                            🎥 {card.video}
+                          </div>
+                        )}
+
+                        {/* Tags */}
+                        {card.tags && card.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {card.tags.slice(0, 3).map((t) => (
+                              <span
+                                key={t}
+                                className="text-[9px] font-mono bg-cream-100 text-ink-600 px-1.5 py-0.2 rounded"
+                              >
+                                #{t}
+                              </span>
+                            ))}
+                            {card.tags.length > 3 && (
+                              <span className="text-[9px] text-ink-400">+{card.tags.length - 3}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Card Actions */}
+                    <div className="p-4 pt-2 border-t border-[#283618]/10 flex items-center justify-between text-xs">
+                      <button
+                        onClick={() => {
+                          setEditingArchCard(card);
+                          setArchForm({
+                            title: card.title,
+                            subtitle: card.subtitle || "",
+                            category: card.category,
+                            image: card.image || "",
+                            video: card.video || "",
+                            description: card.description || "",
+                            scaleArea: card.scaleArea || "",
+                            tags: Array.isArray(card.tags) ? card.tags.join(", ") : "",
+                            details: Array.isArray(card.details) ? card.details.join("\n") : "",
+                            featured: Boolean(card.featured),
+                            order: card.order ?? 0,
+                          });
+                          setShowAddArchModal(true);
+                        }}
+                        className="px-3 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer transition-colors"
+                      >
+                        Edit Card
+                      </button>
+                      <button
+                        onClick={() => handleDeleteArchitectureCard(card.id, card.title)}
+                        className="text-red-700 hover:text-red-900 cursor-pointer font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {architectureCards.length === 0 && (
+              <div className="p-8 text-center bg-cream-50 rounded-brand border border-[#283618]/15 text-xs text-ink-600">
+                No architecture project cards created yet. Click "+ Add Architecture Card" to add your first masterplan.
+              </div>
+            )}
           </div>
         )}
 
@@ -3913,7 +4264,283 @@ export default function AdminPage() {
       )}
 
       {/* ================================================================= */}
-      {/* MODAL 4: INQUIRY DETAILS                                          */}
+      {/* MODAL 3.75: ADD / EDIT ARCHITECTURE CARD                          */}
+      {/* ================================================================= */}
+      {showAddArchModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-xl bg-white border border-[#283618]/15 rounded-2xl p-5 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#283618]/10 mb-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase text-emerald-800 font-bold">
+                  Portfolio Curation
+                </span>
+                <h3 className="text-lg font-serif font-bold text-green-950">
+                  {editingArchCard ? `Edit ${editingArchCard.title}` : "Add Architecture & Design Card"}
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowAddArchModal(false);
+                  setEditingArchCard(null);
+                }}
+                className="text-ink-500 hover:text-ink-900 cursor-pointer p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveArchitectureCard} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                    Card Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Cantilevered Biophilic Podium Architecture"
+                    value={archForm.title}
+                    onChange={(e) => setArchForm({ ...archForm, title: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                    Subtitle / Technical Hook
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Engineered Lightweight Matrix"
+                    value={archForm.subtitle}
+                    onChange={(e) => setArchForm({ ...archForm, subtitle: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                    Architectural Category
+                  </label>
+                  <select
+                    value={archForm.category}
+                    onChange={(e) => setArchForm({ ...archForm, category: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  >
+                    <option value="Podium & Deck Architecture">Podium &amp; Deck Architecture</option>
+                    <option value="Master Landscape Planning">Master Landscape Planning</option>
+                    <option value="3D Modeling & CAD">3D Modeling &amp; CAD</option>
+                    <option value="Villa & Estate Architecture">Villa &amp; Estate Architecture</option>
+                    <option value="Biophilic Commercial Design">Biophilic Commercial Design</option>
+                    <option value="Urban Micro-Ecosystems">Urban Micro-Ecosystems</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* MEDIA OPTION 1: IMAGE (URL OR UPLOAD) */}
+              <div className="p-3 bg-cream-50/80 rounded-xl border border-[#283618]/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-mono uppercase text-green-900 font-bold flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Card Photo / Render (Optional if video/text provided)</span>
+                  </label>
+                  {archForm.image && (
+                    <button
+                      type="button"
+                      onClick={() => setArchForm({ ...archForm, image: "" })}
+                      className="text-[10px] text-red-700 hover:underline"
+                    >
+                      Clear Photo
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={archForm.image}
+                    onChange={(e) => setArchForm({ ...archForm, image: e.target.value })}
+                    placeholder="/images/... or /uploads/... or https://..."
+                    className="flex-1 px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                  />
+                  <input
+                    type="file"
+                    ref={archImageFileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, (url) => setArchForm({ ...archForm, image: url }));
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => archImageFileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="px-3 py-1.5 bg-cream-200 hover:bg-cream-300 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer shrink-0"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload Image</span>
+                  </button>
+                </div>
+
+                {archForm.image && (
+                  <div className="relative w-full h-28 rounded-lg overflow-hidden bg-black/10 border border-[#283618]/10 mt-1">
+                    <Image src={archForm.image} alt="Preview" fill className="object-cover" sizes="400px" />
+                  </div>
+                )}
+              </div>
+
+              {/* MEDIA OPTION 2: VIDEO (URL OR UPLOAD) */}
+              <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-900/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-mono uppercase text-emerald-950 font-bold flex items-center gap-1.5">
+                    <Film className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Card Video / 3D Walkthrough (Optional)</span>
+                  </label>
+                  {archForm.video && (
+                    <button
+                      type="button"
+                      onClick={() => setArchForm({ ...archForm, video: "" })}
+                      className="text-[10px] text-red-700 hover:underline"
+                    >
+                      Clear Video
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={archForm.video}
+                    onChange={(e) => setArchForm({ ...archForm, video: e.target.value })}
+                    placeholder="https://...mp4 or /uploads/... or YouTube/Vimeo link"
+                    className="flex-1 px-3 py-2 bg-white border border-emerald-900/20 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                  />
+                  <input
+                    type="file"
+                    ref={archVideoFileInputRef}
+                    className="hidden"
+                    accept="video/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, (url) => setArchForm({ ...archForm, video: url }));
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => archVideoFileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 border border-emerald-900/20 text-xs rounded font-medium flex items-center gap-1 cursor-pointer shrink-0"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload Video</span>
+                  </button>
+                </div>
+                <p className="text-[10px] text-ink-500">
+                  Tip: A card can have an image, a video, text, or all together on a single card.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                  Scope &amp; Engineering Description *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Detail the architectural concept, lightweight civil substrate, irrigation systems, and botanical aesthetics..."
+                  value={archForm.description}
+                  onChange={(e) => setArchForm({ ...archForm, description: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                    Approx. Scale / Area
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 45,000 sq. ft. / 3 Towers"
+                    value={archForm.scaleArea}
+                    onChange={(e) => setArchForm({ ...archForm, scaleArea: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                    Tags (Comma Separated)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Podium, 3D CAD, Basalt Stone, MEP"
+                    value={archForm.tags}
+                    onChange={(e) => setArchForm({ ...archForm, tags: e.target.value })}
+                    className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">
+                  Technical Specifications / Key Details (One line per bullet)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Engineered load threshold: < 350 kg/m²&#10;Automated capillary drip network&#10;Perimeter acoustic foliage buffering"
+                  value={archForm.details}
+                  onChange={(e) => setArchForm({ ...archForm, details: e.target.value })}
+                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 items-center">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-ink-700">
+                  <input
+                    type="checkbox"
+                    checked={archForm.featured}
+                    onChange={(e) => setArchForm({ ...archForm, featured: e.target.checked })}
+                    className="rounded text-green-900 focus:ring-green-900"
+                  />
+                  <span>Feature at top of page</span>
+                </label>
+
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="text-[11px] font-mono text-ink-600">Sort Order:</span>
+                  <input
+                    type="number"
+                    value={archForm.order}
+                    onChange={(e) => setArchForm({ ...archForm, order: Number(e.target.value) || 0 })}
+                    className="w-16 px-2 py-1 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono text-center focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[#283618]/10 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddArchModal(false);
+                    setEditingArchCard(null);
+                  }}
+                  className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-900 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-bold uppercase tracking-wider rounded shadow-xs cursor-pointer"
+                >
+                  {editingArchCard ? "Update Card" : "Save Card"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {/* ================================================================= */}
       {selectedLead && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">

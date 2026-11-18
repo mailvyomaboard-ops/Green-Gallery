@@ -18,17 +18,19 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
       }
 
-      // Max 10MB
-      if (file.size > 10 * 1024 * 1024) {
-        return NextResponse.json({ error: "File exceeds 10MB limit." }, { status: 400 });
+      // Allow images and multimedia architecture videos up to 50MB
+      if (file.size > 50 * 1024 * 1024) {
+        return NextResponse.json({ error: "File exceeds 50MB limit." }, { status: 400 });
       }
 
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
       const ext = path.extname(file.name) || ".jpg";
+      const allowedExts = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp4", ".webm", ".mov", ".ogg", ".pdf"];
+      const safeExt = allowedExts.includes(ext.toLowerCase()) ? ext.toLowerCase() : ".jpg";
       const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 30);
-      const fileName = `${baseName}_${Date.now()}${ext.toLowerCase()}`;
+      const fileName = `${baseName}_${Date.now()}${safeExt}`;
       const filePath = path.join(uploadsDir, fileName);
 
       fs.writeFileSync(filePath, buffer);

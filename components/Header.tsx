@@ -15,10 +15,10 @@ export function Header() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-2 sm:top-3 z-40 px-3 sm:px-6 max-w-[1240px] mx-auto pointer-events-none mb-2">
-      <div className="bg-white/95 dark:bg-black/90 backdrop-blur-md border border-green-900/10 dark:border-white/10 rounded-full shadow-soft px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4 pointer-events-auto transition-all">
+    <header className="sticky top-2 sm:top-3 z-40 px-3 sm:px-6 max-w-[1360px] mx-auto pointer-events-none mb-2">
+      <div className="bg-white/95 dark:bg-black/90 backdrop-blur-md border border-green-900/10 dark:border-white/10 rounded-full shadow-soft px-3 sm:px-5 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3 pointer-events-auto transition-all">
         {/* Brand Emblem Logo & Wordmark */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none shrink-0">
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group focus:outline-none shrink-0">
           <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-amber-500/40 dark:border-amber-400/50 bg-[#08150E] shadow-sm shrink-0 group-hover:scale-105 transition-all p-0.5">
             <Image
               src="/images/emblem.jpg"
@@ -40,14 +40,14 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation Links — Pill Navigation */}
-        <nav className="hidden lg:flex items-center gap-1 bg-cream-50/80 dark:bg-black/40 p-1 rounded-full border border-green-900/10 dark:border-white/10">
+        <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 bg-cream-50/80 dark:bg-black/40 p-1 rounded-full border border-green-900/10 dark:border-white/10 shrink-0">
           {siteConfig.navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-xs uppercase tracking-wider font-semibold px-3.5 py-1.5 rounded-full transition-all ${
+                className={`text-[11px] xl:text-xs uppercase tracking-wider font-semibold px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
                   isActive
                     ? "bg-green-950 dark:bg-green-700 text-cream-50 shadow-sm"
                     : "text-ink-700 dark:text-white/80 hover:text-green-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/10"

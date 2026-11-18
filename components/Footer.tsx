@@ -7,6 +7,16 @@ import { useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { Sprout, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 
+function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
 export function Footer() {
   const router = useRouter();
   const [tapCount, setTapCount] = useState(0);
@@ -101,6 +111,9 @@ export function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-widest text-green-400">Navigation & Policies</h4>
             <ul className="space-y-2 text-sm text-white/80 font-light">
               <li>
+                <Link href="/architecture" className="hover:text-green-300 transition-colors font-medium text-amber-200">Architecture & Design</Link>
+              </li>
+              <li>
                 <Link href="/services" className="hover:text-green-300 transition-colors">All Services</Link>
               </li>
               <li>
@@ -147,14 +160,24 @@ export function Footer() {
                 </a>
               </p>
             </div>
-            <div className="pt-3">
+            <div className="pt-3 flex flex-wrap gap-2">
               <a
                 href={siteConfig.social.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-green-700 hover:bg-green-600 text-white text-xs font-semibold shadow-sm transition-all"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-green-700 hover:bg-green-600 text-white text-xs font-semibold shadow-sm transition-all"
               >
-                <span>WhatsApp Enquiry</span>
+                <span>WhatsApp</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href={siteConfig.social.instagram || "https://instagram.com/greengallery.in"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-95 text-white text-xs font-semibold shadow-sm transition-all"
+              >
+                <InstagramIcon className="w-3.5 h-3.5" />
+                <span>Instagram</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
             </div>
