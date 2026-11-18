@@ -289,6 +289,51 @@ a, button, input, select, textarea {
   will-change: transform, opacity;
 }
 
+@keyframes card-float-gentle {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+@keyframes light-beam-drift {
+  0%, 100% {
+    transform: translate3d(-10%, -10%, 0) rotate(0deg);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate3d(5%, 5%, 0) rotate(5deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes bar-pulse-grow {
+  0%, 100% {
+    transform: scaleY(0.92);
+  }
+  50% {
+    transform: scaleY(1.05);
+  }
+}
+
+.animate-card-float {
+  animation: card-float-gentle 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-light-beam {
+  animation: light-beam-drift 14s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-bar-grow {
+  animation: bar-pulse-grow 3.5s ease-in-out infinite;
+  transform-origin: bottom;
+  will-change: transform;
+}
+
 .animate-marquee-left {
   display: flex;
   width: max-content;

@@ -108,32 +108,43 @@ export default function HomePage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
+                <div className="group flex items-start gap-3 bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 hover:border-emerald-400/40 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-white">Full BOQ Coordination</h4>
-                    <p className="text-xs text-white/70 mt-1 font-light">Itemized species, rates, and schedule validation.</p>
+                    <h4 className="font-semibold text-sm text-white group-hover:text-emerald-300 transition-colors">Full BOQ Coordination</h4>
+                    <p className="text-xs text-white/70 mt-1 font-light leading-relaxed">Itemized species, bag sizes, rates, and schedule validation.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
+
+                <div className="group flex items-start gap-3 bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 hover:border-emerald-400/40 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                    <Layers className="w-5 h-5 text-emerald-400" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-white">Podium &amp; Slab Drainage</h4>
-                    <p className="text-xs text-white/70 mt-1 font-light">Engineered lightweight media and root protection.</p>
+                    <h4 className="font-semibold text-sm text-white group-hover:text-emerald-300 transition-colors">Podium &amp; Slab Drainage</h4>
+                    <p className="text-xs text-white/70 mt-1 font-light leading-relaxed">Engineered lightweight media, volcanic pumice, and root protection.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
+
+                <div className="group flex items-start gap-3 bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 hover:border-emerald-400/40 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                    <Clock className="w-5 h-5 text-emerald-400" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-white">Phased Tower Deliveries</h4>
-                    <p className="text-xs text-white/70 mt-1 font-light">Supply aligned with RERA possession dates.</p>
+                    <h4 className="font-semibold text-sm text-white group-hover:text-emerald-300 transition-colors">Phased Tower Deliveries</h4>
+                    <p className="text-xs text-white/70 mt-1 font-light leading-relaxed">Supply schedules synchronized with RERA possession dates.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
+
+                <div className="group flex items-start gap-3 bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 hover:border-emerald-400/40 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                    <MapPin className="w-5 h-5 text-emerald-400" />
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-white">Alandi Staging Hub</h4>
-                    <p className="text-xs text-white/70 mt-1 font-light">Acclimatized plants conditioned before dispatch.</p>
+                    <h4 className="font-semibold text-sm text-white group-hover:text-emerald-300 transition-colors">Alandi Staging Hub</h4>
+                    <p className="text-xs text-white/70 mt-1 font-light leading-relaxed">Acclimatized plants conditioned and root-checked before dispatch.</p>
                   </div>
                 </div>
               </div>
@@ -211,20 +222,20 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {siteConfig.workflowSteps.map((step) => (
             <div
               key={step.step}
-              className="bg-white dark:bg-[#080A09] rounded-3xl p-6 border border-green-900/10 dark:border-white/10 shadow-soft flex flex-col justify-between"
+              className="group bg-white dark:bg-[#080A09] rounded-3xl p-6 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-xl hover:border-emerald-500/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 font-display font-extrabold text-base flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-display font-extrabold text-base flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-green-950 transition-all duration-300">
                   0{step.step}
                 </div>
-                <h3 className="font-display text-lg font-bold text-green-950 dark:text-white mb-1">
+                <h3 className="font-display text-lg font-bold text-green-950 dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                   {step.title}
                 </h3>
-                <span className="text-[11px] font-semibold text-green-700 dark:text-green-400 block mb-2">
+                <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 block mb-2 font-mono">
                   {step.tagline}
                 </span>
                 <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed">
