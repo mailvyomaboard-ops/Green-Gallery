@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { defaultSiteContent, SiteContent } from "@/lib/types";
-import { ArrowUpRight, Sparkles, MapPin, Leaf, Compass, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, Sparkles, MapPin } from "lucide-react";
 
 export function Hero({ initialContent }: { initialContent?: SiteContent }) {
   const [content, setContent] = useState<SiteContent>(initialContent || defaultSiteContent);
@@ -184,64 +184,25 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
             {content.heroDescription ||
               "From large-scale commercial developer podiums to private villa sanctuaries. We design, source, plant, and nurture enduring green environments across Pune and Maharashtra."}
           </p>
-
-          {/* Planterly Key Indicators */}
-          <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs font-mono text-emerald-300/80">
-            <span className="flex items-center gap-1.5">
-              <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Native &amp; Acclimatized Species</span>
-            </span>
-            <span className="hidden sm:inline text-white/30">•</span>
-            <span className="flex items-center gap-1.5">
-              <Compass className="w-3.5 h-3.5 text-amber-300" />
-              <span>3D Planning &amp; Civil Coordination</span>
-            </span>
-            <span className="hidden sm:inline text-white/30">•</span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Guaranteed Plant Health</span>
-            </span>
-          </div>
         </div>
 
-        {/* BOTTOM CONTROLS & FLOATING ISLANDS */}
+        {/* BOTTOM CONTROLS & ACTION CTAS */}
         <div
-          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-5 sm:gap-6 pt-5 border-t border-white/10 w-full transition-all duration-1000 delay-300 ease-out ${
+          className={`relative z-20 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-5 sm:gap-6 pt-5 border-t border-white/10 w-full transition-all duration-1000 delay-300 ease-out ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          {/* Left Inset Card: Specimen Flora Network */}
-          <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 p-3 sm:p-4 rounded-2xl flex items-center gap-4 w-full sm:max-w-sm text-left shadow-lg transition-all group">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-emerald-950 border border-emerald-400/30 shrink-0 group-hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/images/frames/ezgif-frame-003.jpg"
-                alt="Acclimatized specimen flora in GreenGallery nursery"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div>
-              <div className="font-display font-bold text-white text-sm sm:text-base leading-tight flex items-center gap-1.5">
-                <span>
-                  {content.heroStatCount && !content.heroStatCount.includes("Pune")
-                    ? content.heroStatCount
-                    : "100+ Turnkey Projects"}
-                </span>
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              </div>
-              <p className="text-white/70 text-xs font-light leading-snug mt-0.5">
-                {content.heroStatLabel ||
-                  "Dedicated logistics staging depot, verified specimen nurseries, and turnkey execution crews."}
-              </p>
-            </div>
+          {/* Subtle Brand Tagline */}
+          <div className="text-xs sm:text-sm font-serif italic text-amber-200/90 text-center sm:text-left">
+            Cultivating living botanical environments across Pune &amp; Maharashtra
           </div>
 
-          {/* Right Action CTAs: Apple/Linear-Styled Tactile Pill Buttons */}
+          {/* Action CTAs: Apple/Linear-Styled Tactile Pill Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             {/* Primary Action Button with Tactile Hover Lift & Glossy Sheen */}
             <Link
               href="/services"
-              className="relative overflow-hidden group w-full sm:w-auto min-h-[48px] px-7 py-3 bg-white hover:bg-cream-50 active:scale-[0.98] text-green-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-2 border border-white/40"
+              className="relative overflow-hidden group w-full sm:w-auto min-h-[48px] px-8 py-3 bg-white hover:bg-cream-50 active:scale-[0.98] text-green-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-2 border border-white/40"
             >
               {/* Glossy sweep effect */}
               <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000" />
@@ -252,7 +213,7 @@ export function Hero({ initialContent }: { initialContent?: SiteContent }) {
             {/* Secondary Consultation Button */}
             <Link
               href="/contact?type=consultation"
-              className="relative overflow-hidden group w-full sm:w-auto min-h-[48px] px-7 py-3 bg-emerald-600/80 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-full border border-emerald-400/40 backdrop-blur-md shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+              className="relative overflow-hidden group w-full sm:w-auto min-h-[48px] px-8 py-3 bg-emerald-600/80 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-full border border-emerald-400/40 backdrop-blur-md shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
               <span className="relative z-10">{content.secondaryButtonText || "Book Consultation"}</span>
             </Link>
