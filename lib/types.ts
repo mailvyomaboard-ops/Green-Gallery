@@ -149,12 +149,16 @@ export interface ClientPartner {
   tagline?: string;
   logo: string;
   city: string;
+  location?: string;
   totalAreaHandled?: string;
   projectCount: number;
   highlightProjects: string[];
   scope: string[];
   description: string;
   featuredProjectSlug?: string;
+  whatWeDid?: string[];
+  videoUrl?: string;
+  galleryImages?: string[];
 }
 
 export interface Project {
@@ -168,12 +172,14 @@ export interface Project {
   clientName?: string;
   clientLogo?: string;
   coverImage: string;
+  videoUrl?: string;
   images: {
     url: string;
     caption: string;
     alt: string;
   }[];
   brief: string;
+  whatWeDid?: string[];
   plantsUsed: string[];
   servicesUsed: string[];
   isFeatured?: boolean;

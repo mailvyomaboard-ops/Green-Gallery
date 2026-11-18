@@ -84,11 +84,25 @@ function readDb(): DatabaseSchema {
         const [nirman] = parsed.clients.splice(nirmanIdx, 1);
         parsed.clients.unshift(nirman);
       }
-      // Cleanse removed project
+      // Cleanse removed project and enrich with media/whatWeDid
       if (parsed.projects) {
         parsed.projects = parsed.projects.filter(
           (p) => p.id !== "proj-shriram" && p.slug !== "shriram-green-acres" && !p.title.toLowerCase().includes("shriram")
         );
+        parsed.projects.forEach((proj) => {
+          const init = initialProjects.find((p) => p.slug === proj.slug || p.id === proj.id);
+          if (init) {
+            if (!proj.whatWeDid || proj.whatWeDid.length === 0) {
+              proj.whatWeDid = init.whatWeDid;
+            }
+            if (!proj.videoUrl && init.videoUrl) {
+              proj.videoUrl = init.videoUrl;
+            }
+            if (!proj.images || proj.images.length <= 1) {
+              proj.images = init.images;
+            }
+          }
+        });
       }
     }
     // Ensure services and maintenancePackages are initialized

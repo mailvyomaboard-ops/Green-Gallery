@@ -13,7 +13,9 @@ import {
   MapPin,
   CheckCircle2,
   MessageSquare,
-  Sparkles
+  Sparkles,
+  Camera,
+  Video
 } from "lucide-react";
 
 export default function ProjectsPage() {
@@ -67,76 +69,97 @@ export default function ProjectsPage() {
 
       {/* Projects Grid: Pure, Clean, Authentic Project Collaborations */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-        {clients.map((project, idx) => (
-          <div
-            key={project.id}
-            className="bg-white dark:bg-[#080A09] rounded-3xl p-4 sm:p-5 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col justify-between group"
-          >
-            <div>
-              {/* Top Half: Dedicated 50% Image Showcase Bay */}
-              <div className="relative w-full h-48 sm:h-52 rounded-2xl bg-white dark:bg-white/95 border border-green-900/10 flex items-center justify-center p-6 overflow-hidden group-hover:scale-[1.02] transition-transform duration-300 shadow-xs mb-4">
-                <Image
-                  src={project.logo}
-                  alt={project.name}
-                  fill
-                  className="object-contain p-3"
-                  sizes="(max-width: 768px) 100vw, 360px"
-                />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-green-950/80 backdrop-blur-sm text-[10px] font-mono font-bold text-green-300 uppercase tracking-wider border border-white/10">
-                  Project #{idx + 1}
+        {clients.map((project, idx) => {
+          const detailUrl = `/projects/${project.featuredProjectSlug || project.slug}`;
+          return (
+            <div
+              key={project.id}
+              className="bg-white dark:bg-[#080A09] rounded-3xl p-5 border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col justify-between group"
+            >
+              <div>
+                {/* Top Half: Dedicated 50% Image Showcase Bay with Direct Clickable Link */}
+                <Link
+                  href={detailUrl}
+                  className="relative block w-full h-48 sm:h-52 rounded-2xl bg-white dark:bg-white/95 border border-green-900/10 overflow-hidden group-hover:scale-[1.02] transition-transform duration-300 shadow-xs mb-4"
+                >
+                  <Image
+                    src={project.logo}
+                    alt={project.name}
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 768px) 100vw, 360px"
+                  />
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-green-950/80 backdrop-blur-sm text-[10px] font-mono font-bold text-green-300 uppercase tracking-wider border border-white/10">
+                    Project #{idx + 1}
+                  </div>
+
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-sm text-[10px] font-mono text-emerald-300 flex items-center gap-1 border border-white/10">
+                    <Camera className="w-3 h-3" />
+                    <span>Photos &amp; Video</span>
+                  </div>
+                </Link>
+
+                {/* Location Pill */}
+                <div className="flex items-center gap-1.5 text-xs text-ink-500 dark:text-white/60 mb-2">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span className="font-semibold text-green-950 dark:text-emerald-300">{project.location || project.city}</span>
                 </div>
-              </div>
 
-              {/* Location Pill */}
-              <div className="flex items-center gap-1.5 text-xs text-ink-500 dark:text-white/60 mb-2">
-                <MapPin className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                <span className="font-medium text-green-900 dark:text-green-300">{project.city}</span>
-              </div>
+                {/* Project Title */}
+                <h2 className="font-display text-xl font-bold text-green-950 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1 mb-1">
+                  <Link href={detailUrl}>
+                    {project.name}
+                  </Link>
+                </h2>
 
-              {/* Project Title */}
-              <h2 className="font-display text-xl font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-1 mb-1">
-                {project.name}
-              </h2>
+                {/* Tagline */}
+                {project.tagline && (
+                  <p className="text-xs text-ink-500 dark:text-white/60 italic line-clamp-1 mb-2 font-light">
+                    {project.tagline}
+                  </p>
+                )}
 
-              {/* Tagline */}
-              {project.tagline && (
-                <p className="text-xs text-ink-500 dark:text-white/60 italic line-clamp-1 mb-2 font-light">
-                  {project.tagline}
+                {/* Scope Description */}
+                <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed line-clamp-3 mb-4">
+                  {project.description}
                 </p>
-              )}
 
-              {/* Scope Description */}
-              <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed line-clamp-3 mb-4">
-                {project.description}
-              </p>
+                {/* Highlights / Scope pills */}
+                {project.scope && project.scope.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-2 border-t border-cream-200 dark:border-white/10">
+                    {project.scope.slice(0, 2).map((item, sIdx) => (
+                      <span
+                        key={sIdx}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-cream-100 dark:bg-white/10 text-green-950 dark:text-green-200"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-              {/* Highlights / Scope pills */}
-              {project.scope && project.scope.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-cream-200 dark:border-white/10">
-                  {project.scope.slice(0, 2).map((item, sIdx) => (
-                    <span
-                      key={sIdx}
-                      className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-cream-100 dark:bg-white/10 text-green-950 dark:text-green-200"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {/* Direct Project Actions */}
+              <div className="pt-4 mt-4 border-t border-cream-200 dark:border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                <Link
+                  href={detailUrl}
+                  className="px-4 py-2 bg-green-950 dark:bg-emerald-600 hover:bg-green-900 text-white rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                >
+                  <span>View Case Study</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+
+                <Link
+                  href={`/contact?type=quote&service=${encodeURIComponent(project.name)}`}
+                  className="text-xs font-semibold text-green-800 dark:text-green-300 hover:text-green-950 dark:hover:text-white flex items-center justify-center gap-1 group-hover:underline text-center"
+                >
+                  <span>Request Proposal</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
-
-            {/* Direct Project Action */}
-            <div className="pt-4 mt-4 border-t border-cream-200 dark:border-white/10 flex items-center justify-between">
-              <Link
-                href={`/contact?type=quote&service=${encodeURIComponent(project.name)}`}
-                className="text-xs font-bold text-green-800 dark:text-green-300 hover:text-green-950 dark:hover:text-white flex items-center gap-1.5 group-hover:underline"
-              >
-                <span>Request Project Proposal</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Bottom Conversion Banner */}

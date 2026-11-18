@@ -171,7 +171,7 @@ export function Footer() {
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
               <a
-                href={siteConfig.social.instagram || "https://instagram.com/greengallery.in"}
+                href={siteConfig.social.instagram || "https://www.instagram.com/greengallery_landscaping/"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-95 text-white text-xs font-semibold shadow-sm transition-all"

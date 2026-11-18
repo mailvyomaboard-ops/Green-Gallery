@@ -49,11 +49,14 @@ import {
   Camera,
   Play,
   Star,
+  Video,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   LeadSubmission,
   InventoryItem,
   ClientPartner,
+  Project,
   ServiceItem,
   MaintenancePackageItem,
   ArchitectureCard,
@@ -149,14 +152,26 @@ export default function AdminPage() {
 
   // Builder Clients & Projects state
   const [clients, setClients] = useState<ClientPartner[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [showAddClientModal, setShowAddClientModal] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientPartner | null>(null);
   const [clientForm, setClientForm] = useState({
     name: "",
     tagline: "",
     city: "Pune",
+    location: "Pune, Maharashtra",
     logo: "/images/clients/nirman-greens.jpg",
+    coverImage: "/images/frames/ezgif-frame-001.jpg",
+    videoUrl: "",
     description: "",
+    whatWeDid: "",
+    plantsUsed: "",
+    servicesUsed: "Landscape Design and Installation, Project Foliage for Builders",
+    year: 2024,
+    areaSqFt: 45000,
+    category: "Township and Large Developments" as Project["category"],
+    galleryImages: [] as string[],
+    featuredProjectSlug: "",
   });
 
   // Services state
@@ -220,6 +235,9 @@ export default function AdminPage() {
   const plantImageFileInputRef = useRef<HTMLInputElement>(null);
   const editPlantImageFileInputRef = useRef<HTMLInputElement>(null);
   const clientImageFileInputRef = useRef<HTMLInputElement>(null);
+  const clientCoverImageFileInputRef = useRef<HTMLInputElement>(null);
+  const clientVideoFileInputRef = useRef<HTMLInputElement>(null);
+  const clientGalleryImageFileInputRef = useRef<HTMLInputElement>(null);
   const serviceImageFileInputRef = useRef<HTMLInputElement>(null);
   const pkgImageFileInputRef = useRef<HTMLInputElement>(null);
   const archImageFileInputRef = useRef<HTMLInputElement>(null);
@@ -386,10 +404,11 @@ export default function AdminPage() {
   const loadAllData = async () => {
     setIsRefreshing(true);
     try {
-      const [leadsRes, invRes, clientsRes, servicesRes, maintenanceRes, archRes, reviewsRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
+      const [leadsRes, invRes, clientsRes, projectsRes, servicesRes, maintenanceRes, archRes, reviewsRes, cmsRes, analyticsRes, settingsRes] = await Promise.all([
         fetch("/api/leads").then((r) => r.json()).catch(() => ({ leads: [] })),
         fetch("/api/inventory").then((r) => r.json()).catch(() => ({ items: [] })),
         fetch("/api/clients").then((r) => r.json()).catch(() => ({ clients: [] })),
+        fetch("/api/projects").then((r) => r.json()).catch(() => ({ projects: [] })),
         fetch("/api/services").then((r) => r.json()).catch(() => ({ services: [] })),
         fetch("/api/maintenance").then((r) => r.json()).catch(() => ({ packages: [] })),
         fetch("/api/architecture").then((r) => r.json()).catch(() => ({ cards: [] })),
@@ -402,6 +421,7 @@ export default function AdminPage() {
       if (leadsRes.leads) setLeads(leadsRes.leads);
       if (invRes.items) setInventory(invRes.items);
       if (clientsRes.clients) setClients(clientsRes.clients);
+      if (projectsRes.projects) setProjects(projectsRes.projects);
       if (servicesRes.services) setServices(servicesRes.services);
       if (maintenanceRes.packages) setMaintenancePackages(maintenanceRes.packages);
       if (archRes.cards) setArchitectureCards(archRes.cards);
@@ -699,45 +719,188 @@ export default function AdminPage() {
   }, [inventory, invSearch, invCategoryFilter]);
 
   // ---------------------------------------------------------------------------
-  // CLIENTS ACTIONS
+  // CLIENTS & PROJECTS ACTIONS
   // ---------------------------------------------------------------------------
+  const openClientModal = (c?: ClientPartner) => {
+    if (c) {
+      setEditingClient(c);
+      const matchingProj = projects.find(
+        (p) => (c.featuredProjectSlug && p.slug === c.featuredProjectSlug) || p.slug === c.slug || p.clientName?.toLowerCase() === c.name.toLowerCase()
+      );
+      setClientForm({
+        name: c.name,
+        tagline: c.tagline || "",
+        city: c.city || "Pune",
+        location: matchingProj?.location || c.location || c.city || "Pune, Maharashtra",
+        logo: c.logo || "/images/clients/nirman-greens.jpg",
+        coverImage: matchingProj?.coverImage || c.logo || "/images/frames/ezgif-frame-001.jpg",
+        videoUrl: matchingProj?.videoUrl || c.videoUrl || "",
+        description: c.description || matchingProj?.brief || "",
+        whatWeDid: (matchingProj?.whatWeDid || c.whatWeDid || []).join("\n"),
+        plantsUsed: (matchingProj?.plantsUsed || []).join(", "),
+        servicesUsed: (matchingProj?.servicesUsed || c.scope || []).join(", "),
+        year: matchingProj?.year || 2024,
+        areaSqFt: matchingProj?.areaSqFt || 45000,
+        category: (matchingProj?.category || "Township and Large Developments") as Project["category"],
+        galleryImages: (matchingProj?.images && matchingProj.images.length > 0)
+          ? matchingProj.images.map((img: any) => img.url)
+          : (c.galleryImages || []),
+        featuredProjectSlug: c.featuredProjectSlug || matchingProj?.slug || "",
+      });
+    } else {
+      setEditingClient(null);
+      setClientForm({
+        name: "",
+        tagline: "",
+        city: "Pune",
+        location: "Pune, Maharashtra",
+        logo: "/images/clients/nirman-greens.jpg",
+        coverImage: "/images/frames/ezgif-frame-001.jpg",
+        videoUrl: "",
+        description: "",
+        whatWeDid: "Engineered structural lightweight substrate formulation (<350 kg/m²)\nSpecimen mature canopy trees and avenue palms\nAutomated micro-drip irrigation running on STP water\nBasalt paver hardscape and perimeter acoustic foliage buffer",
+        plantsUsed: "Terminalia mantaly, Foxtail Palms, Plumeria obtusa",
+        servicesUsed: "Landscape Design and Installation, Project Foliage for Builders",
+        year: new Date().getFullYear(),
+        areaSqFt: 35000,
+        category: "Township and Large Developments",
+        galleryImages: ["/images/frames/ezgif-frame-001.jpg", "/images/frames/ezgif-frame-002.jpg"],
+        featuredProjectSlug: "",
+      });
+    }
+    setShowAddClientModal(true);
+  };
+
   const handleSaveClient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientForm.name || !clientForm.city) return;
 
     try {
+      const parsedWhatWeDid = clientForm.whatWeDid
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const parsedPlants = clientForm.plantsUsed
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const parsedServices = clientForm.servicesUsed
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const clientPayload = {
+        name: clientForm.name,
+        tagline: clientForm.tagline,
+        city: clientForm.city,
+        location: clientForm.location,
+        logo: clientForm.logo,
+        description: clientForm.description,
+        whatWeDid: parsedWhatWeDid,
+        videoUrl: clientForm.videoUrl,
+        galleryImages: clientForm.galleryImages,
+        scope: parsedServices,
+        featuredProjectSlug: clientForm.featuredProjectSlug || editingClient?.featuredProjectSlug,
+      };
+
+      let savedClient: ClientPartner | null = null;
+
       if (editingClient) {
         const res = await fetch("/api/clients", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: editingClient.id, ...clientForm }),
+          body: JSON.stringify({ id: editingClient.id, ...clientPayload }),
         });
         const data = await res.json();
         if (data.success && data.client) {
+          savedClient = data.client;
           setClients((prev) => prev.map((c) => (c.id === editingClient.id ? data.client : c)));
-          setEditingClient(null);
         }
       } else {
         const res = await fetch("/api/clients", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(clientForm),
+          body: JSON.stringify(clientPayload),
         });
         const data = await res.json();
         if (data.success && data.client) {
+          savedClient = data.client;
           setClients((prev) => [...prev, data.client]);
-          setShowAddClientModal(false);
-          setClientForm({
-            name: "",
-            tagline: "",
-            city: "Pune",
-            logo: "/images/clients/nirman-greens.jpg",
-            description: "",
-          });
         }
       }
+
+      // Also create or sync matching project in projectsRepo via /api/projects
+      const projectSlug = clientForm.featuredProjectSlug || editingClient?.featuredProjectSlug || clientForm.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const existingProject = projects.find(
+        (p) => (projectSlug && p.slug === projectSlug) || p.clientName?.toLowerCase() === clientForm.name.toLowerCase()
+      );
+
+      const galleryImagesFormatted = clientForm.galleryImages.map((url, i) => ({
+        url,
+        caption: `${clientForm.name} photo ${i + 1}`,
+        alt: clientForm.name,
+      }));
+      if (clientForm.coverImage && !galleryImagesFormatted.some((img) => img.url === clientForm.coverImage)) {
+        galleryImagesFormatted.unshift({
+          url: clientForm.coverImage,
+          caption: `${clientForm.name} - Cover Showcase`,
+          alt: clientForm.name,
+        });
+      }
+
+      const projectPayload = {
+        title: existingProject?.title || `${clientForm.name} Landscape Execution`,
+        slug: existingProject?.slug || projectSlug,
+        category: clientForm.category,
+        location: clientForm.location || clientForm.city,
+        year: Number(clientForm.year) || 2024,
+        areaSqFt: Number(clientForm.areaSqFt) || 45000,
+        clientName: clientForm.name,
+        clientLogo: clientForm.logo,
+        coverImage: clientForm.coverImage || clientForm.logo,
+        videoUrl: clientForm.videoUrl,
+        images: galleryImagesFormatted,
+        brief: clientForm.description,
+        whatWeDid: parsedWhatWeDid,
+        plantsUsed: parsedPlants,
+        servicesUsed: parsedServices,
+        isFeatured: true,
+        status: "COMPLETED",
+      };
+
+      if (existingProject) {
+        const pRes = await fetch("/api/projects", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: existingProject.id, ...projectPayload }),
+        });
+        const pData = await pRes.json();
+        if (pData.success && pData.project) {
+          setProjects((prev) => prev.map((p) => (p.id === existingProject.id ? pData.project : p)));
+        }
+      } else {
+        const pRes = await fetch("/api/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(projectPayload),
+        });
+        const pData = await pRes.json();
+        if (pData.success && pData.project) {
+          setProjects((prev) => [...prev, pData.project]);
+          if (savedClient) {
+            await fetch("/api/clients", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: savedClient.id, featuredProjectSlug: pData.project.slug }),
+            });
+          }
+        }
+      }
+
+      setShowAddClientModal(false);
+      setEditingClient(null);
     } catch (e) {
-      console.error("Failed to save client", e);
+      console.error("Failed to save client and project", e);
     }
   };
 
@@ -2094,17 +2257,7 @@ export default function AdminPage() {
                 </h2>
               </div>
               <button
-                onClick={() => {
-                  setClientForm({
-                    name: "",
-                    tagline: "",
-                    city: "Pune",
-                    logo: "/images/clients/nirman-greens.jpg",
-                    description: "",
-                  });
-                  setEditingClient(null);
-                  setShowAddClientModal(true);
-                }}
+                onClick={() => openClientModal()}
                 className="px-3.5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-medium rounded-brand shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -2113,71 +2266,102 @@ export default function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {clients.map((c, idx) => (
-                <div
-                  key={c.id}
-                  className="bg-white border border-[#283618]/10 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:border-green-900/30 transition-colors"
-                >
-                  <div>
-                    {/* Top 50% Image Showcase Bay */}
-                    <div className="relative w-full h-44 sm:h-48 rounded-2xl bg-white border border-[#283618]/10 flex items-center justify-center p-4 mb-4 shadow-xs overflow-hidden">
-                      <Image
-                        src={c.logo}
-                        alt={c.name}
-                        fill
-                        className="object-contain p-2"
-                        sizes="(max-width: 768px) 100vw, 360px"
-                      />
-                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-green-950/80 backdrop-blur-md text-[9px] font-mono font-bold text-green-300 uppercase tracking-wider border border-white/10">
-                        Project #{idx + 1}
-                      </div>
-                    </div>
+              {clients.map((c, idx) => {
+                const matchingProj = projects.find(
+                  (p) => (c.featuredProjectSlug && p.slug === c.featuredProjectSlug) || p.slug === c.slug || p.clientName?.toLowerCase() === c.name.toLowerCase()
+                );
+                const hasVideo = Boolean(c.videoUrl || matchingProj?.videoUrl);
+                const photoCount = matchingProj?.images?.length || (c.galleryImages?.length || 1);
+                const whatWeDidCount = (matchingProj?.whatWeDid?.length || c.whatWeDid?.length || 0);
+                const liveUrl = `/projects/${c.featuredProjectSlug || matchingProj?.slug || c.slug}`;
 
-                    <div className="min-w-0 mb-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-base font-serif font-semibold text-green-900 truncate">
-                          {c.name}
-                        </h3>
-                        <span className="text-[10px] font-mono text-[#283618] bg-cream-50 border border-[#283618]/10 px-2 py-0.5 rounded shrink-0">
-                          {c.city}
-                        </span>
+                return (
+                  <div
+                    key={c.id}
+                    className="bg-white border border-[#283618]/10 rounded-brand p-5 shadow-xs flex flex-col justify-between hover:border-green-900/30 transition-colors group"
+                  >
+                    <div>
+                      {/* Top Image Showcase Bay */}
+                      <div className="relative w-full h-44 sm:h-48 rounded-2xl bg-white border border-[#283618]/10 flex items-center justify-center p-4 mb-4 shadow-xs overflow-hidden">
+                        <Image
+                          src={c.logo}
+                          alt={c.name}
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 100vw, 360px"
+                        />
+                        <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-green-950/80 backdrop-blur-md text-[9px] font-mono font-bold text-green-300 uppercase tracking-wider border border-white/10">
+                          Project #{idx + 1}
+                        </div>
+
+                        <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
+                          {hasVideo && (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-500/30 text-[9px] font-mono font-bold flex items-center gap-1">
+                              <Video className="w-2.5 h-2.5 text-emerald-400" />
+                              <span>Video</span>
+                            </span>
+                          )}
+                          <span className="px-2 py-0.5 rounded-full bg-black/60 text-white border border-white/10 text-[9px] font-mono">
+                            {photoCount} {photoCount === 1 ? "Photo" : "Photos"}
+                          </span>
+                        </div>
                       </div>
-                      {c.tagline && (
-                        <p className="text-xs text-ink-500 italic truncate mt-0.5">{c.tagline}</p>
+
+                      <div className="min-w-0 mb-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-base font-serif font-semibold text-green-900 truncate">
+                            {c.name}
+                          </h3>
+                          <span className="text-[10px] font-mono text-[#283618] bg-cream-50 border border-[#283618]/10 px-2 py-0.5 rounded shrink-0 flex items-center gap-1">
+                            <MapPin className="w-2.5 h-2.5 text-emerald-600" />
+                            <span>{c.location || c.city}</span>
+                          </span>
+                        </div>
+                        {c.tagline && (
+                          <p className="text-xs text-ink-500 italic truncate mt-0.5">{c.tagline}</p>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-ink-900/80 leading-relaxed line-clamp-2 mb-3 font-light">
+                        {c.description}
+                      </p>
+
+                      {whatWeDidCount > 0 && (
+                        <div className="mb-3 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200/50 text-[10px] text-emerald-900 flex items-center justify-between">
+                          <span>Execution Deliverables</span>
+                          <strong className="font-mono">{whatWeDidCount} Scope Points</strong>
+                        </div>
                       )}
                     </div>
 
-                    <p className="text-xs text-ink-900/80 leading-relaxed line-clamp-3 mb-4 font-light">
-                      {c.description}
-                    </p>
+                    <div className="pt-3 border-t border-[#283618]/10 flex items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openClientModal(c)}
+                          className="px-3 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer transition-colors"
+                        >
+                          Edit Project &amp; Media
+                        </button>
+                        <a
+                          href={liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-cream-100 hover:bg-cream-200 text-ink-700 rounded border border-[#283618]/10 text-[11px] font-medium flex items-center gap-1"
+                        >
+                          <span>Live</span>
+                          <ArrowUpRight className="w-3 h-3" />
+                        </a>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteClient(c.id, c.name)}
+                        className="text-red-700 hover:text-red-900 cursor-pointer font-medium text-xs"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="pt-3 border-t border-[#283618]/10 flex items-center justify-between text-xs">
-                    <button
-                      onClick={() => {
-                        setEditingClient(c);
-                        setClientForm({
-                          name: c.name,
-                          tagline: c.tagline || "",
-                          city: c.city,
-                          logo: c.logo,
-                          description: c.description,
-                        });
-                        setShowAddClientModal(true);
-                      }}
-                      className="px-3 py-1 bg-green-50 text-green-900 hover:bg-green-100 rounded border border-green-200 font-medium cursor-pointer transition-colors"
-                    >
-                      Edit Card
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClient(c.id, c.name)}
-                      className="text-red-700 hover:text-red-900 cursor-pointer font-medium"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -3976,127 +4160,388 @@ export default function AdminPage() {
       )}
 
       {/* ================================================================= */}
-      {/* MODAL 3: ADD / EDIT CLIENT PARTNER                                */}
+      {/* MODAL 3: ADD / EDIT CLIENT PARTNER & PROJECT CASE STUDY           */}
       {/* ================================================================= */}
       {showAddClientModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white border border-[#283618]/15 rounded-2xl p-5 sm:p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#283618]/10 mb-4">
-              <h3 className="text-base font-serif font-bold text-green-900">
-                {editingClient ? `Edit ${editingClient.name}` : "Add Developer Client"}
-              </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-2xl bg-white border border-[#283618]/15 rounded-2xl p-5 sm:p-7 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#283618]/10 mb-5">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-800 font-bold">
+                  Portfolio Operations
+                </span>
+                <h3 className="text-lg font-serif font-bold text-green-950">
+                  {editingClient ? `Edit Project: ${editingClient.name}` : "Add Developer Project & Case Study"}
+                </h3>
+              </div>
               <button
                 onClick={() => {
                   setShowAddClientModal(false);
                   setEditingClient(null);
                 }}
-                className="text-ink-500 hover:text-ink-900 cursor-pointer p-1"
+                className="text-ink-500 hover:text-ink-900 cursor-pointer p-1 rounded-lg hover:bg-cream-100"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveClient} className="space-y-3">
-              <div>
-                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Developer Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Nirman Greens"
-                  value={clientForm.name}
-                  onChange={(e) => setClientForm({ ...clientForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
-                />
-              </div>
+            <form onSubmit={handleSaveClient} className="space-y-5">
+              {/* SECTION 1: IDENTITY & SITE LOCATION */}
+              <div className="space-y-3 p-4 rounded-xl bg-cream-50/60 border border-[#283618]/10">
+                <span className="text-[11px] font-mono uppercase text-green-900 font-bold block">
+                  1. Project &amp; Developer Identity
+                </span>
 
-              <div>
-                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Tagline</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Eco-Conscious Integrated Townships"
-                  value={clientForm.tagline}
-                  onChange={(e) => setClientForm({ ...clientForm, tagline: e.target.value })}
-                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">City / Region *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Ambegaon / Katraj, Pune"
-                  value={clientForm.city}
-                  onChange={(e) => setClientForm({ ...clientForm, city: e.target.value })}
-                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Developer Logo / Photo *</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={clientForm.logo}
-                    onChange={(e) => setClientForm({ ...clientForm, logo: e.target.value })}
-                    placeholder="/images/clients/... or /uploads/..."
-                    className="flex-1 px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
-                  />
-                  <input
-                    type="file"
-                    ref={clientImageFileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileUpload(file, (url) => setClientForm({ ...clientForm, logo: url }));
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => clientImageFileInputRef.current?.click()}
-                    disabled={uploadingImage}
-                    className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>{uploadingImage ? "Uploading..." : "Upload"}</span>
-                  </button>
-                </div>
-                {clientForm.logo && (
-                  <div className="relative w-full h-24 rounded-xl overflow-hidden bg-white border border-[#283618]/10 mt-2 p-2">
-                    <Image src={clientForm.logo} alt="Preview" fill className="object-contain" sizes="200px" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-medium text-ink-700 mb-1">Developer / Client Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Silver Group"
+                      value={clientForm.name}
+                      onChange={(e) => setClientForm({ ...clientForm, name: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                    />
                   </div>
-                )}
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-ink-700 mb-1">Tagline / Sub-venture</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. A Kiran Sawant Venture"
+                      value={clientForm.tagline}
+                      onChange={(e) => setClientForm({ ...clientForm, tagline: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-medium text-ink-700 mb-1">Exact Site Location *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Ravet / Punawale, PCMC, Pune"
+                      value={clientForm.location}
+                      onChange={(e) => setClientForm({ ...clientForm, location: e.target.value, city: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-ink-700 mb-1">Category</label>
+                    <select
+                      value={clientForm.category}
+                      onChange={(e) => setClientForm({ ...clientForm, category: e.target.value as any })}
+                      className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                    >
+                      <option value="Township and Large Developments">Township and Large Developments</option>
+                      <option value="Residential">Residential</option>
+                      <option value="Commercial">Commercial</option>
+                      <option value="Terrace and Vertical">Terrace and Vertical</option>
+                      <option value="Interior">Interior</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-medium text-ink-700 mb-1">Execution Year</label>
+                    <input
+                      type="number"
+                      placeholder="2024"
+                      value={clientForm.year}
+                      onChange={(e) => setClientForm({ ...clientForm, year: Number(e.target.value) || 2024 })}
+                      className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900 font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-ink-700 mb-1">Total Scale / Area (Sq. Ft.)</label>
+                    <input
+                      type="number"
+                      placeholder="45000"
+                      value={clientForm.areaSqFt}
+                      onChange={(e) => setClientForm({ ...clientForm, areaSqFt: Number(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900 font-mono"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-mono uppercase text-green-900 mb-1">Scope Description</label>
+              {/* SECTION 2: "WHAT WE DID FOR THEM" */}
+              <div className="space-y-2 p-4 rounded-xl bg-cream-50/60 border border-[#283618]/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono uppercase text-green-900 font-bold block">
+                    2. What We Did For Them (Scope Deliverables)
+                  </span>
+                  <span className="text-[10px] text-ink-500">1 point per line</span>
+                </div>
+                <p className="text-[11px] text-ink-600 font-light">
+                  Enter each technical deliverable, civil coordination milestone, or botanical installation point on its own line:
+                </p>
+                <textarea
+                  rows={4}
+                  required
+                  placeholder="Engineered structural lightweight substrate formulation (<350 kg/m²)&#10;Specimen mature canopy trees and avenue palms hoisted via crane&#10;Automated pressure-compensating micro-drip irrigation running on STP water&#10;Basalt paver hardscape and perimeter acoustic foliage buffer"
+                  value={clientForm.whatWeDid}
+                  onChange={(e) => setClientForm({ ...clientForm, whatWeDid: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900 leading-relaxed"
+                />
+              </div>
+
+              {/* SECTION 3: OVERVIEW & BRIEF */}
+              <div className="space-y-2 p-4 rounded-xl bg-cream-50/60 border border-[#283618]/10">
+                <span className="text-[11px] font-mono uppercase text-green-900 font-bold block">
+                  3. Project Narrative &amp; Overview
+                </span>
                 <textarea
                   rows={3}
                   required
-                  placeholder="Summary of landscaping work delivered..."
+                  placeholder="Comprehensive architectural narrative of the landscape project..."
                   value={clientForm.description}
                   onChange={(e) => setClientForm({ ...clientForm, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900 leading-relaxed"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#283618]/10 flex justify-end gap-2">
+              {/* SECTION 4: PHOTOS & VIDEOS BAY */}
+              <div className="space-y-4 p-4 rounded-xl bg-cream-50/60 border border-[#283618]/10">
+                <span className="text-[11px] font-mono uppercase text-green-900 font-bold block">
+                  4. Photos &amp; Video Walkthrough (Media Bay)
+                </span>
+
+                {/* Developer Logo */}
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Developer Logo / Client Mark *</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={clientForm.logo}
+                      onChange={(e) => setClientForm({ ...clientForm, logo: e.target.value })}
+                      placeholder="/images/clients/... or /uploads/..."
+                      className="flex-1 px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                    />
+                    <input
+                      type="file"
+                      ref={clientImageFileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, (url) => setClientForm({ ...clientForm, logo: url }));
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => clientImageFileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{uploadingImage ? "Uploading..." : "Upload Logo"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Cover Showcase Photo */}
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Project Cover Photo</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={clientForm.coverImage}
+                      onChange={(e) => setClientForm({ ...clientForm, coverImage: e.target.value })}
+                      placeholder="/images/frames/... or /uploads/..."
+                      className="flex-1 px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                    />
+                    <input
+                      type="file"
+                      ref={clientCoverImageFileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, (url) => setClientForm({ ...clientForm, coverImage: url }));
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => clientCoverImageFileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="px-3 py-1.5 bg-cream-100 hover:bg-cream-200 border border-[#283618]/15 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{uploadingImage ? "Uploading..." : "Upload Cover"}</span>
+                    </button>
+                  </div>
+                  {clientForm.coverImage && (
+                    <div className="relative w-full h-28 rounded-xl overflow-hidden bg-black/5 border border-[#283618]/10 mt-2">
+                      <Image src={clientForm.coverImage} alt="Cover Preview" fill className="object-cover" sizes="300px" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Video Walkthrough */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-medium text-ink-700">Video Walkthrough (URL or Video File)</label>
+                    <span className="text-[10px] text-ink-500">MP4, WebM, MOV up to 50MB</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={clientForm.videoUrl}
+                      onChange={(e) => setClientForm({ ...clientForm, videoUrl: e.target.value })}
+                      placeholder="https://.../video.mp4 or /uploads/video_...mp4"
+                      className="flex-1 px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs font-mono focus:outline-none focus:border-green-900"
+                    />
+                    <input
+                      type="file"
+                      ref={clientVideoFileInputRef}
+                      className="hidden"
+                      accept="video/mp4,video/webm,video/quicktime,video/ogg"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, (url) => setClientForm({ ...clientForm, videoUrl: url }));
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => clientVideoFileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 border border-emerald-300 text-xs rounded font-medium flex items-center gap-1 cursor-pointer"
+                    >
+                      <Video className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{uploadingImage ? "Uploading..." : "Upload Video"}</span>
+                    </button>
+                  </div>
+
+                  {clientForm.videoUrl && (
+                    <div className="mt-2 rounded-xl overflow-hidden bg-black border border-green-900/20 max-w-sm">
+                      <video
+                        src={clientForm.videoUrl}
+                        controls
+                        className="w-full max-h-40 object-cover"
+                      >
+                        Your browser does not support preview.
+                      </video>
+                      <div className="p-2 text-[10px] text-white/70 font-mono flex items-center justify-between">
+                        <span>Video Walkthrough Linked</span>
+                        <button
+                          type="button"
+                          onClick={() => setClientForm({ ...clientForm, videoUrl: "" })}
+                          className="text-red-400 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Photo Gallery Images List */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-medium text-ink-700">Photo Gallery Images ({clientForm.galleryImages.length})</label>
+                    <input
+                      type="file"
+                      ref={clientGalleryImageFileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleFileUpload(file, (url) =>
+                            setClientForm({ ...clientForm, galleryImages: [...clientForm.galleryImages, url] })
+                          );
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => clientGalleryImageFileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="text-xs text-emerald-800 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Upload &amp; Add Photo</span>
+                    </button>
+                  </div>
+
+                  {clientForm.galleryImages.length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pt-1">
+                      {clientForm.galleryImages.map((imgUrl, i) => (
+                        <div key={i} className="relative h-20 rounded-lg overflow-hidden border border-[#283618]/15 bg-black/5 group">
+                          <Image src={imgUrl} alt={`Gallery ${i}`} fill className="object-cover" sizes="120px" />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setClientForm({
+                                ...clientForm,
+                                galleryImages: clientForm.galleryImages.filter((_, idx) => idx !== i),
+                              })
+                            }
+                            className="absolute top-1 right-1 p-1 rounded-full bg-black/70 text-white hover:bg-red-600 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-ink-500 italic">No gallery photos added yet.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* SECTION 5: BOTANICAL PALETTE & SERVICES */}
+              <div className="space-y-3 p-4 rounded-xl bg-cream-50/60 border border-[#283618]/10">
+                <span className="text-[11px] font-mono uppercase text-green-900 font-bold block">
+                  5. Botanical Species &amp; Services Used
+                </span>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Botanical Plants Used (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Terminalia mantaly, Foxtail Palm, Plumeria obtusa, Bermuda Grass"
+                    value={clientForm.plantsUsed}
+                    onChange={(e) => setClientForm({ ...clientForm, plantsUsed: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-ink-700 mb-1">Services Delivered (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Landscape Design and Installation, Project Foliage for Builders, Maintenance"
+                    value={clientForm.servicesUsed}
+                    onChange={(e) => setClientForm({ ...clientForm, servicesUsed: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-[#283618]/10 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddClientModal(false);
                     setEditingClient(null);
                   }}
-                  className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-900 cursor-pointer"
+                  className="px-4 py-2 text-xs text-ink-500 hover:text-ink-900 cursor-pointer font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-green-900 hover:bg-[#1f2b13] text-cream-50 text-xs font-bold uppercase tracking-wider rounded shadow-xs cursor-pointer"
+                  className="px-6 py-2.5 bg-green-950 hover:bg-green-900 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-md cursor-pointer transition-all"
                 >
-                  {editingClient ? "Update Partner" : "Save Partner"}
+                  {editingClient ? "Save Project, Media & Case Study" : "Publish Project Case Study"}
                 </button>
               </div>
             </form>

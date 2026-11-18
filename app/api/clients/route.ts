@@ -33,12 +33,18 @@ export async function POST(req: NextRequest) {
       tagline: body.tagline || "Real Estate & Infrastructure Partner",
       logo: body.logo || "/images/clients/silver-group.jpg",
       city: body.city.trim(),
+      location: body.location || body.city.trim(),
       totalAreaHandled: body.totalAreaHandled || "25,000+ sq. ft.",
       projectCount: Number(body.projectCount) || 1,
       highlightProjects: Array.isArray(body.highlightProjects) ? body.highlightProjects : [body.highlightProjects || "Flagship Development"],
       scope: Array.isArray(body.scope) ? body.scope : ["Landscape Design and Installation"],
       description: body.description || "Trusted real estate development partner in Pune.",
       featuredProjectSlug: body.featuredProjectSlug,
+      whatWeDid: Array.isArray(body.whatWeDid)
+        ? body.whatWeDid
+        : (typeof body.whatWeDid === "string" ? body.whatWeDid.split("\n").map((s: string) => s.trim()).filter(Boolean) : []),
+      videoUrl: body.videoUrl || "",
+      galleryImages: Array.isArray(body.galleryImages) ? body.galleryImages : [],
     });
 
     return NextResponse.json({ success: true, client: newClient });

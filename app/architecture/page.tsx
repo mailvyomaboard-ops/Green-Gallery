@@ -147,8 +147,8 @@ export default function ArchitectureDesignPage() {
     return `https://wa.me/917823080251?text=${text}`;
   };
 
-  const instagramDmUrl = "https://ig.me/m/greengallery.in";
-  const instagramProfileUrl = siteConfig.social.instagram || "https://instagram.com/greengallery.in";
+  const instagramDmUrl = "https://ig.me/m/greengallery_landscaping";
+  const instagramProfileUrl = siteConfig.social.instagram || "https://www.instagram.com/greengallery_landscaping/";
 
   return (
     <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-16 sm:space-y-24">
@@ -500,7 +500,7 @@ export default function ArchitectureDesignPage() {
                     className="flex-1 inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 text-white font-semibold text-xs transition-all"
                   >
                     <InstagramIcon className="w-3.5 h-3.5" />
-                    <span>View @greengallery.in</span>
+                    <span>View @greengallery_landscaping</span>
                   </a>
                   <a
                     href={instagramDmUrl}

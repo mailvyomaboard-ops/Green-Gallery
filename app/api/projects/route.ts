@@ -41,6 +41,10 @@ export async function POST(req: NextRequest) {
         { url: body.coverImage, caption: body.title, alt: body.title }
       ] : []),
       brief: body.brief || "",
+      whatWeDid: Array.isArray(body.whatWeDid)
+        ? body.whatWeDid
+        : (typeof body.whatWeDid === "string" ? body.whatWeDid.split("\n").map((s: string) => s.trim()).filter(Boolean) : []),
+      videoUrl: body.videoUrl || "",
       plantsUsed: Array.isArray(body.plantsUsed) ? body.plantsUsed : [],
       servicesUsed: Array.isArray(body.servicesUsed) ? body.servicesUsed : ["Landscape Design and Installation"],
       isFeatured: Boolean(body.isFeatured),

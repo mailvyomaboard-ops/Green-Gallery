@@ -103,8 +103,8 @@ export const siteConfig: SiteConfig = {
   ],
   social: {
     whatsappLink: "https://wa.me/917823080251?text=Hello%20GreenGallery%2C%20I%27m%20interested%20in%20your%20services...",
-    instagram: "https://instagram.com/greengallery.in",
-    instagramHandle: "@greengallery.in",
+    instagram: "https://www.instagram.com/greengallery_landscaping/",
+    instagramHandle: "@greengallery_landscaping",
   },
   serviceRegions: [
     "Pune Municipal Corporation (PMC)",

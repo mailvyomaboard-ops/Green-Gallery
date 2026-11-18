@@ -133,11 +133,24 @@ export const initialProjects: Project[] = [
     status: "COMPLETED",
     clientName: "Private Villa Estate",
     coverImage: "/images/hero-clean.webp",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-top-aerial-shot-of-a-luxury-pool-and-palm-trees-42218-large.mp4",
     brief: "Monolithic geometric concrete stepping slabs, dark charcoal river-stone gravel margins, manicured Bermuda lawn, architectural tree specimens, and a sunken hearth fire pit with integrated evening warm uplighting. Designed and installed as a private botanical oasis.",
+    whatWeDid: [
+      "Custom landscape architecture and 3D terrain modeling for a high-privacy villa compound.",
+      "Cast-in-place cantilevered concrete pavers floating over river-stone dry washes.",
+      "Specimen architectural tree sourcing: Terminalia mantaly and specimen sculpted bonsai specimens.",
+      "Sunken fire-pit lounge with concealed 3000K warm LED perimeter wash uplighting.",
+      "Precision sub-surface soil conditioning with enriched bio-humus and micro-drainage networks.",
+      "Ongoing botanical concierge and dedicated estate maintenance protocol."
+    ],
     plantsUsed: ["Terminalia mantaly (Madagascar Almond)", "Agave attenuata (Fox Tail Agave)", "Ficus microcarpa bonsai", "Buxus sempervirens (Boxwood)", "Ophiopogon japonicus (Mondo Grass)"],
     servicesUsed: ["Landscape Design and Installation", "Garden Maintenance Contracts"],
     isFeatured: true,
-    images: [{ url: "/images/hero-clean.webp", caption: "Sunken hearth fire pit and architectural lawn", alt: "Koregaon Park Villa Sanctuary" }],
+    images: [
+      { url: "/images/hero-clean.webp", caption: "Sunken hearth fire pit and architectural lawn", alt: "Koregaon Park Villa Sanctuary" },
+      { url: "/images/frames/ezgif-frame-002.jpg", caption: "Monolithic concrete slab paths and river gravel margins", alt: "Stepping Slabs and Gravel" },
+      { url: "/images/frames/ezgif-frame-004.jpg", caption: "Sculpted specimen foliage with evening warm illumination", alt: "Sculpted Evergreen Trees" }
+    ],
   },
   {
     id: "proj-silver",
@@ -150,11 +163,24 @@ export const initialProjects: Project[] = [
     status: "COMPLETED",
     clientName: "Silver Group (A Kiran Sawant Venture)",
     coverImage: "/images/frames/ezgif-frame-001.jpg",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-top-aerial-shot-of-a-luxury-pool-and-palm-trees-42218-large.mp4",
     brief: "Multi-tiered podium landscape installation executed for Silver Group. Engineered lightweight soil matrices, specimen avenue palms, perimeter acoustic foliage buffers, and automated weather-responsive drip irrigation.",
+    whatWeDid: [
+      "Lightweight engineered soil matrix deployment (<340 kg/m²) meeting strict structural dead-load constraints.",
+      "Heavy crane rigging and precision installation of 45+ specimen mature avenue palms and canopy trees.",
+      "Multi-layered dimpled HDPE drainage cell array with non-woven geotextile filter fabric.",
+      "Fully automated dual-line pressure-compensating drip system running on building STP recycled water.",
+      "Dense acoustic perimeter buffer planting to insulate podium amenities from exterior highway sound.",
+      "Central clubhouse turf installation with heavy foot-traffic reinforced subgrade."
+    ],
     plantsUsed: ["Terminalia mantaly (Madagascar Almond)", "Wodyetia bifurcata (Foxtail Palm)", "Plumeria obtusa", "Heliconia psittacorum", "Pennisetum setaceum"],
     servicesUsed: ["Landscape Design and Installation", "Project Foliage for Builders", "Garden Maintenance Contracts"],
     isFeatured: true,
-    images: [{ url: "/images/frames/ezgif-frame-001.jpg", caption: "Podium avenue palm installation", alt: "Silver Gracia Podium" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-001.jpg", caption: "Podium avenue palm installation and infinity edge view", alt: "Silver Gracia Podium" },
+      { url: "/images/frames/ezgif-frame-006.jpg", caption: "Central lawn and tropical biophilic borders", alt: "Podium Central Lawn" },
+      { url: "/images/frames/ezgif-frame-008.jpg", caption: "Acoustic boundary buffer plantation along podium rim", alt: "Perimeter Green Buffer" }
+    ],
   },
   {
     id: "proj-keshav",
@@ -167,11 +193,23 @@ export const initialProjects: Project[] = [
     status: "COMPLETED",
     clientName: "Keshav Group",
     coverImage: "/images/frames/ezgif-frame-003.jpg",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-top-aerial-shot-of-a-luxury-pool-and-palm-trees-42218-large.mp4",
     brief: "Grand avenue landscaping connecting arterial entry gates to residential towers for Keshav Group. Drought-tolerant roadside foliage, large-caliper shade trees, and central amphitheater lawns.",
+    whatWeDid: [
+      "Turnkey master boulevard plantation with flowering Cassia fistula (Golden Shower) trees.",
+      "Central amphitheater lawn turfing with graded drainage gradients preventing monsoon waterlogging.",
+      "Large-caliper mature Royal Palms staged and planted with root-ball stabilization frames.",
+      "Automated centralized irrigation control panel coordinating multi-sector watering cycles.",
+      "Low-maintenance drought-hardy shrub hedging creating pedestrian vehicular separation."
+    ],
     plantsUsed: ["Cassia fistula (Golden Shower)", "Roystonea regia (Royal Palm)", "Ixora chinensis", "Duranta repens", "Nerium oleander"],
     servicesUsed: ["Project Foliage for Builders", "Plant Supply (Retail and Bulk)", "Landscape Design and Installation"],
     isFeatured: true,
-    images: [{ url: "/images/frames/ezgif-frame-003.jpg", caption: "Arterial grand avenue tree plantation", alt: "Keshav Crown Grand Avenue" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-003.jpg", caption: "Arterial grand avenue tree plantation", alt: "Keshav Crown Grand Avenue" },
+      { url: "/images/frames/ezgif-frame-010.jpg", caption: "Central amphitheater green and shaded walking trails", alt: "Central Amphitheater Lawn" },
+      { url: "/images/frames/ezgif-frame-012.jpg", caption: "Royal palm gateway installation", alt: "Grand Entrance Palms" }
+    ],
   },
   {
     id: "proj-swastik",
@@ -185,10 +223,21 @@ export const initialProjects: Project[] = [
     clientName: "Swastik Realty Group",
     coverImage: "/images/frames/ezgif-frame-005.jpg",
     brief: "Podium amenitized garden for Swastik Realty Group. Natural basalt stone retaining beds, fragrance gardens with nocturnal blooming flora, and quiet seating alcoves.",
+    whatWeDid: [
+      "Dry-stacked basalt stone retaining planter walls honoring traditional Maharashtrian stonework.",
+      "Night-blooming fragrance botanical garden featuring Sonchampa and Raat Rani varieties.",
+      "Lightweight perlite and cocopeat soil matrices tailored for sensitive residential deck slabs.",
+      "Custom wooden pergola shade structures intertwined with flowering climber varieties.",
+      "Dedicated multi-zone drip network with fertilizer injector dosing units."
+    ],
     plantsUsed: ["Michelia champaca (Sonchampa)", "Gardenia jasminoides", "Tabernaemontana divaricata", "Zoysia tenuifolia lawn"],
     servicesUsed: ["Landscape Design and Installation", "Garden Maintenance Contracts"],
     isFeatured: true,
-    images: [{ url: "/images/frames/ezgif-frame-005.jpg", caption: "Basalt rock planter beds and night blooms", alt: "Swastik Disa Eco-Deck" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-005.jpg", caption: "Basalt rock planter beds and night blooms", alt: "Swastik Disa Eco-Deck" },
+      { url: "/images/frames/ezgif-frame-014.jpg", caption: "Pergola seating with fragrant climber canopy", alt: "Pergola Walkway" },
+      { url: "/images/frames/ezgif-frame-016.jpg", caption: "Fine-bladed Zoysia turf seating alcove", alt: "Zoysia Turf Alcove" }
+    ],
   },
   {
     id: "proj-tayal",
@@ -202,10 +251,21 @@ export const initialProjects: Project[] = [
     clientName: "Tayal Group",
     coverImage: "/images/frames/ezgif-frame-007.jpg",
     brief: "Corporate campus and retail boulevard landscaping executed for Tayal Group. Pollution-absorbing 3-tier dense acoustic buffer belts, royal avenue palms, and sub-surface capillary irrigation.",
+    whatWeDid: [
+      "Three-tier industrial and vehicular pollution filter buffer belts (Neem, Karanj, Alstonia).",
+      "Corporate plaza entry concourse with symmetrical specimen Royal Avenue Palms.",
+      "Sub-surface capillary irrigation conserving up to 40% more water than conventional sprinklers.",
+      "Permeable grass-paver emergency vehicle lanes blending infrastructure seamlessly into greenery.",
+      "Turnkey corporate landscape maintenance with quarterly tree-health audits."
+    ],
     plantsUsed: ["Azadirachta indica (Neem)", "Pongamia pinnata (Karanj)", "Alstonia scholaris", "Roystonea regia"],
     servicesUsed: ["Project Foliage for Builders", "Plant Supply (Retail and Bulk)"],
     isFeatured: true,
-    images: [{ url: "/images/frames/ezgif-frame-007.jpg", caption: "Corporate acoustic green buffer belts", alt: "Tayal Commercial Plaza" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-007.jpg", caption: "Corporate acoustic green buffer belts", alt: "Tayal Commercial Plaza" },
+      { url: "/images/frames/ezgif-frame-017.jpg", caption: "Executive plaza entry avenue palms", alt: "Plaza Concourse" },
+      { url: "/images/frames/ezgif-frame-018.jpg", caption: "Permeable grass-paver emergency roadway", alt: "Grass Pavers" }
+    ],
   },
   {
     id: "proj-nirman",
@@ -218,11 +278,23 @@ export const initialProjects: Project[] = [
     status: "COMPLETED",
     clientName: "Nirman Greens",
     coverImage: "/images/frames/ezgif-frame-009.jpg",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-top-aerial-shot-of-a-luxury-pool-and-palm-trees-42218-large.mp4",
     brief: "Expansive multi-acre central park developed for Nirman Greens. Native Western Ghats biodiversity conservation, seasonal flowering groves, and treated STP water distribution network.",
+    whatWeDid: [
+      "Ecological master planning preserving local micro-climatic Sahyadri botanical corridors.",
+      "Multi-acre naturalized lawn amphitheater engineered for community gatherings and events.",
+      "Seasonal flowering woodland zones with native Palash (Flame of the Forest) and Kachnar.",
+      "Centralized pump house piping network distributing 100% STP recycled water daily.",
+      "Natural bioswales and retention rain gardens handling high-volume monsoon surface runoff."
+    ],
     plantsUsed: ["Bauhinia variegata (Kachnar)", "Butea monosperma (Palash)", "Vitex negundo", "Carex oshimensis"],
     servicesUsed: ["Landscape Design and Installation", "Project Foliage for Builders", "Garden Maintenance Contracts"],
     isFeatured: true,
-    images: [{ url: "/images/frames/ezgif-frame-009.jpg", caption: "Multi-acre central park and native biodiversity grove", alt: "Nirman Greens Central Park" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-009.jpg", caption: "Multi-acre central park and native biodiversity grove", alt: "Nirman Greens Central Park" },
+      { url: "/images/frames/ezgif-frame-019.jpg", caption: "Native Sahyadri flora conservation groves", alt: "Sahyadri Flora Grove" },
+      { url: "/images/frames/ezgif-frame-020.jpg", caption: "Community amphitheater lawn and bioswale retention pond", alt: "Township Bioswales" }
+    ],
   },
   {
     id: "proj-shevi",
@@ -236,10 +308,21 @@ export const initialProjects: Project[] = [
     clientName: "Shevi Group",
     coverImage: "/images/frames/ezgif-frame-011.jpg",
     brief: "Sky amenity terrace garden and indoor biophilic atrium for Shevi Group. Lightweight substrate formulations, clumping privacy bamboo curtains, and automated outdoor misting coolers.",
+    whatWeDid: [
+      "Ultra-lightweight soil formulation designed specifically for high-rise rooftop wind shear.",
+      "Clumping non-invasive Golden Goddess bamboo screening providing complete penthouse privacy.",
+      "Multi-story biophilic entrance atrium with interior architectural fiddle-leaf trees and monstera.",
+      "Automated micro-mist cooling system lowering ambient terrace heat by up to 5 degrees Celsius.",
+      "Integrated planter drainage troughs tied directly into building rainwater harvesting downspouts."
+    ],
     plantsUsed: ["Bambusa multiplex (Golden Goddess Bamboo)", "Monstera deliciosa", "Ficus lyrata", "Bougainvillea glabra"],
     servicesUsed: ["Terrace and Vertical Gardens", "Interior Plantscaping"],
     isFeatured: true,
-    images: [{ url: "/images/frames/ezgif-frame-011.jpg", caption: "Sky terrace amenity and biophilic atrium", alt: "Shevi Emerald Terrace" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-011.jpg", caption: "Sky terrace amenity and biophilic atrium", alt: "Shevi Emerald Terrace" },
+      { url: "/images/frames/ezgif-frame-001.jpg", caption: "Rooftop lounge surrounded by clumping bamboo hedges", alt: "Rooftop Bamboo Screen" },
+      { url: "/images/frames/ezgif-frame-003.jpg", caption: "Biophilic indoor reception atrium with specimen trees", alt: "Indoor Biophilic Atrium" }
+    ],
   },
   {
     id: "proj-diamond",
@@ -253,10 +336,20 @@ export const initialProjects: Project[] = [
     clientName: "Diamond Builders & Developers",
     coverImage: "/images/frames/ezgif-frame-013.jpg",
     brief: "High-density residential grounds executed for Diamond Builders & Developers. Open-to-sky fountain courtyards, sacred medicinal fragrant plantations, and basalt paver trails.",
+    whatWeDid: [
+      "Central water court fountain landscape surrounded by fragrance and medicinal botanical borders.",
+      "Child-safe softscape children's playground boundary hedging and impact-absorbing lawn.",
+      "Basalt stone pathways integrated with root-barrier layers preventing paver displacement.",
+      "Avenue tree shading over outdoor seating pavilions and senior citizen fitness corners.",
+      "High-density shrub trimming and regular turf rejuvenation schedules."
+    ],
     plantsUsed: ["Ocimum sanctum", "Nyctanthes arbor-tristis (Parijat)", "Jasminum sambac", "Plumeria rubra"],
     servicesUsed: ["Landscape Design and Installation", "Plant Supply (Retail and Bulk)"],
     isFeatured: false,
-    images: [{ url: "/images/frames/ezgif-frame-013.jpg", caption: "Fragrant medicinal flora courtyards", alt: "Diamond Solitaire Residential Landscape" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-013.jpg", caption: "Fragrant medicinal flora courtyards", alt: "Diamond Solitaire Residential Landscape" },
+      { url: "/images/frames/ezgif-frame-015.jpg", caption: "Fountain court botanical margins", alt: "Fountain Court" }
+    ],
   },
   {
     id: "proj-kesar",
@@ -270,10 +363,20 @@ export const initialProjects: Project[] = [
     clientName: "Kesar Group",
     coverImage: "/images/frames/ezgif-frame-015.jpg",
     brief: "Intimate private villa courtyards featuring night-blooming botanicals, sculpted evergreen topiary buffers, and automated sub-surface micro-spray misting.",
+    whatWeDid: [
+      "Bespoke private courtyard botanical layouts tailored for individual villa plots.",
+      "Sculpted evergreen Boxwood topiary and nocturnal fragrant floral curation.",
+      "Underground micro-spray misting for humidity retention during warm Pune summers.",
+      "Natural stone step borders and granite water spouts creating soothing water harmonics.",
+      "Dedicated organic fertilization schedules and specimen maintenance."
+    ],
     plantsUsed: ["Cestrum nocturnum (Raat Rani)", "Gardenia jasminoides (Gandharaj)", "Buxus sempervirens"],
     servicesUsed: ["Landscape Design and Installation", "Garden Maintenance Contracts"],
     isFeatured: false,
-    images: [{ url: "/images/frames/ezgif-frame-015.jpg", caption: "Night-blooming fragrance courtyard", alt: "Kesar Harmony Courtyards" }],
+    images: [
+      { url: "/images/frames/ezgif-frame-015.jpg", caption: "Night-blooming fragrance courtyard", alt: "Kesar Harmony Courtyards" },
+      { url: "/images/frames/ezgif-frame-007.jpg", caption: "Sculpted evergreen borders and granite water spout", alt: "Granite Water Spout" }
+    ],
   },
 ];
 
