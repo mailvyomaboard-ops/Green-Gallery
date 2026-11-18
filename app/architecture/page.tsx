@@ -24,7 +24,17 @@ import {
   Ruler,
   Clock,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  TreePine,
+  Check,
+  Shovel,
+  Droplets,
+  Flower2,
+  Sun,
+  Award,
+  Users2,
+  Warehouse,
+  Briefcase
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { initialArchitectureCards } from "@/lib/data";
@@ -52,11 +62,10 @@ export default function ArchitectureDesignPage() {
     phone: "",
     email: "",
     organization: "",
-    role: "Architect / Consultant",
-    projectType: "Podium & Deck Architecture",
-    scaleArea: "",
+    serviceType: "Podium & Terrace Gardens",
+    approxArea: "",
     location: "",
-    stage: "Planning & Concepts",
+    stage: "Concept & Planning",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,11 +85,11 @@ export default function ArchitectureDesignPage() {
 
   const categories = [
     "All",
-    "Podium & Deck Architecture",
-    "Master Landscape Planning",
-    "3D Modeling & CAD",
-    "Villa & Estate Architecture",
-    "Biophilic Commercial Design",
+    "Podium & Terrace Gardens",
+    "Water Features & Hardscape",
+    "Villa & Residential Landscaping",
+    "Sustainable Landscape Planning",
+    "Commercial & Industrial Landscaping",
   ];
 
   const filteredCards = selectedCategory === "All"
@@ -107,9 +116,9 @@ export default function ArchitectureDesignPage() {
           phone: form.phone,
           email: form.email,
           company: form.organization,
-          clientType: form.role,
-          projectType: `Architecture & Design: ${form.projectType}`,
-          approxArea: form.scaleArea,
+          clientType: form.organization ? "Organization / Firm" : "Individual Property Owner",
+          projectType: `Architecture & Design: ${form.serviceType}`,
+          approxArea: form.approxArea,
           siteLocation: form.location,
           projectStage: form.stage,
           message: form.message,
@@ -118,7 +127,7 @@ export default function ArchitectureDesignPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to send consultation inquiry. Please try WhatsApp directly.");
+        throw new Error("Failed to send consultation inquiry. Please connect with us directly on WhatsApp.");
       }
 
       setSubmitSuccess(true);
@@ -127,11 +136,10 @@ export default function ArchitectureDesignPage() {
         phone: "",
         email: "",
         organization: "",
-        role: "Architect / Consultant",
-        projectType: "Podium & Deck Architecture",
-        scaleArea: "",
+        serviceType: "Podium & Terrace Gardens",
+        approxArea: "",
         location: "",
-        stage: "Planning & Concepts",
+        stage: "Concept & Planning",
         message: "",
       });
     } catch (err: any) {
@@ -142,59 +150,70 @@ export default function ArchitectureDesignPage() {
   };
 
   // Generate customized WhatsApp consultation text
-  const generateWhatsAppUrl = () => {
-    const text = `Hello GreenGallery Architecture & Design Team,%0A%0AI'm interested in discussing an architectural landscape collaboration:%0A- Name: ${form.name || "Interested Client"}%0A- Organization: ${form.organization || "N/A"} (${form.role})%0A- Project Type: ${form.projectType}%0A- Approximate Scale: ${form.scaleArea || "To be discussed"}%0A- Location: ${form.location || "Pune / Maharashtra"}%0A- Scope Brief: ${encodeURIComponent(form.message || "Looking for conceptual architectural designs, 3D modeling, and execution.")}`;
+  const generateWhatsAppUrl = (customTopic?: string) => {
+    const text = `Hello GreenGallery Landscape Team,%0A%0AI would like to discuss a landscape project:%0A- Name: ${form.name || "Prospective Client"}%0A- Organization: ${form.organization || "Individual Client"}%0A- Service: ${customTopic || form.serviceType}%0A- Approximate Area: ${form.approxArea || "To be confirmed"}%0A- Location: ${form.location || "Pune / Maharashtra"}%0A- Details: ${encodeURIComponent(form.message || "Looking for landscape planning, 3D design, plant supply, and execution.")}`;
     return `https://wa.me/917823080251?text=${text}`;
   };
 
-  const instagramDmUrl = "https://ig.me/m/greengallery_landscaping";
   const instagramProfileUrl = siteConfig.social.instagram || "https://www.instagram.com/greengallery_landscaping/";
+  const instagramDmUrl = "https://ig.me/m/greengallery_landscaping";
 
   return (
     <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-16 sm:space-y-24">
-      {/* 1. ARCHITECTURAL HERO SECTION */}
-      <section className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-[#05140D] via-[#0A2218] to-[#040E0A] text-white p-6 sm:p-12 md:p-16 border border-green-800/40 shadow-2xl">
+      {/* 1. HERO SECTION: GROUNDED & PROFESSIONAL POSITIONING */}
+      <section className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-[#06170F] via-[#0B251A] to-[#04100A] text-white p-6 sm:p-12 md:p-16 border border-emerald-900/30 shadow-2xl">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
           <div className="absolute inset-0 bg-[radial-gradient(#2d6a4f_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
         </div>
 
         <div className="relative z-10 max-w-4xl space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-cream-50 text-xs font-semibold uppercase tracking-wider">
-            <Compass className="w-4 h-4 text-emerald-400 animate-spin-slow" />
-            <span>Architecture, 3D Modeling & Civil Integration</span>
+            <Compass className="w-4 h-4 text-emerald-400" />
+            <span>Landscape Architecture, 3D Design &amp; Civil Coordination</span>
           </div>
 
           <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.08] drop-shadow-md">
-            Where Living Flora Meets Structural Architecture
+            Where Nature Meets Thoughtful Design
           </h1>
 
           <div className="text-base sm:text-xl md:text-2xl font-serif italic text-amber-200/90 font-light tracking-wide drop-shadow">
-            Architectural Masterplans, Suspended Podiums &amp; 3D Environmental Design
+            Integrated Landscape Planning, 3D Visualization &amp; Turnkey Execution
           </div>
 
           <p className="text-white/85 text-sm sm:text-base md:text-lg font-light leading-relaxed max-w-3xl">
-            We collaborate with architectural studios, principal structural consultants, and real estate developers to design and execute living botanical envelopes. From millimeter-precise CAD coordination and structural dead-load mitigation to kinetic water features and micro-forest wind corridors, Green Gallery engineers landscapes that elevate human habitation.
+            GreenGallery works with architects, developers, contractors and property owners to transform outdoor spaces into functional green environments. From podium gardens and terrace landscapes to commercial landscapes and botanical installations, we coordinate design, material selection, plantation and execution with attention to site conditions, drainage, irrigation and maintenance requirements.
           </p>
 
-          {/* Quick Metrics Bar */}
+          {/* Core Philosophy Badge */}
+          <div className="inline-flex items-center gap-2 text-xs font-mono font-medium tracking-widest text-emerald-300 uppercase py-1 px-3 rounded-lg bg-emerald-950/60 border border-emerald-500/30">
+            <span>Design</span>
+            <span className="text-emerald-500">•</span>
+            <span>Coordinate</span>
+            <span className="text-emerald-500">•</span>
+            <span>Execute</span>
+            <span className="text-emerald-500">•</span>
+            <span>Maintain</span>
+          </div>
+
+          {/* Quick Metrics Bar: Grounded & Realistic */}
           <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-white/10 text-left">
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <div className="font-display text-xl sm:text-2xl font-black text-emerald-400">45k+ sq ft</div>
-              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider">Podium Decks Engineered</div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <div className="font-display text-xl sm:text-2xl font-black text-emerald-400">100+</div>
+              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider mt-0.5">Projects Executed Across Pune</div>
             </div>
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <div className="font-display text-xl sm:text-2xl font-black text-amber-300">100%</div>
-              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider">Civil &amp; MEP Coordinated</div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <div className="font-display text-xl sm:text-2xl font-black text-amber-300">Civil &amp; Drip</div>
+              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider mt-0.5">Irrigation Coordination</div>
             </div>
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <div className="font-display text-xl sm:text-2xl font-black text-emerald-400">&lt; 350 kg/m²</div>
-              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider">Lightweight Media Slabs</div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <div className="font-display text-xl sm:text-2xl font-black text-emerald-400">Lightweight</div>
+              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider mt-0.5">Media Planning for Slabs</div>
             </div>
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <div className="font-display text-xl sm:text-2xl font-black text-amber-300">RERA Ready</div>
-              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider">Turnkey BOQ Integrity</div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <div className="font-display text-xl sm:text-2xl font-black text-amber-300">Detailed BOQ</div>
+              <div className="text-[11px] text-white/70 font-mono uppercase tracking-wider mt-0.5">Scope &amp; Plant Schedules</div>
             </div>
           </div>
 
@@ -223,25 +242,223 @@ export default function ArchitectureDesignPage() {
               className="px-6 py-3 rounded-full bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:opacity-100 text-white font-semibold text-xs uppercase tracking-wider border border-white/20 backdrop-blur-md transition-all flex items-center gap-2"
             >
               <InstagramIcon className="w-4 h-4" />
-              <span>Studio Reels &amp; DM</span>
+              <span>Instagram Portfolio</span>
             </a>
           </div>
         </div>
       </section>
 
-      {/* 2. DYNAMIC MULTIMEDIA SHOWCASE CARDS (IMG / VIDEO / TEXT) */}
+      {/* 2. WHAT WE ACTUALLY DELIVER: 6 TANGIBLE SERVICES */}
+      <section className="space-y-8">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>Comprehensive Capabilities</span>
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-950 dark:text-white tracking-tight">
+            What We Actually Deliver
+          </h2>
+          <p className="text-sm sm:text-base text-ink-700 dark:text-white/70 font-light leading-relaxed">
+            From preliminary concepts and 3D visualization to direct nursery plant sourcing, on-site execution, and ongoing maintenance.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Service 1 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A140F] border border-green-900/10 dark:border-white/10 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <Shovel className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
+              Turnkey Landscape Execution
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 leading-relaxed">
+              Complete on-site execution for developers, corporate campuses, and private residences. We manage ground preparation, soil enrichment, specimen planting, natural stone stepping pathways, and peripheral fencing.
+            </p>
+            <div className="pt-2 border-t border-green-900/5 dark:border-white/5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+              Ground Prep • Hardscape • Turnkey Planting
+            </div>
+          </div>
+
+          {/* Service 2 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A140F] border border-green-900/10 dark:border-white/10 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <Compass className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
+              3D Landscape Design &amp; Planning
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 leading-relaxed">
+              Comprehensive landscape masterplanning and realistic 3D visualizations. We help clients visualize spatial zoning, light patterns, plant palettes, and water feature integration before any physical work begins.
+            </p>
+            <div className="pt-2 border-t border-green-900/5 dark:border-white/5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+              Spatial Zoning • 3D Renders • Plant Palettes
+            </div>
+          </div>
+
+          {/* Service 3 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A140F] border border-green-900/10 dark:border-white/10 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <TreePine className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
+              Plantation &amp; Specimen Supply
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 leading-relaxed">
+              Direct nursery sourcing of acclimatized mature trees, exotic palms, flowering shrubs, and groundcovers. We supply handpicked, healthy plant stock tailored to Pune's soil, sun orientation, and micro-climate.
+            </p>
+            <div className="pt-2 border-t border-green-900/5 dark:border-white/5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+              Nursery Sourcing • Specimen Palms • Healthy Stock
+            </div>
+          </div>
+
+          {/* Service 4 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A140F] border border-green-900/10 dark:border-white/10 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <Layers className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
+              Terrace &amp; Podium Gardens
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 leading-relaxed">
+              Specialized elevated garden planning for residential podiums and penthouse terraces. Engineered with lightweight growing media, drainage cell layers, root barrier protection, and water-efficient drip irrigation.
+            </p>
+            <div className="pt-2 border-t border-green-900/5 dark:border-white/5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+              Lightweight Soils • Drainage Cells • Root Protection
+            </div>
+          </div>
+
+          {/* Service 5 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A140F] border border-green-900/10 dark:border-white/10 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <Flower2 className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
+              Interior &amp; Balcony Plantscaping
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 leading-relaxed">
+              Air-purifying botanical installations for luxury living rooms, corporate reception lobbies, and apartment balconies. We select low-light resilient varieties with premium self-watering or weather-resistant planters.
+            </p>
+            <div className="pt-2 border-t border-green-900/5 dark:border-white/5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+              Indoor Flora • Architectural Planters • Low-Light Plants
+            </div>
+          </div>
+
+          {/* Service 6 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A140F] border border-green-900/10 dark:border-white/10 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <Droplets className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-xl font-bold text-green-950 dark:text-white">
+              Ongoing Maintenance &amp; AMC
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 leading-relaxed">
+              Reliable scheduled garden maintenance contracts for housing societies, bungalows, and commercial facilities. Includes seasonal pruning, lawn mowing, organic pest prevention, fertilization, and drip network servicing.
+            </p>
+            <div className="pt-2 border-t border-green-900/5 dark:border-white/5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+              Pruning &amp; Lawn Care • Organic Fertilizers • AMC Visits
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. OUR EXECUTION PROCESS: 6 STEP ROADMAP */}
+      <section className="p-8 sm:p-12 rounded-3xl bg-cream-50 dark:bg-[#08120B] border border-green-900/10 dark:border-white/10 space-y-8">
+        <div className="max-w-2xl space-y-2">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Structured Delivery Roadmap</span>
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-green-950 dark:text-white tracking-tight">
+            Our Execution Process
+          </h2>
+          <p className="text-xs sm:text-sm text-ink-700 dark:text-white/70 font-light leading-relaxed">
+            A methodical, step-by-step workflow that ensures design integrity, smooth civil coordination, and healthy botanical longevity.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Step 1 */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0C1912] border border-green-900/10 dark:border-white/10 relative space-y-3">
+            <div className="text-3xl font-display font-black text-emerald-600/30 dark:text-emerald-400/20">01</div>
+            <h4 className="font-display font-bold text-green-950 dark:text-white text-base">
+              Site Inspection &amp; Requirements Analysis
+            </h4>
+            <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed">
+              We visit your property to evaluate sunlight patterns, wind exposure, soil quality, existing drainage channels, water sources, and civil structural parameters.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0C1912] border border-green-900/10 dark:border-white/10 relative space-y-3">
+            <div className="text-3xl font-display font-black text-emerald-600/30 dark:text-emerald-400/20">02</div>
+            <h4 className="font-display font-bold text-green-950 dark:text-white text-base">
+              Landscape Planning &amp; 3D Visualization
+            </h4>
+            <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed">
+              We translate your vision into spatial concept plans, botanical palettes, 3D renderings, and functional zoning diagrams for client and architect review.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0C1912] border border-green-900/10 dark:border-white/10 relative space-y-3">
+            <div className="text-3xl font-display font-black text-emerald-600/30 dark:text-emerald-400/20">03</div>
+            <h4 className="font-display font-bold text-green-950 dark:text-white text-base">
+              Material Selection &amp; Itemized BOQ
+            </h4>
+            <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed">
+              We provide a transparent, detailed Bill of Quantities with specified plant species, container sizes, soil volumes, irrigation hardware, and timeline milestones.
+            </p>
+          </div>
+
+          {/* Step 4 */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0C1912] border border-green-900/10 dark:border-white/10 relative space-y-3">
+            <div className="text-3xl font-display font-black text-emerald-600/30 dark:text-emerald-400/20">04</div>
+            <h4 className="font-display font-bold text-green-950 dark:text-white text-base">
+              Site Preparation &amp; Civil Coordination
+            </h4>
+            <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed">
+              We coordinate closely with site engineers to verify waterproofing integrity, place drainage cells and geotextile filters, and run irrigation plumbing conduits.
+            </p>
+          </div>
+
+          {/* Step 5 */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0C1912] border border-green-900/10 dark:border-white/10 relative space-y-3">
+            <div className="text-3xl font-display font-black text-emerald-600/30 dark:text-emerald-400/20">05</div>
+            <h4 className="font-display font-bold text-green-950 dark:text-white text-base">
+              Plantation &amp; Landscape Installation
+            </h4>
+            <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed">
+              Our trained horticultural workforce delivers acclimatized plant specimens, enriches growing media, positions focal specimen trees, installs turf, and tests drip systems.
+            </p>
+          </div>
+
+          {/* Step 6 */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0C1912] border border-green-900/10 dark:border-white/10 relative space-y-3">
+            <div className="text-3xl font-display font-black text-emerald-600/30 dark:text-emerald-400/20">06</div>
+            <h4 className="font-display font-bold text-green-950 dark:text-white text-base">
+              Maintenance &amp; Ongoing Support
+            </h4>
+            <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed">
+              We hand over a comprehensive care schedule and offer scheduled AMC visits covering nutrient feeding, pest management, trimming, and irrigation adjustments.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. 3D LANDSCAPE CONCEPTS & DESIGN VISUALIZATIONS SHOWCASE */}
       <section className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4 border-b border-green-900/10 dark:border-white/10">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-green-700 dark:text-emerald-400 mb-1">
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400 mb-1">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Design Portfolios &amp; Master Models</span>
+              <span>Visual Concepts &amp; Planning Studies</span>
             </div>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-950 dark:text-white tracking-tight">
-              Architectural Design Showcase
+              3D Landscape Concepts &amp; Design Studies
             </h2>
             <p className="text-sm text-ink-700 dark:text-white/70 mt-2 font-light max-w-2xl leading-relaxed">
-              Explore dynamic multi-format project studies combining high-resolution site photography, 3D video walkthroughs, and structural civil documentation.
+              The following studies illustrate our 3D conceptual modeling, spatial zoning, and botanical layering methodologies prior to on-site execution.
             </p>
           </div>
 
@@ -263,148 +480,132 @@ export default function ArchitectureDesignPage() {
           </div>
         </div>
 
-        {/* Dynamic Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Informative Concept Disclaimer Note */}
+        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-300/60 dark:border-amber-700/40 text-amber-900 dark:text-amber-200 text-xs flex items-center gap-3">
+          <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <span>
+            <strong>Note on Design Studies:</strong> These project descriptions represent 3D design concepts and planning models. Final execution specifications are tailored to each site’s structural drawings, client preferences, and local civil conditions.
+          </span>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredCards.map((card) => {
-            const hasImage = Boolean(card.image && card.image.trim().length > 0);
             const hasVideo = Boolean(card.video && card.video.trim().length > 0);
-            const activeTab = activeMediaTab[card.id] || (hasVideo && !hasImage ? "video" : "image");
+            const activeTab = activeMediaTab[card.id] || "image";
 
             return (
-              <article
+              <div
                 key={card.id}
-                className="bg-white dark:bg-[#080D0A] rounded-3xl overflow-hidden border border-green-900/10 dark:border-white/10 shadow-soft hover:shadow-xl transition-all flex flex-col justify-between group"
+                className="group rounded-3xl overflow-hidden bg-white dark:bg-[#0D1812] border border-green-900/15 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all flex flex-col justify-between"
               >
                 <div>
-                  {/* Media Bay: Image, Video, or Toggle */}
-                  {(hasImage || hasVideo) ? (
-                    <div className="relative w-full h-64 sm:h-72 bg-black overflow-hidden">
-                      {/* Media selector pill if both image & video exist */}
-                      {hasImage && hasVideo && (
-                        <div className="absolute top-3 right-3 z-30 flex items-center gap-1 bg-black/70 backdrop-blur-md p-1 rounded-full border border-white/20">
-                          <button
-                            onClick={() => toggleMediaTab(card.id, "image")}
-                            className={`p-1.5 rounded-full text-xs transition-colors ${
-                              activeTab === "image" ? "bg-emerald-500 text-green-950 font-bold" : "text-white/70 hover:text-white"
-                            }`}
-                            title="Show Still Image"
-                          >
-                            <Camera className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => toggleMediaTab(card.id, "video")}
-                            className={`p-1.5 rounded-full text-xs transition-colors ${
-                              activeTab === "video" ? "bg-emerald-500 text-green-950 font-bold" : "text-white/70 hover:text-white"
-                            }`}
-                            title="Play Video Walkthrough"
-                          >
-                            <Film className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Display Image */}
-                      {activeTab === "image" && hasImage && (
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={card.image!}
-                            alt={card.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-700"
-                            sizes="(max-width: 768px) 100vw, 420px"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        </div>
-                      )}
-
-                      {/* Display Video */}
-                      {(activeTab === "video" || !hasImage) && hasVideo && (
-                        <div className="relative w-full h-full bg-black flex items-center justify-center">
-                          {card.video?.includes("youtube.com") || card.video?.includes("youtu.be") || card.video?.includes("vimeo.com") ? (
-                            <iframe
-                              src={card.video}
-                              title={card.title}
-                              className="w-full h-full border-0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
-                          ) : (
-                            <video
-                              src={card.video}
-                              controls
-                              playsInline
-                              preload="metadata"
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </div>
-                      )}
-
-                      {/* Category Badge & Scale */}
-                      <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-1.5">
-                        <span className="px-2.5 py-1 rounded-full bg-green-950/90 text-emerald-300 text-[10px] font-mono font-bold uppercase tracking-wider border border-emerald-500/30 backdrop-blur-sm">
-                          {card.category}
-                        </span>
-                        {card.scaleArea && (
-                          <span className="px-2.5 py-1 rounded-full bg-black/60 text-white text-[10px] font-mono tracking-wider border border-white/20 backdrop-blur-sm">
-                            {card.scaleArea}
-                          </span>
-                        )}
-                      </div>
+                  {/* Media Container with Multi-tab switcher (Img / Video) */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
+                    {/* Concept Study Badge */}
+                    <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-[10px] font-mono uppercase tracking-wider text-amber-300">
+                      <Sparkles className="w-3 h-3 text-amber-400" />
+                      <span>3D Concept Study</span>
                     </div>
-                  ) : (
-                    /* Text-Only Architectural Manifesto Card Frame */
-                    <div className="relative w-full p-6 bg-gradient-to-br from-green-950 via-[#0B2418] to-[#040E0A] text-white border-b border-green-800/30">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="px-3 py-1 rounded-full bg-white/10 text-amber-300 text-[10px] font-mono uppercase tracking-wider border border-white/20">
-                          {card.category}
-                        </span>
-                        <Compass className="w-5 h-5 text-emerald-400" />
-                      </div>
-                      <div className="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-1">
-                        Technical Manifesto &amp; Framework
-                      </div>
-                      {card.scaleArea && (
-                        <span className="text-[11px] text-white/70 font-mono">
-                          Scale: {card.scaleArea}
-                        </span>
-                      )}
-                    </div>
-                  )}
 
-                  {/* Text Content Bay */}
-                  <div className="p-6 space-y-3">
-                    <h3 className="font-display text-xl font-bold text-green-950 dark:text-white group-hover:text-green-600 dark:group-hover:text-emerald-400 transition-colors leading-tight">
+                    {/* Scale Tag */}
+                    {card.scaleArea && (
+                      <div className="absolute top-3 right-3 z-20 flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-950/80 backdrop-blur-md border border-emerald-500/30 text-[10px] font-mono text-emerald-300">
+                        <Ruler className="w-3 h-3" />
+                        <span>{card.scaleArea}</span>
+                      </div>
+                    )}
+
+                    {/* Media switcher pills if video exists */}
+                    {hasVideo && (
+                      <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1 p-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20">
+                        <button
+                          onClick={() => toggleMediaTab(card.id, "image")}
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all ${
+                            activeTab === "image" ? "bg-white text-black" : "text-white/70 hover:text-white"
+                          }`}
+                        >
+                          <Camera className="w-3 h-3" />
+                          <span>Image</span>
+                        </button>
+                        <button
+                          onClick={() => toggleMediaTab(card.id, "video")}
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 transition-all ${
+                            activeTab === "video" ? "bg-emerald-500 text-green-950 font-bold" : "text-white/70 hover:text-white"
+                          }`}
+                        >
+                          <Film className="w-3 h-3" />
+                          <span>Video</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Media Display */}
+                    {activeTab === "image" || !hasVideo ? (
+                      <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-700">
+                        <Image
+                          src={card.image || "/images/frames/ezgif-frame-005.jpg"}
+                          alt={card.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      </div>
+                    ) : (
+                      <div className="relative w-full h-full flex items-center justify-center bg-black">
+                        <video
+                          src={card.video}
+                          controls
+                          className="w-full h-full object-cover"
+                          poster={card.image}
+                        />
+                      </div>
+                    )}
+
+                    {/* Category pill on bottom-left */}
+                    <div className="absolute bottom-3 left-3 z-10">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-white/20 backdrop-blur-md text-white border border-white/20">
+                        {card.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Text Details */}
+                  <div className="p-5 sm:p-6 space-y-3">
+                    <h3 className="font-display text-lg sm:text-xl font-bold text-green-950 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                       {card.title}
                     </h3>
+
                     {card.subtitle && (
-                      <p className="text-xs text-amber-800 dark:text-amber-300/90 font-serif italic tracking-wide">
+                      <div className="text-xs font-serif italic text-amber-700 dark:text-amber-300/80">
                         {card.subtitle}
-                      </p>
+                      </div>
                     )}
-                    <p className="text-xs text-ink-700 dark:text-white/70 font-light leading-relaxed line-clamp-4">
+
+                    <p className="text-xs text-ink-700 dark:text-white/70 leading-relaxed font-light">
                       {card.description}
                     </p>
 
-                    {/* Technical details list */}
+                    {/* Highlighted Scope Points */}
                     {card.details && card.details.length > 0 && (
-                      <ul className="pt-2 space-y-1.5 border-t border-cream-200 dark:border-white/10 text-[11px] text-ink-600 dark:text-white/80">
+                      <div className="pt-2 space-y-1.5 border-t border-green-900/10 dark:border-white/10">
                         {card.details.map((detail, idx) => (
-                          <li key={idx} className="flex items-start gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                          <div key={idx} className="flex items-start gap-2 text-[11px] text-ink-800 dark:text-white/80">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                             <span>{detail}</span>
-                          </li>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     )}
 
                     {/* Tags */}
                     {card.tags && card.tags.length > 0 && (
                       <div className="pt-2 flex flex-wrap gap-1.5">
-                        {card.tags.map((tag) => (
+                        {card.tags.map((tag, idx) => (
                           <span
-                            key={tag}
-                            className="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-cream-100 dark:bg-white/5 text-ink-700 dark:text-white/60 border border-green-900/10 dark:border-white/10"
+                            key={idx}
+                            className="text-[10px] px-2 py-0.5 rounded-md bg-cream-100 dark:bg-white/5 text-green-900 dark:text-emerald-300 font-mono"
                           >
                             #{tag}
                           </span>
@@ -414,40 +615,119 @@ export default function ArchitectureDesignPage() {
                   </div>
                 </div>
 
-                {/* Card Footer CTA */}
-                <div className="p-6 pt-0">
+                {/* Card Action Footer */}
+                <div className="p-4 sm:p-5 pt-0">
                   <a
-                    href="#connect-form"
-                    onClick={() => setForm((prev) => ({ ...prev, projectType: card.category, message: `I would like to consult with your architecture team about projects similar to "${card.title}".` }))}
-                    className="w-full py-2.5 px-4 rounded-xl bg-cream-100 dark:bg-white/5 hover:bg-green-950 hover:text-white dark:hover:bg-emerald-600 text-green-950 dark:text-white text-xs font-semibold flex items-center justify-between border border-green-900/10 dark:border-white/10 transition-all group-hover:border-emerald-500/40"
+                    href={generateWhatsAppUrl(card.title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-green-900/5 hover:bg-emerald-500 dark:bg-white/5 dark:hover:bg-emerald-500 text-green-950 hover:text-green-950 dark:text-white dark:hover:text-green-950 font-bold text-xs uppercase tracking-wider border border-green-900/10 dark:border-white/10 hover:border-transparent transition-all flex items-center justify-center gap-2"
                   >
-                    <span>Request Consultation for this Scope</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 group-hover:text-green-950" />
+                    <span>Enquire About This Concept</span>
                   </a>
                 </div>
-              </article>
+              </div>
             );
           })}
         </div>
       </section>
 
-      {/* 3. "CONNECT WITH US" ARCHITECTURE & DESIGN FORM */}
-      <section id="connect-form" className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-cream-50 dark:bg-[#07100B] border border-green-900/15 dark:border-white/10 p-6 sm:p-10 md:p-14 shadow-soft">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Left Column: Direct Connect & Studio Channels */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-green-100 dark:bg-emerald-950/60 border border-green-800/20 text-green-900 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
-              <Compass className="w-3.5 h-3.5" />
-              <span>Direct Studio Channel</span>
+      {/* 5. WHY GREENGALLERY? (CORE COMPETITIVE ADVANTAGES) */}
+      <section className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#0B251A] to-[#04100A] text-white border border-emerald-900/40 shadow-xl space-y-8">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-300">
+            <Award className="w-3.5 h-3.5" />
+            <span>Why Work With Us</span>
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Why GreenGallery?
+          </h2>
+          <p className="text-xs sm:text-sm text-white/70 font-light leading-relaxed">
+            The benefits of choosing a dedicated design-to-execution landscaping partner.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>One-Stop Landscape Solution</span>
             </div>
-
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-green-950 dark:text-white tracking-tight">
-              Connect With Our Architecture &amp; Design Studio
-            </h2>
-
-            <p className="text-sm text-ink-700 dark:text-white/70 font-light leading-relaxed">
-              Whether you are an architectural firm planning a sustainable building envelope, a developer finalizing podium drawings, or a private client envisioning an estate sanctuary, our horticultural architects are ready to review your floor plans and technical schematics.
+            <p className="text-xs text-white/70 leading-relaxed">
+              We handle every stage internally: concept planning, 3D visualization, plant sourcing, soil preparation, planting, and long-term maintenance.
             </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+              <Warehouse className="w-4 h-4 text-emerald-400" />
+              <span>Direct Nursery Sourcing Network</span>
+            </div>
+            <p className="text-xs text-white/70 leading-relaxed">
+              Direct access to leading plant nurseries across Maharashtra and India, ensuring healthy, well-rooted, and acclimatized specimens at competitive rates.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+              <Sun className="w-4 h-4 text-emerald-400" />
+              <span>Climate-Appropriate Botanical Selection</span>
+            </div>
+            <p className="text-xs text-white/70 leading-relaxed">
+              We recommend species that flourish in Pune's local soil types and temperature variations, avoiding high-mortality ornamental mismatches.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+              <Users2 className="w-4 h-4 text-emerald-400" />
+              <span>Experienced Site Execution Teams</span>
+            </div>
+            <p className="text-xs text-white/70 leading-relaxed">
+              Our supervisors and planting teams understand site safety, clean execution, soil ratios, and smooth coordination with other on-site contractors.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+              <Layers className="w-4 h-4 text-emerald-400" />
+              <span>Design-to-Execution Coordination</span>
+            </div>
+            <p className="text-xs text-white/70 leading-relaxed">
+              No communication gap between what was rendered on screen and what gets planted on the ground. We execute strictly against agreed drawings and BOQs.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+              <Flower2 className="w-4 h-4 text-emerald-400" />
+              <span>Comprehensive Indoor &amp; Outdoor Scope</span>
+            </div>
+            <p className="text-xs text-white/70 leading-relaxed">
+              A single reliable vendor capable of managing sprawling commercial boulevards, elevated podium gardens, villa courtyards, and luxury interior plantscaping.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. CONNECT WITH GREENGALLERY: STUDIO & PROJECT ENQUIRY */}
+      <section id="connect-form" className="space-y-8 scroll-mt-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Direct Studio Information */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                <Compass className="w-3.5 h-3.5" />
+                <span>Get In Touch</span>
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-green-950 dark:text-white tracking-tight">
+                Connect With GreenGallery
+              </h2>
+              <p className="text-sm text-ink-700 dark:text-white/70 font-light leading-relaxed">
+                Whether you're an architect planning a podium garden, a developer developing a commercial landscape, or a homeowner looking to transform your outdoor space, GreenGallery can help with landscape planning, 3D visualization, plantation selection and execution coordination.
+              </p>
+            </div>
 
             {/* Direct Connect Matrix Cards */}
             <div className="space-y-4 pt-2">
@@ -459,10 +739,10 @@ export default function ArchitectureDesignPage() {
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-green-950 dark:text-white text-base">
-                      Instant WhatsApp Studio Desk
+                      WhatsApp Consultation Desk
                     </h3>
                     <p className="text-xs text-ink-600 dark:text-white/70">
-                      Share PDF drawings, CAD layouts, and get direct voice/chat feedback with our lead director.
+                      Share site photos, floor plans, and get direct voice/chat feedback with our landscape design and execution team.
                     </p>
                   </div>
                 </div>
@@ -485,10 +765,10 @@ export default function ArchitectureDesignPage() {
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-green-950 dark:text-white text-base">
-                      GreenGallery Official Instagram
+                      Instagram Portfolio
                     </h3>
                     <p className="text-xs text-ink-600 dark:text-white/70">
-                      Watch live architectural execution reels, 3D renders, and send direct messages to our studio team.
+                      Follow our ongoing project site work, plant arrivals, terrace installations, and recent portfolio reels.
                     </p>
                   </div>
                 </div>
@@ -508,7 +788,7 @@ export default function ArchitectureDesignPage() {
                     rel="noopener noreferrer"
                     className="flex-1 inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white dark:bg-white/10 border border-green-900/15 dark:border-white/15 text-green-950 dark:text-white font-semibold text-xs hover:bg-cream-100 dark:hover:bg-white/20 transition-all"
                   >
-                    <span>DM Floor Plans</span>
+                    <span>DM on Instagram</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </a>
                 </div>
@@ -518,14 +798,14 @@ export default function ArchitectureDesignPage() {
               <div className="p-4 rounded-2xl bg-cream-100/70 dark:bg-white/5 border border-green-900/10 dark:border-white/10 text-xs space-y-2">
                 <div className="flex items-center gap-2 text-ink-800 dark:text-white">
                   <Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Direct Studio Line: </span>
+                  <span>Direct Line: </span>
                   <a href={`tel:${siteConfig.contact.phone}`} className="font-bold underline hover:text-emerald-600">
                     {siteConfig.contact.phoneDisplay}
                   </a>
                 </div>
                 <div className="flex items-center gap-2 text-ink-800 dark:text-white">
                   <Mail className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Studio Email: </span>
+                  <span>Email: </span>
                   <a href={`mailto:${siteConfig.contact.email}`} className="font-bold underline hover:text-emerald-600">
                     {siteConfig.contact.email}
                   </a>
@@ -534,14 +814,14 @@ export default function ArchitectureDesignPage() {
             </div>
           </div>
 
-          {/* Right Column: Interactive Consultation Request Form */}
+          {/* Right Column: Project Enquiry Form */}
           <div className="lg:col-span-7 bg-white dark:bg-[#0A140F] p-6 sm:p-8 rounded-3xl border border-green-900/15 dark:border-white/10 shadow-sm space-y-6">
             <div>
               <h3 className="font-display text-2xl font-bold text-green-950 dark:text-white">
-                Submit an Architectural Project Brief
+                Landscape Project Enquiry
               </h3>
               <p className="text-xs text-ink-600 dark:text-white/60 mt-1">
-                Fill in the details below. Our technical landscape team responds within 24 business hours with BOQ and initial feasibility notes.
+                Share your requirements below. Our landscape design and execution team will respond promptly within 1 business day.
               </p>
             </div>
 
@@ -549,9 +829,9 @@ export default function ArchitectureDesignPage() {
               <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/40 text-emerald-900 dark:text-emerald-200 text-xs flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-sm">Consultation Request Received!</div>
+                  <div className="font-bold text-sm">Inquiry Received Successfully!</div>
                   <p className="mt-1">
-                    Thank you, {form.name || "Architect"}. Our senior design team has logged your submission. You can also message us directly on WhatsApp to attach large CAD/PDF files.
+                    Thank you, {form.name || "Client"}. Our landscape team has logged your requirements and will reach out shortly. You can also message us directly on WhatsApp to share site photos or layout drawings.
                   </p>
                   <a
                     href={generateWhatsAppUrl()}
@@ -559,7 +839,7 @@ export default function ArchitectureDesignPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 mt-2 font-bold text-emerald-700 dark:text-emerald-300 underline"
                   >
-                    <span>Send PDF drawings on WhatsApp now</span>
+                    <span>Connect directly on WhatsApp now</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </a>
                 </div>
@@ -581,7 +861,7 @@ export default function ArchitectureDesignPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Ar. Vikram Sharma / Rahul Mehta"
+                    placeholder="e.g. Rahul Sharma"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
@@ -611,7 +891,7 @@ export default function ArchitectureDesignPage() {
                   <input
                     type="email"
                     required
-                    placeholder="studio@architects.com"
+                    placeholder="name@example.com"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
@@ -620,11 +900,11 @@ export default function ArchitectureDesignPage() {
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
-                    Organization / Firm / Client Role
+                    Company / Organization (Optional)
                   </label>
                   <input
                     type="text"
-                    placeholder="Sharma Design Studio / Real Estate Firm"
+                    placeholder="e.g. Design Studio / Developer / Residence"
                     value={form.organization}
                     onChange={(e) => setForm({ ...form, organization: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
@@ -635,60 +915,65 @@ export default function ArchitectureDesignPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
-                    Project Scope
+                    Type of Service Required
                   </label>
                   <select
-                    value={form.projectType}
-                    onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                    value={form.serviceType}
+                    onChange={(e) => setForm({ ...form, serviceType: e.target.value })}
                     className="w-full px-3 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
-                    <option value="Podium & Deck Architecture">Podium &amp; Deck Architecture</option>
-                    <option value="Master Landscape Planning">Master Landscape Planning</option>
-                    <option value="3D Modeling & CAD">3D Modeling &amp; CAD</option>
-                    <option value="Villa & Estate Architecture">Villa &amp; Estate Architecture</option>
-                    <option value="Biophilic Commercial Design">Biophilic Commercial Design</option>
-                    <option value="Urban Micro-Ecosystems">Urban Micro-Ecosystems</option>
+                    <option value="Podium & Terrace Gardens">Podium &amp; Terrace Gardens</option>
+                    <option value="Landscape Planning & Design">Landscape Planning &amp; Design</option>
+                    <option value="3D Landscape Visualization">3D Landscape Visualization</option>
+                    <option value="Villa & Residential Landscaping">Villa &amp; Residential Landscaping</option>
+                    <option value="Commercial & Industrial Landscaping">Commercial &amp; Industrial Landscaping</option>
+                    <option value="Interior & Balcony Gardens">Interior &amp; Balcony Gardens</option>
+                    <option value="Plantation & Plant Supply">Plantation &amp; Plant Supply</option>
+                    <option value="Garden Maintenance">Garden Maintenance</option>
+                    <option value="Water Features & Hardscape">Water Features &amp; Hardscape</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
-                    Approx. Scale / Area
+                    Approximate Project Area
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. 25,000 sq ft / 2 Acres"
-                    value={form.scaleArea}
-                    onChange={(e) => setForm({ ...form, scaleArea: e.target.value })}
+                    placeholder="e.g. 5,000 sq ft / 0.5 Acre"
+                    value={form.approxArea}
+                    onChange={(e) => setForm({ ...form, approxArea: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
-                    Project Stage
+                    Current Project Stage
                   </label>
                   <select
                     value={form.stage}
                     onChange={(e) => setForm({ ...form, stage: e.target.value })}
                     className="w-full px-3 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
-                    <option value="Planning & Concepts">Planning &amp; Concepts</option>
-                    <option value="Civil Structure Ready">Civil Structure Ready</option>
-                    <option value="Interior / Finishing Stage">Interior / Finishing Stage</option>
-                    <option value="Existing Landscape Renovation">Existing Renovation</option>
+                    <option value="Concept & Planning">Concept &amp; Planning</option>
+                    <option value="Architectural Design Stage">Architectural Design Stage</option>
+                    <option value="Civil Construction On-Site">Civil Construction On-Site</option>
+                    <option value="Ready for Landscaping">Ready for Landscaping</option>
+                    <option value="Renovation / Upgrade">Renovation / Upgrade</option>
                   </select>
                 </div>
               </div>
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-green-950 dark:text-white mb-1.5">
-                  Project Brief, Location &amp; Technical Requirements
+                  Project Location &amp; Requirements
                 </label>
                 <textarea
                   rows={4}
                   required
-                  placeholder="Describe your site location, structural slab parameters, architectural vision, water sources, or target possession milestones..."
+                  placeholder="Describe your site location in Pune/Maharashtra, landscape vision, existing site conditions, or special requirements..."
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-green-900/20 dark:border-white/10 bg-cream-50/50 dark:bg-black/30 text-xs text-ink-900 dark:text-white focus:outline-none focus:border-emerald-500 leading-relaxed"
@@ -702,7 +987,7 @@ export default function ArchitectureDesignPage() {
                   className="w-full sm:w-auto px-8 py-3 rounded-full bg-green-950 hover:bg-green-900 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-glow transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>{isSubmitting ? "Submitting Brief..." : "Submit Architectural Brief"}</span>
+                  <span>{isSubmitting ? "Submitting Inquiry..." : "Submit Project Enquiry"}</span>
                 </button>
 
                 <a
@@ -712,7 +997,7 @@ export default function ArchitectureDesignPage() {
                   className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1.5"
                 >
                   <MessageSquare className="w-4 h-4 text-[#25D366]" />
-                  <span>Prefer WhatsApp? Launch Pre-filled Chat</span>
+                  <span>Prefer WhatsApp? Chat Directly</span>
                 </a>
               </div>
             </form>

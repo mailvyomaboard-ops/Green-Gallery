@@ -227,7 +227,18 @@ export interface ArchitectureCard {
   id: string;
   title: string;
   subtitle?: string;
-  category: "Podium & Deck Architecture" | "Master Landscape Planning" | "3D Modeling & CAD" | "Villa & Estate Architecture" | "Biophilic Commercial Design" | "Urban Micro-Ecosystems";
+  category:
+    | "Podium & Terrace Gardens"
+    | "Water Features & Hardscape"
+    | "Villa & Residential Landscaping"
+    | "Sustainable Landscape Planning"
+    | "Commercial & Industrial Landscaping"
+    | "Podium & Deck Architecture"
+    | "Master Landscape Planning"
+    | "3D Modeling & CAD"
+    | "Villa & Estate Architecture"
+    | "Biophilic Commercial Design"
+    | "Urban Micro-Ecosystems";
   image?: string;
   video?: string;
   description: string;

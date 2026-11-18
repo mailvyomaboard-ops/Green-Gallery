@@ -5123,12 +5123,17 @@ export default function AdminPage() {
                     onChange={(e) => setArchForm({ ...archForm, category: e.target.value as any })}
                     className="w-full px-3 py-2 bg-cream-50/50 border border-[#283618]/15 rounded text-xs focus:outline-none focus:border-green-900"
                   >
-                    <option value="Podium & Deck Architecture">Podium &amp; Deck Architecture</option>
-                    <option value="Master Landscape Planning">Master Landscape Planning</option>
-                    <option value="3D Modeling & CAD">3D Modeling &amp; CAD</option>
-                    <option value="Villa & Estate Architecture">Villa &amp; Estate Architecture</option>
-                    <option value="Biophilic Commercial Design">Biophilic Commercial Design</option>
-                    <option value="Urban Micro-Ecosystems">Urban Micro-Ecosystems</option>
+                    <option value="Podium & Terrace Gardens">Podium &amp; Terrace Gardens</option>
+                    <option value="Water Features & Hardscape">Water Features &amp; Hardscape</option>
+                    <option value="Villa & Residential Landscaping">Villa &amp; Residential Landscaping</option>
+                    <option value="Sustainable Landscape Planning">Sustainable Landscape Planning</option>
+                    <option value="Commercial & Industrial Landscaping">Commercial &amp; Industrial Landscaping</option>
+                    <option value="Podium & Deck Architecture">Podium &amp; Deck Architecture (Legacy)</option>
+                    <option value="Master Landscape Planning">Master Landscape Planning (Legacy)</option>
+                    <option value="3D Modeling & CAD">3D Modeling &amp; CAD (Legacy)</option>
+                    <option value="Villa & Estate Architecture">Villa &amp; Estate Architecture (Legacy)</option>
+                    <option value="Biophilic Commercial Design">Biophilic Commercial Design (Legacy)</option>
+                    <option value="Urban Micro-Ecosystems">Urban Micro-Ecosystems (Legacy)</option>
                   </select>
                 </div>
               </div>
